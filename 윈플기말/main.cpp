@@ -6,7 +6,6 @@
 #include "Load.h"
 #include "Map.h"
 #include "ObjectManager.h"
-#include "Camera.h"
 #ifdef _DEBUG
 #pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
 #endif
@@ -78,7 +77,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 	static HBITMAP hbit1, oldbit1;
 	static PLAYER player;
 	static MAP map;
-	static CAMERA camera;
 	static OBJECT obj[100];
 
 	static int ocount;		//obj 개수를 세주는 변수
@@ -89,10 +87,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		map.CreateMap(g_hinst);
 		hbit1 = (HBITMAP)LoadBitmap(g_hinst, MAKEINTRESOURCE(IDB_BITMAP1));
 
-		//obj[0].create(0, 3910, 1023, 3999-3910, 1);
-		//obj[1].create(537, 3825, 607-537, 100, 2);
-		ocount = initObject(obj,10);
-		//ocount = 2;
+		obj[0].create(0, 3910, 1023, 3999-3910, 1);
+		obj[1].create(537, 3825, 607-537, 100, 2);
+		ocount = 2;
 		SetTimer(hwnd, 1,1, NULL);
 		break;
 	case WM_PAINT:
@@ -114,7 +111,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		else {
 			Ellipse(mem1dc, player.getx() - player.getw(), player.gety() - player.geth(), player.getx() + player.getw(), player.gety() + player.geth());
 		}
-		BitBlt(hdc, 0, 0, 1024, 768, mem1dc, camera.getx(), camera.gety(), SRCCOPY);
+		BitBlt(hdc, 0, 0, 1024, 768, mem1dc, 0, 4000 - 768, SRCCOPY);
 
 		DeleteObject(mem1dc);
 		EndPaint(hwnd, &ps);
@@ -125,7 +122,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		case 1:
 			player.move();
 			adjustPlayer(player, obj, ocount);
-			adjustCamera(camera, player);
 			cout << player.gety() << endl;
 			InvalidateRgn(hwnd, NULL, FALSE);
 			break;

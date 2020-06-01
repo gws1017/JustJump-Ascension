@@ -256,7 +256,7 @@ void PLAYER::move()
 			y -= 3;
 		}
 		else {
-			y -= COLSPEED;
+			y -= 5;
 		}
 		if (abs((y - savey)) >= 100)	//30픽셀만큼 점프했다면
 			state = 7;			//다시 땅으로 떨어지게함
@@ -296,7 +296,7 @@ void PLAYER::move()
 	}
 	else if (state == 7)
 	{
-		y += COLSPEED;
+		y += 4;
 		if (COMMAND_move == 1)
 		{
 				x -= ROWSPEED;

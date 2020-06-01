@@ -5,7 +5,7 @@
 bool collp2w(PLAYER player, OBJECT object)
 //----------------------------------------
 {
-	int adjust = 10 ;
+	int adjust = 5 ;
 	if (object.getType() == 1)
 	{
 		if (object.getX() <= player.getx() && player.getx() <= object.getX() + object.getW())
@@ -22,7 +22,6 @@ bool collp2w(PLAYER player, OBJECT object)
 			if (object.getY() <= player.gety() + player.geth() && player.gety() + player.geth() <= object.getY() + adjust)
 			{
 				return 1;
-				//ㅇㅇ
 			}
 		}
 	}
@@ -53,75 +52,4 @@ void adjustPlayer(PLAYER& player, OBJECT* obj,int ocount)
 				player.setstate(7);
 		}
 	}
-}
-//int(맵 번호) 에 따라 장애물 위치값 넣어주고 몇개의 오브젝트가 들어갔는지 알려주는 함수
-int initObject(OBJECT* obj, int mapnum)
-{
-	int x, y, w, h, type;
-	int objcount = 0;
-	
-	ifstream in;
-	if (mapnum == 10)
-	{
-		in.open("map/map_1.txt", ios::in);
-	}
-	else if (mapnum == 11)
-	{
-		in.open("map/map_2.txt", ios::in);
-	}
-	else {
-		return 0;		//맵 값이 잘못입력되었으면 그대로 탈출
-	}
-
-
-
-
-	if (in.is_open())
-	{
-		for (int i = 0; i < 100; ++i)
-		{
-			if (in.eof())
-			{
-				objcount = i;
-				break;
-			}
-			in >> x >> y >> w >> h >> type;
-			obj[i].setX(x);
-			obj[i].setY(y);
-			obj[i].setW(w);
-			obj[i].setH(h);
-			obj[i].setType(type);
-
-		}
-	}
-	return objcount;
-}
-
-//카메라 무빙워크
-void adjustCamera(CAMERA& camera,PLAYER player)
-{
-	//플레이어가 카메라의 중간지점을 넘어가면 카메라도 올려준다
-	if (player.gety() < camera.gety() + 384)
-	{
-		if (camera.gety() <= 0)	//최상점일땐 이동해주지않음
-		{
-
-		}
-		else {
-			camera.sety(player.gety() - 384);
-		}
-	}
-	else if (player.gety() > camera.gety() + 384)
-	{
-		if (camera.gety() >= 3232)	//최하점일땐 이동해주지않음
-		{
-
-		}
-		else {
-			camera.sety(player.gety() - 384);
-		}
-	}
-
-
-
 }
