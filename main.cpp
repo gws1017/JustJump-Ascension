@@ -3,13 +3,12 @@
 #include <random>
 #include <iostream>
 #include "resource.h"
-#include "player.h"
 #include "Load.h"
 #include "Map.h"
-#include "object.h"
-//#ifdef _DEBUG
-//#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
-//#endif
+#include "ObjectManager.h"
+#ifdef _DEBUG
+#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
+#endif
 
 HINSTANCE g_hinst;
 LPCTSTR lpszClass = L"windows program 2-2";
@@ -17,7 +16,9 @@ LPCTSTR lpszWinodwName = L"windows progragm 2-2";
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam);
 
+//extern int ROWSPEED;
 
+//extern int COLSPEED;
 
 //한줄에 79자까지 입력가능한 메모장
 
@@ -48,7 +49,7 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hPrevinstance, LPSTR lpszCmdPa
 	(
 		lpszClass, lpszWinodwName,
 		WS_OVERLAPPEDWINDOW,
-		100, 50, 1024 ,768,
+		100, 50, 1024, 768,
 		NULL, (HMENU)NULL,
 		hinstance, NULL
 	);
@@ -71,14 +72,14 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hPrevinstance, LPSTR lpszCmdPa
 LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
 	static PAINTSTRUCT ps;
-	static HDC hdc, mem1dc,mem2dc;
+	static HDC hdc, mem1dc, mem2dc,playerdc;
 	static RECT rectview;
 	static HBITMAP hbit1, oldbit1;
 	static PLAYER player;
-	static Map map;
-	static object obj[100];
+	static MAP map;
+	static OBJECT obj[100];
 
-	static int ocount;
+	static int ocount;		//obj 개수를 세주는 변수
 	switch (iMessage)
 	{
 	case WM_CREATE:
@@ -86,50 +87,58 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		map.CreateMap(g_hinst);
 		hbit1 = (HBITMAP)LoadBitmap(g_hinst, MAKEINTRESOURCE(IDB_BITMAP1));
 
-		obj[0].create(0, 3910, 1023, 3999,1);
-		obj[1].create(537, 3825, 607, 3825,2);
-		ocount = 0;
-
+		obj[0].create(0, 3910, 1023, 3999-3910, 1);
+		obj[1].create(537, 3825, 607-537, 100, 2);
+		ocount = 2;
+		SetTimer(hwnd, 1,1, NULL);
 		break;
 	case WM_PAINT:
 		hdc = BeginPaint(hwnd, &ps);
 
 		mem1dc = CreateCompatibleDC(hdc);
+		if (hbit1 == NULL)
+		{
+			hbit1 = CreateCompatibleBitmap(hdc, rectview.right, rectview.bottom);
+		}
+		SelectObject(mem1dc,hbit1);
+
 		map.DrawBK(mem1dc, mem2dc, rectview);
 
-		BitBlt(hdc, 0, 0, 1024, 768, mem1dc, 0, 4000-768, SRCCOPY);
-		
+		if (player.getstate() == 3)
+		{
+			Ellipse(mem1dc, player.getx() - player.getw(), player.gety() - player.geth() + player.geth() / 2, player.getx() + player.getw(), player.gety() + player.geth());
+		}
+		else {
+			Ellipse(mem1dc, player.getx() - player.getw(), player.gety() - player.geth(), player.getx() + player.getw(), player.gety() + player.geth());
+		}
+		BitBlt(hdc, 0, 0, 1024, 768, mem1dc, 0, 4000 - 768, SRCCOPY);
+
 		DeleteObject(mem1dc);
 		EndPaint(hwnd, &ps);
 		break;
+	case WM_TIMER:
+		switch (wParam)
+		{
+		case 1:
+			player.move();
+			adjustPlayer(player, obj, ocount);
+			cout << player.gety() << endl;
+			InvalidateRgn(hwnd, NULL, FALSE);
+			break;
+
+		}
 	case WM_KEYDOWN:
-		if (wParam == VK_LEFT)
-		{
-			player.setx(player.getx() - 1);
-			break;
-		}
-		if (wParam == VK_RIGHT)
-		{
-			player.setx(player.getx() + 1);
-			break;
-		}
-		if (wParam == VK_UP)
-		{
-			player.sety(player.gety() - 1);
-			break;
-		}
-		if (wParam == VK_DOWN)
-		{
-			player.sety(player.gety() + 1);
-			break;
-		}
+		player.PlayerSetting(wParam);
+		break;
+	case WM_KEYUP:
+		player.PlayerWaiting(wParam);
 		break;
 	case WM_CHAR:
 
-		InvalidateRect(hwnd, NULL, TRUE);
+		InvalidateRect(hwnd, NULL, FALSE);
 		break;
 	case WM_DESTROY:
-		
+
 		PostQuitMessage(0);
 		return 0;
 	}

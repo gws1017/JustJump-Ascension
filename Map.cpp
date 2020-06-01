@@ -2,16 +2,16 @@
 #include <Windows.h>
 #include "Load.h"
 
-void Map::CreateMap(HINSTANCE g_hinst)
+void MAP::CreateMap(HINSTANCE g_hinst)
 {
 	hbitbk = LoadBK(hbitbk,g_hinst);
 }
 
-void Map :: DrawBK(HDC& mem1dc, HDC& mem2dc, RECT& rectview)
+void MAP :: DrawBK(HDC& mem1dc, HDC& mem2dc, RECT& rectview)
 {
 	mem2dc = CreateCompatibleDC(mem1dc);
-	SelectObject(mem1dc, hbitbk);
-	BitBlt(mem1dc, rectview.left, rectview.top, rectview.right, rectview.bottom, mem2dc, 0,0, SRCCOPY);
+	SelectObject(mem2dc, hbitbk);
+	BitBlt(mem1dc, 0, 0,MAPWIDTH, MAPHEIGHT, mem2dc, 0,0, SRCCOPY);	//맵 전체 새로고침
 	DeleteObject(mem2dc);
 }
 
