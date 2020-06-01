@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿  Load.cpp
   main.cpp
 c:\users\gws10\documents\github\justjump\윈플기말\main.cpp(66): warning C4244: 'return': 'WPARAM'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
@@ -7,3 +8,7 @@ c:\users\gws10\documents\github\justjump\윈플기말\main.cpp(66): warning C424
   player.cpp
   코드를 생성하고 있습니다...
   윈플기말.vcxproj -> C:\Users\gws10\Documents\GitHub\JustJump\x64\Debug\윈플기말.exe
+=======
+﻿  ObjectManager.cpp
+  윈플기말.vcxproj -> C:\Users\sumin\Documents\GitHub\JustJump\x64\Debug\윈플기말.exe
+>>>>>>> fb1d6d5e39cf18de6f8242169457498c53543fd3
