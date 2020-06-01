@@ -22,6 +22,7 @@ bool collp2w(PLAYER player, OBJECT object)
 			if (object.getY() <= player.gety() + player.geth() && player.gety() + player.geth() <= object.getY() + adjust)
 			{
 				return 1;
+				//¤·¤·
 			}
 		}
 	}
