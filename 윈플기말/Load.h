@@ -2,3 +2,5 @@
 #include <Windows.h>
 
 HBITMAP LoadBK(HBITMAP, HINSTANCE);
+
+HBITMAP LoadObj(HBITMAP, HINSTANCE, int);

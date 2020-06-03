@@ -7,13 +7,13 @@
 #include "Map.h"
 #include "ObjectManager.h"
 #include "Camera.h"
-#ifdef _DEBUG
-#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
-#endif
+//#ifdef _DEBUG
+////#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
+//#endif
 
 HINSTANCE g_hinst;
-LPCTSTR lpszClass = L"windows program 2-2";
-LPCTSTR lpszWinodwName = L"windows progragm 2-2";
+LPCTSTR lpszClass = L"Just Jump";
+LPCTSTR lpszWinodwName = L"Just Jump";
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam);
 
@@ -73,9 +73,9 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hPrevinstance, LPSTR lpszCmdPa
 LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
 	static PAINTSTRUCT ps;
-	static HDC hdc, mem1dc, mem2dc,playerdc;
+	static HDC hdc, mem1dc, mem2dc,playerdc,odc; // odc = 오브젝트 dc
 	static RECT rectview;
-	static HBITMAP hbit1, oldbit1;
+	static HBITMAP hbit1, oldbit1,hbitobj[100];
 	static PLAYER player;
 	static MAP map;
 	static CAMERA camera;
@@ -87,11 +87,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 	case WM_CREATE:
 		GetClientRect(hwnd, &rectview);
 		map.CreateMap(g_hinst);
-		hbit1 = (HBITMAP)LoadBitmap(g_hinst, MAKEINTRESOURCE(IDB_BITMAP1));
-
+		
+		hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/bk.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+		//hbitobj[0] = (HBITMAP)LoadImage(g_hinst, TEXT("img/foothold2.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 		//obj[0].create(0, 3910, 1023, 3999-3910, 1);
 		//obj[1].create(537, 3825, 607-537, 100, 2);
-		ocount = initObject(obj,10);
+		ocount = initObject(obj,10,g_hinst);
+			
 		//ocount = 2;
 		SetTimer(hwnd, 1,1, NULL);
 		break;
@@ -103,9 +105,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		{
 			hbit1 = CreateCompatibleBitmap(hdc, rectview.right, rectview.bottom);
 		}
+
 		SelectObject(mem1dc,hbit1);
+		
 
 		map.DrawBK(mem1dc, mem2dc, rectview);
+		for (int i = 0; i <= ocount; i++)
+			obj[i].DrawObj(mem1dc, odc);
 
 		if (player.getstate() == 3)
 		{

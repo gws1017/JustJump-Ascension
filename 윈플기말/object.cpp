@@ -1,5 +1,6 @@
+#pragma comment (lib, "Msimg32.lib")
 #include "object.h"
-
+#include "Load.h"
 
 
 int OBJECT::getX()
@@ -50,11 +51,18 @@ void OBJECT::setType(int _type)
 {
 	type = _type;
 }
-void OBJECT::setHbit(HBITMAP _hbit)
+void OBJECT::setHbit(HINSTANCE g_hinst)
 {
-	hbit = _hbit;
+	hbit = LoadObj(hbit, g_hinst, type);
 }
-
+void OBJECT::DrawObj(HDC& mem1dc, HDC& odc)
+{
+	odc = CreateCompatibleDC(mem1dc);
+	SelectObject(odc, hbit);
+	if(type == 2) TransparentBlt(mem1dc, x, y, w, h+17, odc, 11,15,77,18, RGB(255,255,255));	// 원본그림에서 x 11~88 y 15 33 만큼 잘라내서 투명처리후 출력
+	if(type == 3) TransparentBlt(mem1dc, x, y, w, h +18, odc, 0, 0, 19, 19, RGB(255, 255, 255));
+	DeleteObject(odc);
+}
 //땅바닥과 플레이어 충돌체크 1이면 부닥침
 //
 //bool collp2w(PLAYER player, OBJECT obj)

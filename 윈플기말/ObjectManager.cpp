@@ -45,7 +45,7 @@ void adjustPlayer(PLAYER& player, OBJECT* obj,int ocount)
 			player.sety(obj[i].getY() - player.geth());
 			player.setstate(1);
 			if (ROWSPEED == 1)
-				ROWSPEED = 5;
+				ROWSPEED = 3;
 			break;
 		}
 		else {
@@ -55,7 +55,7 @@ void adjustPlayer(PLAYER& player, OBJECT* obj,int ocount)
 	}
 }
 //int(맵 번호) 에 따라 장애물 위치값 넣어주고 몇개의 오브젝트가 들어갔는지 알려주는 함수
-int initObject(OBJECT* obj, int mapnum)
+int initObject(OBJECT* obj, int mapnum, HINSTANCE g_hinst)
 {
 	int x, y, w, h, type;
 	int objcount = 0;
@@ -91,6 +91,7 @@ int initObject(OBJECT* obj, int mapnum)
 			obj[i].setW(w);
 			obj[i].setH(h);
 			obj[i].setType(type);
+			obj[i].setHbit(g_hinst);
 
 		}
 	}

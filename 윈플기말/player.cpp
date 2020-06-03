@@ -1,6 +1,6 @@
 #include "player.h"
 #include <iostream>
-int ROWSPEED=5; 	//가로 이동속도
+int ROWSPEED=3; 	//가로 이동속도
 int COLSPEED=10;	//세로 이동속도
 bool LEFTkey=0;//왼쪽키 눌렀는지 1이면 누름 0이면 안누름
 bool RIGHTkey=0;//오른쪽키 눌렀는지 1이면 누름 0이면 안누름
@@ -9,9 +9,9 @@ bool DOWNkey=0;//아래쪽키 눌렀는지 1이면 누름 0이면 안누름
 bool LRkey = 0;//왼쪽오른쪽키 동시에 눌렀는지 1이면눌림 0이면 안눌림
 PLAYER::PLAYER()
 {
-	x = 100;
-	y = 3800;
-	w = 50;
+	x = 100; //100
+	y = 3800; //3800
+	w = 50;  
 	h = 50;
 	state = 7;
 	dir = 2;

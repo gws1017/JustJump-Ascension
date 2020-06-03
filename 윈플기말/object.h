@@ -24,7 +24,9 @@ public:
 	void setH(int);
 	//1Àº ¹Ù´Ú 2´Â ÇÃ·§Æû 3~Àå¾Ö¹°
 	void setType(int);
-	void setHbit(HBITMAP);
+	void setHbit(HINSTANCE);
+
+	void DrawObj(HDC&, HDC&);
 };
 
 //bool collp2w(PLAYER, OBJECT);
