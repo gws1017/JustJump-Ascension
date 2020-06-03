@@ -11,8 +11,8 @@ HBITMAP LoadBK(HBITMAP hbit1, HINSTANCE g_hinst)
 }
 HBITMAP LoadObj(HBITMAP hbit1, HINSTANCE g_hinst, int type) //오브젝트의 이미지파일을 불러옴
 {
-	if (type == 1); // 바닥
-
+	if (type == 1) // 바닥
+	hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/foothold1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 	else if(type == 2) // 발판
 	hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/foothold2.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //상대경로로 변경
 	else if(type == 3)

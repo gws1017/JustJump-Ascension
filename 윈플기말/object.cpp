@@ -59,6 +59,7 @@ void OBJECT::DrawObj(HDC& mem1dc, HDC& odc)
 {
 	odc = CreateCompatibleDC(mem1dc);
 	SelectObject(odc, hbit);
+	if (type == 1) TransparentBlt(mem1dc, x, y, w, h , odc, 0, 0, 1023, 62, RGB(255, 255, 255));
 	if(type == 2) TransparentBlt(mem1dc, x, y, w, h+17, odc, 11,15,77,18, RGB(255,255,255));	// 원본그림에서 x 11~88 y 15 33 만큼 잘라내서 투명처리후 출력
 	if(type == 3) TransparentBlt(mem1dc, x, y, w, h +18, odc, 0, 0, 19, 19, RGB(255, 255, 255));
 	DeleteObject(odc);
