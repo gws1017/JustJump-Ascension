@@ -34,6 +34,7 @@ public:
 
 	void PlayerSetting(WPARAM);
 	void PlayerWaiting(WPARAM);
+	void fall2save();
 	void move();
 };
 

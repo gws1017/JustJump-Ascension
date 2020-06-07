@@ -16,7 +16,7 @@ bool collp2w(PLAYER player, OBJECT object)
 			}
 		}
 	}
-	else if(object.getType()==2) {	//플랫폼일때
+	else if(object.getType()<=100) {	//플랫폼일때
 		if (object.getX() <= player.getx() && player.getx() <= object.getX() + object.getW())
 		{
 			if (object.getY() <= player.gety() + player.geth() && player.gety() + player.geth() <= object.getY() + adjust)
@@ -56,7 +56,7 @@ void adjustPlayer(PLAYER& player, OBJECT* obj,int ocount)
 
 			if (player.getstate() == 7) //떨어지는 중일때 부딪혔다 ?
 			{
-				if (obj[i].getType() == 1 || obj[i].getType() == 2)			//근데 그게 땅바닥이였다?
+				if (obj[i].getType() <101)			//근데 그게 땅바닥이였다?
 				{
 					if(LEFTkey==0&&RIGHTkey==0)	//근데 그와중에도 아무키도 안누르고있었다 ? 
 						player.setCMD_move(false);	//그럼 진행방향으로 가는걸 멈추도록해준다.
@@ -70,7 +70,10 @@ void adjustPlayer(PLAYER& player, OBJECT* obj,int ocount)
 	}
 	
 	if (player.getstate() == 4 || player.getstate() == 1)	//하나도 못부딪혔으면 공중에있는거니까 떨어져야한다
+	{
 		player.setstate(7);
+		player.fall2save();		//떨어지는 순간의 x좌표점 기억
+	}
 
 }
 //int(맵 번호) 에 따라 장애물 위치값 넣어주고 몇개의 오브젝트가 들어갔는지 알려주는 함수
@@ -142,7 +145,7 @@ void adjustCamera(CAMERA& camera,PLAYER player)
 		}
 	}else if (camera.gety()+600 != player.gety())		//카메라가 정해진 위치에 있지않다면
 	{
-		if (player.getstate() != 7)
+		if (player.getstate() != 7)							//그리고 떨어질때까지 카메라를 바꿔주면 너무 흔들려서 이때는 무시함
 		{
 			if (camera.gety() + 540 > player.gety())		//얼마나 멀리있느냐에 따라 속도비를 다르게해서 카메라를 따라오게한다
 			{

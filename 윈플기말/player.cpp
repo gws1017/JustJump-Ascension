@@ -122,7 +122,7 @@ void PLAYER::PlayerSetting(WPARAM wParam)
 		{
 			LRkey = true;
 			return;
-		}
+		} 
 		if (state == 7)
 		{
 			dir = 1;
@@ -189,10 +189,13 @@ void PLAYER::PlayerWaiting(WPARAM wParam)
 	{
 		LRkey = false;
 		LEFTkey = false;
-		if (RIGHTkey == true)
+		if (state != 7)				//떨어지고 있을때는 이동로직이 작동하면 안된다 무시해줌
 		{
-			COMMAND_move = 2;
-			return;
+			if (RIGHTkey == true)	//키가 동시에 눌리고있었다면 땔때 옮겨줌
+			{
+				COMMAND_move = 2;
+				return;
+			}
 		}
 		if (state == 4)		//움직이고있을땐 멈춰 점프뛰고있을땐 계쏙 점프뛰는상태 유지 개입 x
 			state = 1;
@@ -206,10 +209,13 @@ void PLAYER::PlayerWaiting(WPARAM wParam)
 	{
 		LRkey = false;
 		RIGHTkey = false;
-		if (LEFTkey == true)
+		if (state != 7)				//떨어지고 있을때는 이동로직이 작동하면 안된다 무시해줌
 		{
-			COMMAND_move = 1;
-			return;
+			if (LEFTkey == true)
+			{
+				COMMAND_move = 1;
+				return;
+			}
 		}
 		if (state == 4)		//움직이고있을땐 멈춰 점프뛰고있을땐 계쏙 점프뛰는상태 유지 개입 x
 			state = 1;
@@ -231,8 +237,11 @@ void PLAYER::PlayerWaiting(WPARAM wParam)
 //플레이어 움직임
 void PLAYER::move()
 {
+	static int adjustspd = 0;	//떨어질때 x값을 천천히 이동시켜주기 위함
+
 	if (state == 1)
 	{
+		adjustspd = 0;		//수직낙하 한 후는 1상태가 되므로 여기서 초기화시켜줌
 		if (LRkey == true)
 		{
 
@@ -268,7 +277,10 @@ void PLAYER::move()
 			y -= COLSPEED;
 		}
 		if (abs((y - savey)) >= 100)	//30픽셀만큼 점프했다면
+		{
 			state = 7;			//다시 땅으로 떨어지게함
+			savex = x;			//이순간의 x좌표를 기억함(가속도를 받다가 멈춘것처럼 해줄예정)
+		}
 		
 	}
 	else if (state == 3)
@@ -306,13 +318,55 @@ void PLAYER::move()
 	else if (state == 7)
 	{
 		y += COLSPEED;
+		if(adjustspd<1000)
+			adjustspd++;
+		if (LEFTkey == true)
+			if (adjustspd % 30 == 0)
+				x -= ROWSPEED;
+		if (RIGHTkey == true)
+			if (adjustspd % 30 == 0)
+				x += ROWSPEED;
 		if (COMMAND_move == 1)
 		{
+			if (adjustspd <= 10)
+			{
 				x -= ROWSPEED;
+			}
+			if (adjustspd > 10)
+			{          
+				if (adjustspd % 2 == 0)
+					x -= ROWSPEED;
+			}
+			else if (adjustspd > 30)
+			{
+				if (adjustspd % 5 == 0)
+					x -= ROWSPEED;
+			}
+			
+			if (LEFTkey == 0)
+				if (abs(x - savex) > 50)
+					COMMAND_move = 0;
+
 		}
 		else if (COMMAND_move == 2)
 		{
+			if (adjustspd <= 10)
+			{
 				x += ROWSPEED;
+			}
+			if (adjustspd > 10)
+			{
+				if (adjustspd % 2 == 0)
+					x += ROWSPEED;
+			}
+			else if (adjustspd > 30)
+			{
+				if (adjustspd % 5 == 0)
+					x += ROWSPEED;
+			}
+			if (RIGHTkey == 0)
+				if (abs(x - savex) > 50)
+					COMMAND_move = 0;
 		}
 	}
 }
@@ -320,3 +374,7 @@ void PLAYER::move()
 
 
 
+void PLAYER::fall2save()
+{
+	savex = x;
+}
