@@ -50,7 +50,7 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hPrevinstance, LPSTR lpszCmdPa
 	(
 		lpszClass, lpszWinodwName,
 		WS_OVERLAPPEDWINDOW,
-		100, 50, 1024, 768,
+		100, 50, 1040, 807,
 		NULL, (HMENU)NULL,
 		hinstance, NULL
 	);

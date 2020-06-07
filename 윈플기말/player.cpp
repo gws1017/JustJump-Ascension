@@ -11,8 +11,8 @@ PLAYER::PLAYER()
 {
 	x = 80; //100
 	y = 1600; //3800
-	w = 50;  
-	h = 50;
+	w = 20;  
+	h = 20;
 	state = 7;
 	dir = 2;
 	COMMAND_move = false;
@@ -89,13 +89,19 @@ void PLAYER::PlayerSetting(WPARAM wParam)
 {
 	if (wParam == VK_LEFT)
 	{
-		LEFTkey = true;
-		if (RIGHTkey == true)
+		LEFTkey = true;				//키 누름상태
+		if (RIGHTkey == true)		//좌우를 동시에 누르고있다면 움직이지않음
 		{
 			LRkey = true;
 			return;
 		}
-		COMMAND_move = 1;
+		if (state == 7)
+		{
+			dir = 1;
+		}
+		else {
+			COMMAND_move = 1;			//한쪽키만누르고있다면 움직여줌(하지만 떨어지는 상태에선 변하지않음)
+		}
 		if (state == 1 || state == 4)
 		{
 			state = 4;
@@ -117,23 +123,24 @@ void PLAYER::PlayerSetting(WPARAM wParam)
 			LRkey = true;
 			return;
 		}
-		if (COMMAND_move == 1)
+		if (state == 7)
 		{
-			COMMAND_move = 0;
+			dir = 1;
 		}
 		else {
-			COMMAND_move = 2;
-			if (state == 1 || state == 4)
-			{
-				state = 4;
-				dir = 2;
-				std::cout << "RIGHT 눌림" << std::endl;
-			}
-			else if (state == 2)
-			{
-				ROWSPEED = 1;
-			}
+			COMMAND_move = 2;			//한쪽키만누르고있다면 움직여줌(하지만 떨어지는 상태에선 변하지않음)
 		}
+		if (state == 1 || state == 4)
+		{
+			state = 4;
+			dir = 2;
+			std::cout << "RIGHT 눌림" << std::endl;
+		}
+		else if (state == 2)
+		{
+			ROWSPEED = 1;
+		}
+
 		return;
 	}
 	if (wParam == VK_UP)
@@ -189,7 +196,8 @@ void PLAYER::PlayerWaiting(WPARAM wParam)
 		}
 		if (state == 4)		//움직이고있을땐 멈춰 점프뛰고있을땐 계쏙 점프뛰는상태 유지 개입 x
 			state = 1;
-		COMMAND_move = false;
+		if (state != 7)	//떨어질땐 진행방향쪽으로 계속 떨어져야한다
+			COMMAND_move = false; 
 		std::cout << "LEFT 똄" << std::endl;
 
 		return;
@@ -205,7 +213,8 @@ void PLAYER::PlayerWaiting(WPARAM wParam)
 		}
 		if (state == 4)		//움직이고있을땐 멈춰 점프뛰고있을땐 계쏙 점프뛰는상태 유지 개입 x
 			state = 1;
-		COMMAND_move = false;
+		if (state != 7)	//떨어질땐 진행방향으로 계속 떨어짐
+			COMMAND_move = false;
 		std::cout << "RIGTH 뗌" << std::endl;
 
 		return;
