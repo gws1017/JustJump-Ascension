@@ -50,7 +50,7 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hPrevinstance, LPSTR lpszCmdPa
 	(
 		lpszClass, lpszWinodwName,
 		WS_OVERLAPPEDWINDOW,
-		100, 50, 1024, 768,
+		100, 50, 1040, 807,
 		NULL, (HMENU)NULL,
 		hinstance, NULL
 	);
@@ -138,13 +138,19 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
 		}
 	case WM_KEYDOWN:
+
 		player.PlayerSetting(wParam);
 		break;
 	case WM_KEYUP:
 		player.PlayerWaiting(wParam);
 		break;
 	case WM_CHAR:
-
+		if (wParam == 'r')
+		{
+			player.setx(80);
+			player.sety(1600);
+			break;
+		}
 		InvalidateRect(hwnd, NULL, FALSE);
 		break;
 	case WM_DESTROY:
