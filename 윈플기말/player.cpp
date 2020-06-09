@@ -1,4 +1,5 @@
 #include "player.h"
+#include "Load.h"
 #include <iostream>
 int ROWSPEED=3; 	//가로 이동속도
 int COLSPEED=10;	//세로 이동속도
@@ -48,6 +49,12 @@ void PLAYER::setdir(int i)
 void PLAYER::setCMD_move(int i)
 {
 	COMMAND_move = i;
+}
+
+void PLAYER::setBit(HINSTANCE g_hinst)
+{
+	hbitwalk = LoadWalk(g_hinst);
+	hbitex = LoadEx(g_hinst);
 }
 
 //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ세터

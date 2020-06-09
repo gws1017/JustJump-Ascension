@@ -7,6 +7,8 @@ class PLAYER {
 	int state;			//1기본상태,2점프상태,3숙이기상태,4이동상태,5줄에 매달린상태,6피격상태,7공중에있는상태
 	int dir;			//1왼쪽 2오른쪽 3위 4아래
 	int COMMAND_move;	//이게 움직이고있는 상황인지 아닌지 구분 1이면왼쪽으로움직임  2면 오른쪽으로 움직임0이면 안움직임
+	HBITMAP hbitwalk;   //걸을때 비트맵
+	HBITMAP hbitex;		//점프,숙이기 줄타기 비트맵
 public:
 	PLAYER();
 	void setx(int);
@@ -19,6 +21,7 @@ public:
 	void setdir(int);
 	//이게 움직이고있는 상황인지 아닌지 구분 
 	void setCMD_move(int);
+	void setBit(HINSTANCE);
 
 	int getx();
 	int gety();
