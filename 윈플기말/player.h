@@ -7,8 +7,10 @@ class PLAYER {
 	int state;			//1기본상태,2점프상태,3숙이기상태,4이동상태,5줄에 매달린상태,6피격상태,7공중에있는상태
 	int dir;			//1왼쪽 2오른쪽 3위 4아래
 	int COMMAND_move;	//이게 움직이고있는 상황인지 아닌지 구분 1이면왼쪽으로움직임  2면 오른쪽으로 움직임0이면 안움직임
+	HBITMAP hbitcur;    //현재 사용중인 비트맵
 	HBITMAP hbitwalk;   //걸을때 비트맵
 	HBITMAP hbitex;		//점프,숙이기 줄타기 비트맵
+	int bx, by, bw, bh; //비트맵의 스프라이트위치를 바꾸기위한 좌표 변수
 public:
 	PLAYER();
 	void setx(int);
@@ -22,6 +24,7 @@ public:
 	//이게 움직이고있는 상황인지 아닌지 구분 
 	void setCMD_move(int);
 	void setBit(HINSTANCE);
+	void initBitPos();
 
 	int getx();
 	int gety();
@@ -39,6 +42,9 @@ public:
 	void PlayerWaiting(WPARAM);
 	void fall2save();
 	void move();
+	void selectBit();	   //플레이어 스프라이트선택
+	void BitMove();		   //애니메이션
+	void draw(HDC&, HDC&); //플레이어 그림
 };
 
 

@@ -73,7 +73,7 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hPrevinstance, LPSTR lpszCmdPa
 LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
 	static PAINTSTRUCT ps;
-	static HDC hdc, mem1dc, mem2dc,playerdc,odc; // odc = 오브젝트 dc
+	static HDC hdc, mem1dc, mem2dc,playerdc,odc,pdc; // odc = 오브젝트 dc, pdc = player dc
 	static RECT rectview;
 	static HBITMAP hbit1, oldbit1,hbitobj[100];
 	static PLAYER player;
@@ -87,7 +87,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 	case WM_CREATE:
 		GetClientRect(hwnd, &rectview);
 		map.CreateMap(g_hinst);
-		
+		player.setBit(g_hinst);
+		player.initBitPos();
 		hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/bk.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 		//hbitobj[0] = (HBITMAP)LoadImage(g_hinst, TEXT("img/foothold2.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 		//obj[0].create(0, 3910, 1023, 3999-3910, 1);
@@ -96,6 +97,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			
 		//ocount = 2;
 		SetTimer(hwnd, 1,1, NULL);
+		SetTimer(hwnd, 2,100, NULL);
 		break;
 	case WM_PAINT:
 		hdc = BeginPaint(hwnd, &ps);
@@ -113,13 +115,15 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		for (int i = 0; i <= ocount; i++)
 			obj[i].DrawObj(mem1dc, odc);
 
-		if (player.getstate() == 3)
+		player.draw(mem1dc, pdc);
+
+		/*if (player.getstate() == 3)
 		{
 			Ellipse(mem1dc, player.getx() - player.getw(), player.gety() - player.geth() + player.geth() / 2, player.getx() + player.getw(), player.gety() + player.geth());
 		}
 		else {
 			Ellipse(mem1dc, player.getx() - player.getw(), player.gety() - player.geth(), player.getx() + player.getw(), player.gety() + player.geth());
-		}
+		}*/
 		BitBlt(hdc, 0, 0, 1024, 768, mem1dc, camera.getx(), camera.gety(), SRCCOPY);
 
 		DeleteObject(mem1dc);
@@ -132,17 +136,24 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			player.move();
 			adjustPlayer(player, obj, ocount);
 			adjustCamera(camera, player);
+			player.selectBit();	
 			cout << player.gety() << endl;
 			InvalidateRgn(hwnd, NULL, FALSE);
 			break;
-
+		case 2:
+			player.BitMove();
+			InvalidateRgn(hwnd, NULL, FALSE);
+			break;
 		}
+		break;
 	case WM_KEYDOWN:
-
+		
 		player.PlayerSetting(wParam);
+		InvalidateRgn(hwnd, NULL, FALSE);
 		break;
 	case WM_KEYUP:
 		player.PlayerWaiting(wParam);
+		InvalidateRgn(hwnd, NULL, FALSE);
 		break;
 	case WM_CHAR:
 		if (wParam == 'r')
