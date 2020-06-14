@@ -11,13 +11,18 @@ bool DOWNkey = 0;//아래쪽키 눌렀는지 1이면 누름 0이면 안누름
 bool LRkey = 0;//왼쪽오른쪽키 동시에 눌렀는지 1이면눌림 0이면 안눌림
 PLAYER::PLAYER()
 {
-	x = 80; //100
-	y = 3800; //3800
-	w = 62; //숫자를 키웠더니 충돌체크가 제대로 안됨 고쳐주셈!
-	h = 50;
-	state = 7;
+	// x y 는 캐릭터의 중심좌표이고 w,h 는 xy에서 좌우로 반틈씩만 간 좌표이다. 
+	x = 80; //100 캐릭터의 중심x좌표
+	y = 3600; //3800 캐릭터의 중심y좌표
+	w = 31; //캐릭터 width의 절반
+	h = 25;	//캐릭터 hegiht의 절반
+	state = 7; //캐릭터의 state
 	dir = 2;
+	adjustspd = 0;
+	stealth = 0;
+	spike_hurt = 0;
 	COMMAND_move = false;
+	COMMAND_hurt = false;
 
 }
 void PLAYER::setx(int i)
@@ -40,6 +45,11 @@ void PLAYER::seth(int i)
 	h = i;
 }
 
+void PLAYER::setadjspd(int i)
+{
+	adjustspd = i;
+}
+
 void PLAYER::setstate(int i)
 {
 	state = i;
@@ -53,7 +63,18 @@ void PLAYER::setCMD_move(int i)
 {
 	COMMAND_move = i;
 }
-
+void PLAYER::setCMD_hurt(bool i)
+{
+	COMMAND_hurt = i;
+}
+void PLAYER::setstealth(int i)
+{
+	stealth = i;
+}
+void PLAYER::setspike_hurt(int i)
+{
+	spike_hurt = i;
+}
 void PLAYER::setBit(HINSTANCE g_hinst)
 {
 	hbitwalk = LoadWalk(g_hinst);
@@ -88,6 +109,12 @@ int PLAYER::geth()
 {
 	return h;
 }
+
+int PLAYER::getadjspd()
+{
+	return adjustspd;
+}
+
 int PLAYER::getstate()
 {
 	return state;
@@ -100,8 +127,18 @@ int PLAYER::getCMD_move()
 {
 	return COMMAND_move;
 }
-
-
+bool PLAYER::getCMD_hurt()
+{
+	return COMMAND_hurt;
+}
+int PLAYER::getstealth()
+{
+	return stealth;
+}
+int PLAYER::getspike_hurt()
+{
+	return spike_hurt;
+}
 //플레이어 상태 변경
 void PLAYER::PlayerSetting(WPARAM wParam)
 {
@@ -111,52 +148,91 @@ void PLAYER::PlayerSetting(WPARAM wParam)
 		if (RIGHTkey == true)		//좌우를 동시에 누르고있다면 움직이지않음
 		{
 			LRkey = true;
+			if (state == 4)		//움직이고 있을때나 1로 해서 멈추게하는거지 다를때 1로바꾸면 난리남
+				state = 1;
 			return;
 		}
+
 		if (state == 7)
 		{
-			dir = 1;
+			dir = 1;	//방향은 바꿔주지만 움직임형태는 냅둠 (아래 move에서 몇초이상 누르면 조금씩은 바뀌게해줌)
 		}
-		else {
-			COMMAND_move = 1;			//한쪽키만누르고있다면 움직여줌(하지만 떨어지는 상태에선 변하지않음)
-		}
-		if (state == 1 || state == 4)
+		else if (state == 1 || state == 4)
 		{
-			state = 4;
-			dir = 1;
+
+			if (state == 1)//멈춰있다가 움직일때 한번 바로 움직여줘야함
+			{
+
+				state = 4;
+				dir = 1;
+				BitMove();
+			}
+			else {
+				state = 4;
+				dir = 1;
+			}
+			COMMAND_move = 1;	//1이든 4든 누르면 일단은 움직임형태를 바꿔줌
 			std::cout << "LEFT눌림" << std::endl;
 		}
 		else if (state == 2)
 		{
-			ROWSPEED = 1;
+			if (COMMAND_hurt != 1)	//쳐맞고있을때는 이 로직 안통해요~
+				ROWSPEED = 1;	//점프했을때 방향을 바꾸려하면 드라마틱하게 다시 오는경우는 없지만 그래도 원했던것보단 조금 나감
+			dir = 1;	//방향은 바꿔주지만 움직임형태는 냅둠
+		}
+		else if (state == 3)
+		{
+			h += 12;
+			y -= 12;
+			state = 4;
 			dir = 1;
+			COMMAND_move = 1;
 		}
 		return;
 	}
 	if (wParam == VK_RIGHT)
 	{
-		RIGHTkey = true;
+		RIGHTkey = true;	//키 누름상태
 		if (LEFTkey == true)
 		{
 			LRkey = true;
+			if (state == 4)		//움직이고 있을때나 1로 해서 멈추게하는거지 다를때 1로바꾸면 난리남
+				state = 1;
 			return;
 		}
 		if (state == 7)
 		{
-			dir = 1;
+			dir = 2;	//방향은 바꿔주지만 움직임형태는 냅둠 (아래 move에서 몇초이상 누르면 조금씩은 바뀌게해줌)
 		}
-		else {
-			COMMAND_move = 2;			//한쪽키만누르고있다면 움직여줌(하지만 떨어지는 상태에선 변하지않음)
-		}
-		if (state == 1 || state == 4)
+		else if (state == 1 || state == 4)
 		{
-			state = 4;
-			dir = 2;
+			if (state == 1)//멈춰있다가 움직일때 한번 바로 움직여줘야함
+			{
+
+				state = 4;
+				dir = 2;
+				BitMove();
+			}
+			else {
+				state = 4;
+				dir = 2;
+			}
+			COMMAND_move = 2;	//1이든 4든 누르면 일단은 움직임형태를 바꿔줌
 			std::cout << "RIGHT 눌림" << std::endl;
 		}
 		else if (state == 2)
 		{
-			ROWSPEED = 1;
+			if (COMMAND_hurt != 1)	//쳐맞고있을때는 이 로직 안통해요~
+				ROWSPEED = 1;	//점프했을때 방향을 바꾸려하면 드라마틱하게 다시 오는경우는 없지만 그래도 원했던것보단 조금 나감
+			dir = 2;	//방향은 바꿔주지만 움직임형태는 냅둠
+		}
+		else if (state == 3)
+		{
+			h += 12;
+			y -= 12;
+			state = 4;
+			dir = 2;
+			COMMAND_move = 2;
 		}
 
 		return;
@@ -164,9 +240,10 @@ void PLAYER::PlayerSetting(WPARAM wParam)
 	if (wParam == VK_UP)
 	{
 		UPkey = true;
+
 		if (state == 5)
 		{
-			dir = 3;
+			COMMAND_move = 3;
 		}
 		//이부분에 사다리와의 충돌 체크를 하고 true면 줄에 매달리는 상태로 바꿔줄예정
 		return;
@@ -174,17 +251,25 @@ void PLAYER::PlayerSetting(WPARAM wParam)
 	if (wParam == VK_DOWN)
 	{
 		DOWNkey = true;
+
 		if (state == 5)
 		{
-			dir = 4;
+			COMMAND_move = 4;
 		}
 		else if (state == 1) {
+
 			state = 3;	//숙이는거는 가만히 있을때만 가능하다
+			h -= 12;		//숙이면 키도 줄어들어야한다.
+			y += 12;
 		}
 		return;
 	}
 	if (wParam == VK_SPACE)
 	{
+		if (DOWNkey == true)//수그리고있을땐 점프못함
+		{
+			return;	//아무것도해주지않는다 현상태유지
+		}
 		if (state != 2 && state != 7)
 		{
 			state = 2;
@@ -200,46 +285,80 @@ void PLAYER::PlayerWaiting(WPARAM wParam)
 	{
 		DOWNkey = false;
 		if (state == 3)
+		{
+			h += 12;
+			y -= 12;	//다시 키 늘려줌
 			state = 1;
+		}
 		return;
 	}
 	if (wParam == VK_LEFT)
 	{
-		LRkey = false;
-		LEFTkey = false;
-		if (state != 7)				//떨어지고 있을때는 이동로직이 작동하면 안된다 무시해줌
+		if (RIGHTkey == true)		//오른쪽키도 누르고있었다면 왼쪽키를 땟을때 오른쪽으로 몸을틀어야한다
 		{
-			if (RIGHTkey == true)	//키가 동시에 눌리고있었다면 땔때 옮겨줌
-			{
+			dir = 2;
+			if (state == 1)			//둘다눌럿을때의 로직은 state==1일때에만 발동이 된다. 
 				COMMAND_move = 2;
-				return;
+		}
+		else if (RIGHTkey == false)	//오른쪽키를 누르고있지 않았다면 움직이는상태였을땐 멈춰줘야한다.
+		{
+			if (state == 4)
+			{
+				state = 1;
+				COMMAND_move = 0;	//움직이는 방향은 그대로지만 움직이지는 않는다.
+			}
+			else if (state == 1)	//종종버그성 플레이로인해서 (점프키와 동시에 키를 누른후 바닥에 닿음과 동시에 땔때) 이경우가있는데, 이때도 멈춰주도록한다.
+			{
+				COMMAND_move = 0;
+			}
+			if (DOWNkey == true)//만약 수그리고있었다면
+			{
+				state = 3;
+				h -= 12;
+				y += 12;//원래대로 돌려놔주자
 			}
 		}
-		if (state == 4)		//움직이고있을땐 멈춰 점프뛰고있을땐 계쏙 점프뛰는상태 유지 개입 x
-			state = 1;
-		if (state != 7)	//떨어질땐 진행방향쪽으로 계속 떨어져야한다
-			COMMAND_move = false;
-		std::cout << "LEFT 똄" << std::endl;
+
+
+		LRkey = false;				//한개를 땠으니 false
+		LEFTkey = false;			//LEFTkey 땠으니 false
+
+		//std::cout << "LEFT 똄" << std::endl;
 
 		return;
 	}
 	if (wParam == VK_RIGHT)
 	{
-		LRkey = false;
-		RIGHTkey = false;
-		if (state != 7)				//떨어지고 있을때는 이동로직이 작동하면 안된다 무시해줌
+		if (LEFTkey == true)		//왼쪽키도 누르고있었다면 오른쪽키를 땟을때 왼쪽으로 몸을틀어야한다
 		{
-			if (LEFTkey == true)
-			{
+			dir = 1;
+			if (state == 1)			//둘다눌럿을때의 로직은 state==1일때에만 발동이 된다. 
 				COMMAND_move = 1;
-				return;
+		}
+		else if (LEFTkey == false)	//왼쪽키를 누르고있지 않았다면 움직이는상태였을땐 멈춰줘야한다.
+		{
+			if (state == 4)
+			{
+				state = 1;
+				COMMAND_move = 0;	//움직이는 방향은 그대로지만 움직이지는 않는다.
+			}
+			else if (state == 1)	//종종버그성 플레이로인해서 (점프키와 동시에 키를 누른후 바닥에 닿음과 동시에 땔때) 이경우가있는데, 이때도 멈춰주도록한다.
+			{
+				COMMAND_move = 0;
+			}
+			if (DOWNkey == true)//만약 수그리고있었다면
+			{
+				state = 3;
+				h -= 12;
+				y += 12;//원래대로 돌려놔주자
 			}
 		}
-		if (state == 4)		//움직이고있을땐 멈춰 점프뛰고있을땐 계쏙 점프뛰는상태 유지 개입 x
-			state = 1;
-		if (state != 7)	//떨어질땐 진행방향으로 계속 떨어짐
-			COMMAND_move = false;
-		std::cout << "RIGTH 뗌" << std::endl;
+
+
+
+		LRkey = false;				//한개를 땠으니 false
+		RIGHTkey = false;			//RIGHTkey 땠으니 false
+		//std::cout << "RIGTH 뗌" << std::endl;
 
 		return;
 	}
@@ -248,14 +367,13 @@ void PLAYER::PlayerWaiting(WPARAM wParam)
 		UPkey = false;
 		return;
 	}
-
+	return;
 }
 
 
 //플레이어 움직임
 void PLAYER::move()
 {
-	static int adjustspd = 0;	//떨어질때 x값을 천천히 이동시켜주기 위함
 
 	if (state == 1)
 	{
@@ -264,41 +382,80 @@ void PLAYER::move()
 		{
 
 		}
-		else {
+		else if (RIGHTkey == true)
+		{
+			dir = 2;
+			state = 4;
+		}
+		else if (LEFTkey == true)
+		{
+			dir = 1;
+			state = 4;
+		}
+
+		//else {
+		//	if (COMMAND_move == 1)
+		//	{
+		//		x -= ROWSPEED;
+		//	}
+		//	else if (COMMAND_move == 2)
+		//	{
+		//		x += ROWSPEED;
+		//	}
+		//}
+		//가만히있을때는 움직일수 없는데 왜 움직였냐 여태
+	}
+	else if (state == 2)	//점프상태일때도 진행방향으로 이동은해야함 
+	{
+		if (COMMAND_hurt == true)	//피격당한경우
+		{
 			if (COMMAND_move == 1)
 			{
+
 				x -= ROWSPEED;
 			}
 			else if (COMMAND_move == 2)
 			{
 				x += ROWSPEED;
 			}
+			//y -= 1;
+			if (abs(y - savey) > 40) {
+				y -= 3;
+			}
+			else {
+				y -= COLSPEED / 2;
+			}
+			if (abs((y - savey)) >= 40)	//40픽셀만큼 피격당해서 위로 살짝뜸
+			{
+				state = 7;			//다시 땅으로 떨어지게함
+				savex = x;			//이순간의 x좌표를 기억함(가속도를 받다가 멈춘것처럼 해줄예정)
+			}
 		}
-		//가만히있을때는 움직일순있ㅇ므
-	}
-	else if (state == 2)	//점프상태일때도 진행방향으로 이동은해야함 
-	{
-		if (COMMAND_move == 1)
+		else if (COMMAND_hurt == false)	//일반상태
 		{
+			if (COMMAND_move == 1)
+			{
 
-			x -= ROWSPEED;
+				x -= ROWSPEED;
+			}
+			else if (COMMAND_move == 2)
+			{
+				x += ROWSPEED;
+			}
+			//y -= 1;
+			if (abs(y - savey) > 80) {
+				y -= 3;
+			}
+			else {
+				y -= COLSPEED;
+			}
+			if (abs((y - savey)) >= 100)	//30픽셀만큼 점프했다면
+			{
+				state = 7;			//다시 땅으로 떨어지게함
+				savex = x;			//이순간의 x좌표를 기억함(가속도를 받다가 멈춘것처럼 해줄예정)
+			}
 		}
-		else if (COMMAND_move == 2)
-		{
-			x += ROWSPEED;
-		}
-		//y -= 1;
-		if (abs(y - savey) > 80) {
-			y -= 3;
-		}
-		else {
-			y -= COLSPEED;
-		}
-		if (abs((y - savey)) >= 100)	//30픽셀만큼 점프했다면
-		{
-			state = 7;			//다시 땅으로 떨어지게함
-			savex = x;			//이순간의 x좌표를 기억함(가속도를 받다가 멈춘것처럼 해줄예정)
-		}
+
 
 	}
 	else if (state == 3)
@@ -334,35 +491,43 @@ void PLAYER::move()
 			y += 1;
 		}
 	}
+	else if (state == 6)
+	{
+		ROWSPEED *= 4;
+		stealth = 100;		//무적시간 2초
+		savey = y;			//피격과 동시에 y좌표저장(적당히 내려오기 위해)
+		COMMAND_hurt = true;	//피격함수 on
+		state = 2;				//피격하면 공중으로 한번 붕 뜬다
+	}
 	else if (state == 7)
 	{
-		y += COLSPEED;
-		if (adjustspd < 1000)
+		y += COLSPEED;					//아래로 떨어짐
+		if (adjustspd < 1000)			//1000까지만 왼쪽으로 움직임
 			adjustspd++;
-		if (LEFTkey == true)
-			if (adjustspd % 30 == 0)
+		if (LEFTkey == true)			//떨어질ㄸ ㅐ 왼쪽 꾹누르고있으면
+			if (adjustspd % 30 == 0)	//타이머가 30번 돌아갈때마다 한번씩 옴겨줌
 				x -= ROWSPEED;
 		if (RIGHTkey == true)
 			if (adjustspd % 30 == 0)
 				x += ROWSPEED;
-		if (COMMAND_move == 1)
+		if (COMMAND_move == 1)		//왼쪽으로 움직이고있다면
 		{
-			if (adjustspd <= 10)
+			if (adjustspd <= 10)	//왼쪽으로 슥 갔다가
 			{
 				x -= ROWSPEED;
 			}
-			if (adjustspd > 10)
+			if (adjustspd > 10)		//10번 왼쪽 갔으면 2번에 한번씩 가줌
 			{
 				if (adjustspd % 2 == 0)
 					x -= ROWSPEED;
 			}
-			else if (adjustspd > 30)
+			else if (adjustspd > 30)	//2번씩 10번 또 갔으면 이젠 5번에 1번씩 찔끔 가줌 이건 오른쪽도 똑같이 적용
 			{
 				if (adjustspd % 5 == 0)
 					x -= ROWSPEED;
 			}
 
-			if (LEFTkey == 0)
+			if (LEFTkey == 0)				//50칸까지는 맨처음방향대로 가고 , 그이후에 왼쪽키를 때고있으면 멈춤당하고 아니면 왼쪽으로 쭉 날라감
 				if (abs(x - savex) > 50)
 					COMMAND_move = 0;
 
@@ -427,11 +592,11 @@ void PLAYER::draw(HDC& mem1dc, HDC& pdc)
 
 		if (dir == 1)//왼쪽
 		{
-			TransparentBlt(mem1dc, x, y, w, h, pdc, 0, 0, 62, 50, RGB(255, 255, 255));
+			TransparentBlt(mem1dc, x - w, y - h, w * 2, h * 2, pdc, 0, 0, 62, 50, RGB(255, 255, 255));
 		}
 		else if (dir == 2)//오른쪽
 		{
-			TransparentBlt(mem1dc, x, y, w, h, pdc, 0, 50, 62, 50, RGB(255, 255, 255));
+			TransparentBlt(mem1dc, x - w, y - h, w * 2, h * 2, pdc, 0, 50, 62, 50, RGB(255, 255, 255));
 		}
 
 	}
@@ -439,11 +604,11 @@ void PLAYER::draw(HDC& mem1dc, HDC& pdc)
 	{
 		if (dir == 1)//왼쪽
 		{
-			TransparentBlt(mem1dc, x, y, w, h, pdc, bx, by, bw, bh, RGB(255, 255, 255)); //68 0 130 50
+			TransparentBlt(mem1dc, x - w, y - h, w * 2, h * 2, pdc, bx, by, bw, bh, RGB(255, 255, 255)); //68 0 130 50
 		}
 		else if (dir == 2)//오른쪽
 		{
-			TransparentBlt(mem1dc, x, y, w, h, pdc, bx, by + 50, bw, bh, RGB(255, 255, 255));
+			TransparentBlt(mem1dc, x - w, y - h, w * 2, h * 2, pdc, bx, by + 50, bw, bh, RGB(255, 255, 255));
 		}
 
 
@@ -452,22 +617,22 @@ void PLAYER::draw(HDC& mem1dc, HDC& pdc)
 	{
 		if (dir == 1)//왼쪽
 		{
-			TransparentBlt(mem1dc, x, y, w, h, pdc, 0, 107, 62, 48, RGB(255, 255, 255)); //68 0 130 50
+			TransparentBlt(mem1dc, x - w, y - h, w * 2, h * 2, pdc, 0, 107, 62, 48, RGB(255, 255, 255)); //68 0 130 50
 		}
 		else if (dir == 2)//오른쪽
 		{
-			TransparentBlt(mem1dc, x, y, w, h, pdc, 77, 107, 62, 48, RGB(255, 255, 255));
+			TransparentBlt(mem1dc, x - w, y - h, w * 2, h * 2, pdc, 77, 107, 62, 48, RGB(255, 255, 255));
 		}
 	}
 	else if (state == 3)
 	{
 		if (dir == 1)//왼쪽
 		{
-			TransparentBlt(mem1dc, x, y+26, w,26, pdc, 0, 161, 62, 26, RGB(255, 255, 255)); //68 0 130 50
+			TransparentBlt(mem1dc, x - w, y - h, w * 2, h * 2, pdc, 0, 161, 62, 26, RGB(255, 255, 255)); //68 0 130 50
 		}
 		else if (dir == 2)//오른쪽
 		{
-			TransparentBlt(mem1dc, x, y+26, w,26, pdc, 77, 161, 62, 26, RGB(255, 255, 255));
+			TransparentBlt(mem1dc, x - w, y - h, w * 2, h * 2, pdc, 77, 161, 62, 26, RGB(255, 255, 255));
 		}
 	}
 	DeleteObject(pdc);
@@ -479,4 +644,23 @@ void PLAYER::draw(HDC& mem1dc, HDC& pdc)
 void PLAYER::fall2save()
 {
 	savex = x;
+}
+
+void PLAYER::stealthtime()
+{
+	if (stealth > 0)
+		stealth--;
+}
+void PLAYER::spike_hurttime()
+{
+	if (spike_hurt < 0)
+	{
+		spike_hurt++;
+		x -= 4;			//왼쪽으로감
+	}
+	else if (spike_hurt > 0)
+	{
+		spike_hurt--;
+		x += 4;
+	}
 }

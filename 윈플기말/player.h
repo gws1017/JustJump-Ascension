@@ -2,49 +2,99 @@
 #include <windows.h>
 
 class PLAYER {
-	int x, y, w, h;
+	int x, y, w, h;		// x y 는 캐릭터의 중심좌표이고 w,h 는 xy에서 좌우로 반틈씩만 간 좌표이다. 
 	int savex, savey;	//savey 는 점프뛸때 그 순간의 y좌표를 기억하기 위함이고 x는 혹시몰라서 넣어둠
 	int state;			//1기본상태,2점프상태,3숙이기상태,4이동상태,5줄에 매달린상태,6피격상태,7공중에있는상태
-	int dir;			//1왼쪽 2오른쪽 3위 4아래
-	int COMMAND_move;	//이게 움직이고있는 상황인지 아닌지 구분 1이면왼쪽으로움직임  2면 오른쪽으로 움직임0이면 안움직임
+	int dir;			//1왼쪽 2오른쪽 3위 4아래 플레이어가 보고있는'방향'
+	int adjustspd;		//떨어질때 x값 천천히 이동시켜주기 위한 변수
+	int COMMAND_move;	//이게 움직이고있는 상황인지 아닌지 구분 1이면왼쪽으로움직임  2면 오른쪽으로 움직임0이면 안움직임 3이면 위로움직임 4면아래로움직임
+	bool COMMAND_hurt;	//쳐맞으면 1 아니면 0 점프할때 로직에 들어감
+	int stealth;		//피격시 무적 2초를 기준으로한다.
+	int spike_hurt;		//하강중 가시로인한 강제적 좌표이동값 -이면 왼쪽으로가야함 + 이면 오른쪽으로 강제이동
 	HBITMAP hbitcur;    //현재 사용중인 비트맵
 	HBITMAP hbitwalk;   //걸을때 비트맵
 	HBITMAP hbitex;		//점프,숙이기 줄타기 비트맵
 	int bx, by, bw, bh; //비트맵의 스프라이트위치를 바꾸기위한 좌표 변수
 public:
 	PLAYER();
+	// x y 는 캐릭터의 중심좌표이고 w,h 는 xy에서 좌우로 반틈씩만 간 좌표이다. 
 	void setx(int);
+	// x y 는 캐릭터의 중심좌표이고 w,h 는 xy에서 좌우로 반틈씩만 간 좌표이다. 
 	void sety(int);
+	// x y 는 캐릭터의 중심좌표이고 w,h 는 xy에서 좌우로 반틈씩만 간 좌표이다. 
 	void setw(int);			//세터
+	// x y 는 캐릭터의 중심좌표이고 w,h 는 xy에서 좌우로 반틈씩만 간 좌표이다. 
 	void seth(int);
+	void setadjspd(int);	
 	//1기본상태,2점프상태,3숙이기상태,4이동상태,5줄에 매달린상태,6피격상태,7공중에있는상태
 	void setstate(int);
 	//1왼쪽 2오른쪽 3위 4아래
 	void setdir(int);
-	//이게 움직이고있는 상황인지 아닌지 구분 
+	//이게 움직이고있는 상황인지 아닌지 구분 1이면왼쪽으로움직임  2면 오른쪽으로 움직임0이면 안움직임 3이면 위로움직임 4면아래로움직임
 	void setCMD_move(int);
+	//이게 피격상태인지 아닌지 구분 1이면 피격 0이면 피격아님
+	void setCMD_hurt(bool);
+	//피격시 무적 시간 2초기준 0이면 무적시간 끝
+	void setstealth(int);
+	//하강중 가시로인한 강제적 좌표이동값 0이면 이동끝 -이면 왼쪽으로가야함 + 이면 오른쪽으로 강제이동
+	void setspike_hurt(int);
+	//비트맵설정
 	void setBit(HINSTANCE);
+	//기본 비트맵 Pos 설정
 	void initBitPos();
+	
 
+
+	// x y 는 캐릭터의 중심좌표이고 w,h 는 xy에서 좌우로 반틈씩만 간 좌표이다. 
 	int getx();
+	// x y 는 캐릭터의 중심좌표이고 w,h 는 xy에서 좌우로 반틈씩만 간 좌표이다. 
 	int gety();
+	// x y 는 캐릭터의 중심좌표이고 w,h 는 xy에서 좌우로 반틈씩만 간 좌표이다. 
 	int getw();			//게터
+	// x y 는 캐릭터의 중심좌표이고 w,h 는 xy에서 좌우로 반틈씩만 간 좌표이다. 
 	int geth();
+	int getadjspd();
 	//1기본상태,2점프상태,3숙이기상태,4이동상태,5줄에 매달린상태,6피격상태,7공중에있는상태
 	int getstate();
 	//1왼쪽 2오른쪽 3위 4아래
 	int getdir();
-	//이게 움직이고있는 상황인지 아닌지 구분 
+	//이게 움직이고있는 상황인지 아닌지 구분 1이면왼쪽으로움직임  2면 오른쪽으로 움직임0이면 안움직임 3이면 위로움직임 4면아래로움직임
 	int getCMD_move();
+	//이게 피격상태인지 아닌지 구분 1이면 피격 0이면 피격아님
+	bool getCMD_hurt();
+	//피격시 무적 시간 2초기준 0이면 무적시간 끝
+	int getstealth();
+	//하강중 가시로인한 강제적 좌표이동값 0이면 이동끝 -이면 왼쪽으로가야함 + 이면 오른쪽으로 강제이동
+	int getspike_hurt();
 
 
+
+
+
+
+
+
+
+
+
+	//방향키 눌렀을때 플레이어 세팅
 	void PlayerSetting(WPARAM);
+	//방향키 땠을때 플레이어 세팅풀기
 	void PlayerWaiting(WPARAM);
+	//떨어지는 시점의 y좌표 기억
 	void fall2save();
+	//플레이어 무브
 	void move();
-	void selectBit();	   //플레이어 스프라이트선택
-	void BitMove();		   //애니메이션
-	void draw(HDC&, HDC&); //플레이어 그림
+	//플레이어 스프라이트선택
+	void selectBit();	   
+	//애니메이션
+	void BitMove();		 
+	//플레이어 그림
+	void draw(HDC&, HDC&); 
+	//피격시 무적시간
+	void stealthtime();
+	//가시한테 찔렸을때 강제이동값
+	void spike_hurttime();
 };
 
 

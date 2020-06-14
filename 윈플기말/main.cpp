@@ -7,9 +7,9 @@
 #include "Map.h"
 #include "ObjectManager.h"
 #include "Camera.h"
-//#ifdef _DEBUG
-////#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
-//#endif
+#ifdef _DEBUG
+#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
+#endif
 
 HINSTANCE g_hinst;
 LPCTSTR lpszClass = L"Just Jump";
@@ -137,7 +137,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			adjustPlayer(player, obj, ocount);
 			adjustCamera(camera, player);
 			player.selectBit();	
-			cout << player.gety() << endl;
+			player.stealthtime();
+			player.spike_hurttime();
+			cout << "현재 stealth상태: " << player.getstealth() << endl;
 			InvalidateRgn(hwnd, NULL, FALSE);
 			break;
 		case 2:
