@@ -624,7 +624,7 @@ void PLAYER::draw(HDC& mem1dc, HDC& pdc)
 			TransparentBlt(mem1dc, x - w, y - h, w * 2, h * 2, pdc, 77, 107, 62, 48, RGB(255, 255, 255));
 		}
 	}
-	else if (state == 3)
+	else if (state == 3) //¼÷ÀÌ±â
 	{
 		if (dir == 1)//¿ÞÂÊ
 		{

@@ -80,7 +80,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 	static MAP map;
 	static CAMERA camera;
 	static OBJECT obj[100];
-
+	static int gas_t = 0; //가스 애니메이션을 1번타이머에 넣기위해 추가한 변수
 	static int ocount;		//obj 개수를 세주는 변수
 	switch (iMessage)
 	{
@@ -134,12 +134,30 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		{
 		case 1:
 			player.move();
+
 			adjustPlayer(player, obj, ocount);
 			adjustCamera(camera, player);
+
 			player.selectBit();	
 			player.stealthtime();
 			player.spike_hurttime();
+			gas_t += 1;
+
+			for (int i = 0; i <= ocount; i++)
+			{
+				if (obj[i].getType() == 103)
+				{
+					if (gas_t >= 30)
+					{
+						obj[i].IndexChange();
+						gas_t = 0;
+					}
+					
+				}
+			}
+
 			cout << "현재 stealth상태: " << player.getstealth() << endl;
+			
 			InvalidateRgn(hwnd, NULL, FALSE);
 			break;
 		case 2:
@@ -160,8 +178,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 	case WM_CHAR:
 		if (wParam == 'r')
 		{
-			player.setx(80);
-			player.sety(1600);
+			player.setx(0);
+			player.sety(300);
 			break;
 		}
 		InvalidateRect(hwnd, NULL, FALSE);
