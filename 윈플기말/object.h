@@ -2,23 +2,27 @@
 #include <windows.h>
 #include "player.h"
 
+
+
 class OBJECT {
 	int x, y;					//오브젝트의 x y 는 왼쪽상단이 기준이다.
 	int w, h;
 	int type;					//1~100 플랫폼 101~장애물
-	HBITMAP hbit;
+	int index;					//애니메이션 돌릴때 배열의 인덱스를 바꿔주어 이미지를 바꾼다
+	HBITMAP hbit;				
 public:
 	//오브젝트의 x y 는 왼쪽상단이 기준이다.
 	int getX();
-	//오브젝트의 x y 는 왼쪽상단이 기준이다.
 	int getY();
 	int getW();
 	int getH();
+	int getindex();
+
 	//1~100 플랫폼 101~장애물
 	int getType();
 	//오브젝트가 몇개들어갔는지
 	int getocount();
-
+	
 	void create(int, int, int, int, int);
 	//오브젝트의 x y 는 왼쪽상단이 기준이다.
 	void setX(int);
@@ -30,6 +34,9 @@ public:
 	void setType(int);
 	void setHbit(HINSTANCE);
 
+	//오브젝트 애니메이션 쓸때 사용하는함수
+	void IndexChange();
+	//오브젝트를 그려줌
 	void DrawObj(HDC&, HDC&);
 };
 
