@@ -73,9 +73,9 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hPrevinstance, LPSTR lpszCmdPa
 LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
 	static PAINTSTRUCT ps;
-	static HDC hdc, mem1dc, mem2dc,playerdc,odc,pdc; // odc = 오브젝트 dc, pdc = player dc
+	static HDC hdc, mem1dc, mem2dc,playerdc,odc,pdc,ui_dc,hp_dc; // odc = 오브젝트 dc, pdc = player dc,ui_Dc : 아래 전체적인 ui hp_Dc: hp통만 나오는거
 	static RECT rectview;
-	static HBITMAP hbit1, oldbit1,hbitobj[100];
+	static HBITMAP hbit1, oldbit1,hbitobj[100],Uibit,HPbit;
 	static PLAYER player;
 	static MAP map;
 	static CAMERA camera;
@@ -85,11 +85,17 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 	switch (iMessage)
 	{
 	case WM_CREATE:
+		AddFontResourceA("font/Maplestory Bold.ttf");
+		AddFontResourceA("font/Maplestory Light.ttf");
 		GetClientRect(hwnd, &rectview);
 		map.CreateMap(g_hinst);
+		map.CreateUi(g_hinst);
+		map.CreateHP(g_hinst);
 		player.setBit(g_hinst);
 		player.initBitPos();
 		hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/bk.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+		Uibit = (HBITMAP)LoadImage(g_hinst, TEXT("img/Ui.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+		HPbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/Ui_HP.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 		//hbitobj[0] = (HBITMAP)LoadImage(g_hinst, TEXT("img/foothold2.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 		//obj[0].create(0, 3910, 1023, 3999-3910, 1);
 		//obj[1].create(537, 3825, 607-537, 100, 2);
@@ -109,9 +115,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		}
 
 		SelectObject(mem1dc,hbit1);
-		
+		SelectObject(ui_dc, Uibit);
+		SelectObject(hp_dc, HPbit);
 
 		map.DrawBK(mem1dc, mem2dc, rectview);
+		
+
 		for (int i = 0; i <= ocount; i++)
 			obj[i].DrawObj(mem1dc, odc);
 
@@ -124,6 +133,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		else {
 			Ellipse(mem1dc, player.getx() - player.getw(), player.gety() - player.geth(), player.getx() + player.getw(), player.gety() + player.geth());
 		}*/
+		map.DrawUi(mem1dc, ui_dc, camera);
+		map.DrawHP(mem1dc, hp_dc, camera, player);
+		//cout << "현재HP상태: " << player.gethp() << endl;
 		BitBlt(hdc, 0, 0, 1024, 768, mem1dc, camera.getx(), camera.gety(), SRCCOPY);
 
 		DeleteObject(mem1dc);
@@ -156,9 +168,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 				}
 			}
 
-			cout << "현재 stealth상태: " << player.getstealth() << endl;
 			
-			InvalidateRgn(hwnd, NULL, FALSE);
+			InvalidateRgn(hwnd, NULL,FALSE);
 			break;
 		case 2:
 			player.BitMove();

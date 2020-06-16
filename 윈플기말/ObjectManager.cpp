@@ -107,6 +107,7 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, int ocount)
 						else {
 							player.setstate(6);		//피격으로감
 						}
+						player.hurt();
 					}
 				}
 				else if (obj[i].getType() == 102) //Break Pipe Left
@@ -164,6 +165,7 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, int ocount)
 								player.setCMD_move(1); //무조건 왼쪽임
 								player.setstate(6);
 							}
+							player.hurt();
 						}
 					}
 				}

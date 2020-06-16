@@ -14,8 +14,11 @@ PLAYER::PLAYER()
 	// x y 는 캐릭터의 중심좌표이고 w,h 는 xy에서 좌우로 반틈씩만 간 좌표이다. 
 	x = 80; //100 캐릭터의 중심x좌표
 	y = 3600; //3800 캐릭터의 중심y좌표
-	w = 31; //캐릭터 width의 절반
+	w = 14; //캐릭터 width의 절반
 	h = 25;	//캐릭터 hegiht의 절반
+	charw = 31;	//캐릭터이펙트 width의 절반
+	charh = 25;	//캐릭터이펙트 height의 절반
+	hp = 100;	//캐릭터 hp는 100
 	state = 7; //캐릭터의 state
 	dir = 2;
 	adjustspd = 0;
@@ -43,6 +46,21 @@ void PLAYER::setw(int i)
 void PLAYER::seth(int i)
 {
 	h = i;
+}
+
+void PLAYER::setcharw(int i)
+{
+	charw = i;
+}
+
+void PLAYER::setcharh(int i)
+{
+	charh = i;
+}
+
+void PLAYER::sethp(int i)
+{
+	hp = i;
 }
 
 void PLAYER::setadjspd(int i)
@@ -108,6 +126,21 @@ int PLAYER::getw()
 int PLAYER::geth()
 {
 	return h;
+}
+
+int PLAYER::getcharw()
+{
+	return charw;
+}
+
+int PLAYER::getcharh()
+{
+	return charh;
+}
+
+int PLAYER::gethp()
+{
+	return hp;
 }
 
 int PLAYER::getadjspd()
@@ -176,7 +209,7 @@ void PLAYER::PlayerSetting(WPARAM wParam)
 		}
 		else if (state == 2)
 		{
-			if (COMMAND_hurt != 1)	//쳐맞고있을때는 이 로직 안통해요~
+	 		if (COMMAND_hurt != 1)	//쳐맞고있을때는 이 로직 안통해요~
 				ROWSPEED = 1;	//점프했을때 방향을 바꾸려하면 드라마틱하게 다시 오는경우는 없지만 그래도 원했던것보단 조금 나감
 			dir = 1;	//방향은 바꿔주지만 움직임형태는 냅둠
 		}
@@ -497,7 +530,8 @@ void PLAYER::move()
 		stealth = 100;		//무적시간 2초
 		savey = y;			//피격과 동시에 y좌표저장(적당히 내려오기 위해)
 		COMMAND_hurt = true;	//피격함수 on
-		state = 2;				//피격하면 공중으로 한번 붕 뜬다
+ 		state = 2;				//피격하면 공중으로 한번 붕 뜬다
+		
 	}
 	else if (state == 7)
 	{
@@ -583,20 +617,59 @@ void PLAYER::BitMove()
 //플레이어를 그려줌
 void PLAYER::draw(HDC& mem1dc, HDC& pdc)
 {
+	BLENDFUNCTION bf;
+	bf.AlphaFormat =0;
+	bf.BlendFlags = 0;
+	bf.BlendOp = AC_SRC_OVER;
+	bf.SourceConstantAlpha = 255;
+	
+
+
 	pdc = CreateCompatibleDC(mem1dc);
+	//피격당했을시에 투명처리 해줄 dc를 mem1dc와 연결
+	HDC gdidc = CreateCompatibleDC(mem1dc);
+	//mem1dc의 캐릭터그릴공간만큼만 얻어온다(실제 mem1dc에는 배경이있으므로 0,0 부터 62,50 까지의 비트맵이 들어감)
+	HBITMAP tmpdc = CreateCompatibleBitmap(mem1dc, 62, 50);
+	HBITMAP oldtmpdc = (HBITMAP)SelectObject(gdidc, tmpdc);
+	//여기서 0,0 ~62,50 까지의 비트맵을 캐릭터기준으로 바꿔준다 (플레이어가 있는 위치의 비트맵을 복사함)
+	BitBlt(gdidc, 0,0, charw*2, h*2, mem1dc, x - charw, y - h, SRCCOPY);
 	//기본 움직임
 	SelectObject(pdc, hbitcur);
-
 	if (state == 1) // 정지상태 
 	{
 
 		if (dir == 1)//왼쪽
 		{
-			TransparentBlt(mem1dc, x - w, y - h, w * 2, h * 2, pdc, 0, 0, 62, 50, RGB(255, 255, 255));
+			//TransparentBlt(gdidc, x - charw, y - h, charw * 2, h * 2, pdc, 0, 0, 62, 50, RGB(255, 255, 255));
+			//gdidc는 0,0~ 62,50 이니까 이 위치에 투명한 캐릭터를 복사시켜주고 GdialphaBlend 를 통해 투명화처리 해준다.
+			TransparentBlt(gdidc, 0, 0, 62,50, pdc, 0, 0, 62, 50, RGB(255, 255, 255));
+
+			if (stealth > 0)
+			{
+			
+					bf.SourceConstantAlpha = 155;
+					GdiAlphaBlend(mem1dc, x - charw, y - h, charw * 2, h * 2, gdidc, 0, 0, 62, 50, bf);
+					bf.SourceConstantAlpha = 255;
+				
+			}
+			else
+				GdiAlphaBlend(mem1dc,  x - charw, y - h, charw * 2, h * 2, gdidc, 0, 0, 62, 50, bf);
 		}
 		else if (dir == 2)//오른쪽
 		{
-			TransparentBlt(mem1dc, x - w, y - h, w * 2, h * 2, pdc, 0, 50, 62, 50, RGB(255, 255, 255));
+			//TransparentBlt(mem1dc, x - charw, y - h, charw * 2, h * 2, pdc, 0, 50, 62, 50, RGB(255, 255, 255));
+			TransparentBlt(gdidc, 0, 0, 62, 50, pdc, 0, 50, 62, 50, RGB(255, 255, 255));
+			if (stealth > 0)
+			{
+
+				bf.SourceConstantAlpha = 155;//투명도
+				//이 함수는 일반 stretchblt 와 비슷하다 gdidc 는 최대가 0,0 ~62,50 이므로 뒷 인자는 0 0 62 50
+				GdiAlphaBlend(mem1dc, x - charw, y - h, charw * 2, h * 2, gdidc, 0, 0, 62, 50, bf);
+				bf.SourceConstantAlpha = 255;
+
+			}
+			else
+				GdiAlphaBlend(mem1dc, x - charw, y - h, charw * 2, h * 2, gdidc, 0, 0, 62, 50, bf);
 		}
 
 	}
@@ -604,11 +677,35 @@ void PLAYER::draw(HDC& mem1dc, HDC& pdc)
 	{
 		if (dir == 1)//왼쪽
 		{
-			TransparentBlt(mem1dc, x - w, y - h, w * 2, h * 2, pdc, bx, by, bw, bh, RGB(255, 255, 255)); //68 0 130 50
+			//TransparentBlt(mem1dc, x - charw, y - h, charw * 2, h * 2, pdc, bx, by, bw, bh, RGB(255, 255, 255)); //68 0 130 50
+			TransparentBlt(gdidc, 0, 0, 62, 50, pdc, bx, by, bw, bh, RGB(255, 255, 255));
+			if (stealth > 0)
+			{
+
+				bf.SourceConstantAlpha = 155;//투명도
+				//이 함수는 일반 stretchblt 와 비슷하다 gdidc 는 최대가 0,0 ~62,50 이므로 뒷 인자는 0 0 62 50
+				GdiAlphaBlend(mem1dc, x - charw, y - h, charw * 2, h * 2, gdidc, 0, 0, 62, 50, bf);
+				bf.SourceConstantAlpha = 255;
+
+			}
+			else
+				GdiAlphaBlend(mem1dc, x - charw, y - h, charw * 2, h * 2, gdidc, 0, 0, 62, 50, bf);
 		}
 		else if (dir == 2)//오른쪽
 		{
-			TransparentBlt(mem1dc, x - w, y - h, w * 2, h * 2, pdc, bx, by + 50, bw, bh, RGB(255, 255, 255));
+			//TransparentBlt(mem1dc, x - charw, y - h, charw * 2, h * 2, pdc, bx, by + 50, bw, bh, RGB(255, 255, 255));
+			TransparentBlt(gdidc, 0, 0, 62, 50, pdc, bx, by+50, bw, bh, RGB(255, 255, 255));
+			if (stealth > 0)
+			{
+
+				bf.SourceConstantAlpha = 155;//투명도
+				//이 함수는 일반 stretchblt 와 비슷하다 gdidc 는 최대가 0,0 ~62,50 이므로 뒷 인자는 0 0 62 50
+				GdiAlphaBlend(mem1dc, x - charw, y - h, charw * 2, h * 2, gdidc, 0, 0, 62, 50, bf);
+				bf.SourceConstantAlpha = 255;
+
+			}
+			else
+				GdiAlphaBlend(mem1dc, x - charw, y - h, charw * 2, h * 2, gdidc, 0, 0, 62, 50, bf);
 		}
 
 
@@ -617,24 +714,76 @@ void PLAYER::draw(HDC& mem1dc, HDC& pdc)
 	{
 		if (dir == 1)//왼쪽
 		{
-			TransparentBlt(mem1dc, x - w, y - h, w * 2, h * 2, pdc, 0, 107, 62, 48, RGB(255, 255, 255)); //68 0 130 50
+			//TransparentBlt(mem1dc, x - charw, y - h, charw * 2, h * 2, pdc, 0, 107, 62, 48, RGB(255, 255, 255)); //68 0 130 50
+			TransparentBlt(gdidc, 0, 0, 62, 50, pdc, 0, 107, 62, 50, RGB(255, 255, 255));
+			if (stealth > 0)
+			{
+
+				bf.SourceConstantAlpha = 155;//투명도
+				//이 함수는 일반 stretchblt 와 비슷하다 gdidc 는 최대가 0,0 ~62,50 이므로 뒷 인자는 0 0 62 50
+				GdiAlphaBlend(mem1dc, x - charw, y - h, charw * 2, h * 2, gdidc, 0, 0, 62, 50, bf);
+				bf.SourceConstantAlpha = 255;
+
+			}
+			else
+				GdiAlphaBlend(mem1dc, x - charw, y - h, charw * 2, h * 2, gdidc, 0, 0, 62, 50, bf);
 		}
 		else if (dir == 2)//오른쪽
 		{
-			TransparentBlt(mem1dc, x - w, y - h, w * 2, h * 2, pdc, 77, 107, 62, 48, RGB(255, 255, 255));
+			//TransparentBlt(mem1dc, x - charw, y - h, charw * 2, h * 2, pdc, 77, 107, 62, 48, RGB(255, 255, 255));
+			TransparentBlt(gdidc, 0, 0, 62, 50, pdc, 77, 107, 62, 48, RGB(255, 255, 255));
+			if (stealth > 0)
+			{
+
+				bf.SourceConstantAlpha = 155;//투명도
+				//이 함수는 일반 stretchblt 와 비슷하다 gdidc 는 최대가 0,0 ~62,50 이므로 뒷 인자는 0 0 62 50
+				GdiAlphaBlend(mem1dc, x - charw, y - h, charw * 2, h * 2, gdidc, 0, 0, 62, 50, bf);
+				bf.SourceConstantAlpha = 255;
+
+			}
+			else
+				GdiAlphaBlend(mem1dc, x - charw, y - h, charw * 2, h * 2, gdidc, 0, 0, 62, 50, bf);
 		}
 	}
 	else if (state == 3) //숙이기
 	{
+
+		BitBlt(gdidc, 0, 0, charw * 2, 50, mem1dc, x - charw, y-12 - h*2, SRCCOPY);
 		if (dir == 1)//왼쪽
 		{
-			TransparentBlt(mem1dc, x - w, y - h, w * 2, h * 2, pdc, 0, 161, 62, 26, RGB(255, 255, 255)); //68 0 130 50
+			//TransparentBlt(mem1dc, x - charw, y - h, charw * 2, h * 2, pdc, 0, 161, 62, 26, RGB(255, 255, 255)); //68 0 130 50
+			TransparentBlt(gdidc, 0, 0, 62, 50, pdc, 0, 161, 62, 26, RGB(255, 255, 255));
+			if (stealth > 0)
+			{
+
+				bf.SourceConstantAlpha = 155;//투명도
+				//이 함수는 일반 stretchblt 와 비슷하다 gdidc 는 최대가 0,0 ~62,50 이므로 뒷 인자는 0 0 62 50
+				GdiAlphaBlend(mem1dc, x - charw, y - h, charw * 2, h * 2, gdidc, 0, 0, 62, 50, bf);
+				bf.SourceConstantAlpha = 255;
+
+			}
+			else
+				GdiAlphaBlend(mem1dc, x - charw, y - h, charw * 2, h * 2, gdidc, 0, 0, 62, 50, bf);
 		}
 		else if (dir == 2)//오른쪽
 		{
-			TransparentBlt(mem1dc, x - w, y - h, w * 2, h * 2, pdc, 77, 161, 62, 26, RGB(255, 255, 255));
+		//	TransparentBlt(mem1dc, x - charw, y - h, charw * 2, h * 2, pdc, 77, 161, 62, 26, RGB(255, 255, 255));
+			TransparentBlt(gdidc, 0, 0, 62, 50, pdc, 77, 161, 62, 26, RGB(255, 255, 255));
+			if (stealth > 0)
+			{
+
+				bf.SourceConstantAlpha = 155;//투명도
+				//이 함수는 일반 stretchblt 와 비슷하다 gdidc 는 최대가 0,0 ~62,50 이므로 뒷 인자는 0 0 62 50
+				GdiAlphaBlend(mem1dc, x - charw, y - h, charw * 2, h * 2, gdidc, 0, 0, 62, 50, bf);
+				bf.SourceConstantAlpha = 255;
+
+			}
+			else
+				GdiAlphaBlend(mem1dc, x - charw, y - h, charw * 2, h * 2, gdidc, 0, 0, 62, 50, bf);
 		}
 	}
+	DeleteObject(SelectObject(gdidc, oldtmpdc));
+	DeleteObject(gdidc);
 	DeleteObject(pdc);
 
 
@@ -663,4 +812,9 @@ void PLAYER::spike_hurttime()
 		spike_hurt--;
 		x += 4;
 	}
+}
+
+void PLAYER::hurt()
+{
+	hp -= 5;
 }

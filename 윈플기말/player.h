@@ -2,7 +2,9 @@
 #include <windows.h>
 
 class PLAYER {
-	int x, y, w, h;		// x y 는 캐릭터의 중심좌표이고 w,h 는 xy에서 좌우로 반틈씩만 간 좌표이다. 
+	int x, y, w, h;		// x y 는 캐릭터의 중심좌표이고 w,h 는 xy에서 좌우로 반틈씩만 간 좌표이다.
+	int charw, charh;	//캐릭터 전체 사이즈이다. 
+	int hp;				//플레이어의 hp이다.
 	int savex, savey;	//savey 는 점프뛸때 그 순간의 y좌표를 기억하기 위함이고 x는 혹시몰라서 넣어둠
 	int state;			//1기본상태,2점프상태,3숙이기상태,4이동상태,5줄에 매달린상태,6피격상태,7공중에있는상태
 	int dir;			//1왼쪽 2오른쪽 3위 4아래 플레이어가 보고있는'방향'
@@ -25,6 +27,13 @@ public:
 	void setw(int);			//세터
 	// x y 는 캐릭터의 중심좌표이고 w,h 는 xy에서 좌우로 반틈씩만 간 좌표이다. 
 	void seth(int);
+	// x y 는 캐릭터의 중심좌표이고 w,h 는 xy에서 좌우로 반틈씩만 간 좌표이다. 
+	void setcharw(int);			//세터
+	// x y 는 캐릭터의 중심좌표이고 w,h 는 xy에서 좌우로 반틈씩만 간 좌표이다. 
+	void setcharh(int);
+	//플레이어의 hp값이다
+	void sethp(int);
+	//떨어질때 x값 천천히 이동시켜주기 위한 변수
 	void setadjspd(int);	
 	//1기본상태,2점프상태,3숙이기상태,4이동상태,5줄에 매달린상태,6피격상태,7공중에있는상태
 	void setstate(int);
@@ -53,6 +62,13 @@ public:
 	int getw();			//게터
 	// x y 는 캐릭터의 중심좌표이고 w,h 는 xy에서 좌우로 반틈씩만 간 좌표이다. 
 	int geth();
+	// x y 는 캐릭터의 중심좌표이고 w,h 는 xy에서 좌우로 반틈씩만 간 좌표이다. 
+	int getcharw();			//게터
+	// x y 는 캐릭터의 중심좌표이고 w,h 는 xy에서 좌우로 반틈씩만 간 좌표이다. 
+	int getcharh();
+	//플레이어의 hp값이다
+	int gethp();
+	//떨어질때 x값 천천히 이동시켜주기 위한 변수
 	int getadjspd();
 	//1기본상태,2점프상태,3숙이기상태,4이동상태,5줄에 매달린상태,6피격상태,7공중에있는상태
 	int getstate();
@@ -95,6 +111,8 @@ public:
 	void stealthtime();
 	//가시한테 찔렸을때 강제이동값
 	void spike_hurttime();
+	//다쳤을때 피 다는 계산식
+	void hurt();
 };
 
 
