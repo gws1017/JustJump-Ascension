@@ -2,7 +2,6 @@
 #include "object.h"
 #include "Load.h"
 
-
 int OBJECT::getX()
 {
 	return x;
@@ -27,6 +26,14 @@ int OBJECT::getindex()
 {
 	return index;
 }
+int OBJECT::getmx()
+{
+	return mx;
+}
+int OBJECT::getmy()
+{
+	return my;
+}
 void OBJECT::create(int _x, int _y, int _w, int _h, int _type)
 {
 	x = _x;
@@ -35,6 +42,22 @@ void OBJECT::create(int _x, int _y, int _w, int _h, int _type)
 	h = _h;
 	type = _type;
 	index = 0;
+
+	mx = 0;
+	my = 0;
+	
+	//row gear
+	if (type == 106)
+	{
+		s = 1;
+		dir = 0;
+	}
+	//col gear
+	else if (type == 107)
+	{
+		s = 1;
+		dir = 1;
+	}
 }
 void OBJECT::setX(int _x)
 {
@@ -62,17 +85,31 @@ void OBJECT::setHbit(HINSTANCE g_hinst)
 
 }
 
+// All objects reset
+void OBJECT::ResetObject()
+{
+	x = 0;
+	y = 0;
+	w = 0;
+	h = 0;
+	type = 0;
+	index = 0;
+	hbit = NULL;
+}
 //인덱스를 바꿔주는함수
 void OBJECT::IndexChange()
 {
+	index += 1;
 	if (type == 103) //가스 공백포함 이미지 4개
 	{
-		index += 1;
 		if (index >= 4) index = 0;
+	}
+	else if (type == 106 || type == 107) //톱니바퀴 회전하는 이미지 2개
+	{
+		if (index >= 2) index = 0;
 	}
 	else if (type == 201)//포탈 이미지 7개
 	{
-		index += 1;
 		if (index >= 7) index = 0;
 	}
 }
@@ -97,13 +134,35 @@ void OBJECT::DrawObj(HDC& mem1dc, HDC& odc)
 		else tx = 0;
 		TransparentBlt(mem1dc, tx, y, gas[index].right, gas[index].bottom, odc, gas[index].left, gas[index].top, gas[index].right, gas[index].bottom, RGB(255, 255, 255));
 	}
-	else if (type == 201)
+	else if (type == 106 || type == 107) //gear
 	{
-		
-		TransparentBlt(mem1dc, x, y, w, h, odc, index*79, 55, 63, 135, RGB(0, 0, 0)); // 0 63 79 143 157 221 //80 80
-
+		TransparentBlt(mem1dc, x+mx , y+my, w, h, odc, index * 23, 4, 18, 18, RGB(255, 255, 255)); // 인덱스로 only x change
+	}
+	else if (type == 201) //portal
+	{
+		TransparentBlt(mem1dc, x, y, w, h, odc, index*79, 55, 63, 135, RGB(0, 0, 0)); // 인덱스로 only x change
 	}
 	DeleteObject(odc);
+}
+
+void OBJECT::move()
+{
+	
+	if (dir == 0) //Left or Down
+	{
+		if (mx > 150) s = -1;
+		else if (mx < -150) s = 1;
+		mx += s * gearrowspeed;
+		
+	}
+	else if (dir == 1) //Up or Down
+	{
+		if (my > 100) s = -1;
+		else if (my < -100) s = 1;
+		my += s * gearcolspeed;
+
+	}
+	
 }
 //땅바닥과 플레이어 충돌체크 1이면 부닥침
 //

@@ -8,8 +8,17 @@ bool collp2w(PLAYER player, OBJECT object)
 	int adjust = 10;
 	//왜 101이 먼저오냐면 발판보다는 장애물이 우선순위기때문임
 	if (object.getType() >= 101) { //장애물일때는 플레이어 네모빡스가 히트박스가된다
-		if (player.getx() + player.getw() < object.getX() || player.getx() - player.getw() > object.getX() + object.getW()) return 0;
-		if (player.gety() + player.geth() < object.getY() || player.gety() - player.geth() > object.getY() + object.getH()) return 0;
+		if (object.getType() == 106 || object.getType() == 107)
+		{
+			if (player.getx() + player.getw() < object.getX()+object.getmx() || player.getx() - player.getw() > object.getX() + object.getmx() + object.getW()) return 0;
+			if (player.gety() + player.geth() < object.getY() + object.getmy() || player.gety() - player.geth() > object.getY() + object.getmy() + object.getH()) return 0;
+		}
+		else
+		{
+			if (player.getx() + player.getw() < object.getX() || player.getx() - player.getw() > object.getX() + object.getW()) return 0;
+			if (player.gety() + player.geth() < object.getY() || player.gety() - player.geth() > object.getY() + object.getH()) return 0;
+		}
+		
 
 		return 1;
 	}
@@ -177,16 +186,65 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int ocount, HINSTANCE g_h
 				{
 					//Update Cooming Soon
 				}
+				else if (obj[i].getType() == 106)
+				{
+					if (player.getstealth() == 0)	//무적이 아니라면
+					{
+						if (player.getstate() == 7)//일반일때는 살짝 점프 뛰듯이 가는데 떨어지는중이면 살짝만 이동한다
+						{
+							if (player.getCMD_move() == 1)
+							{
+								player.setspike_hurt(-8);	//8번 왼쪽으로 감
+							}
+							else if (player.getCMD_move() == 2)
+							{
+								player.setspike_hurt(8);	//8번 오른쪽으로감
+							}
+
+							player.setstealth(100);	//무적시간 넣어줌 (이동하는로직은 state==7 일때 알아서 다뤄줌
+						}
+						else {
+							player.setstate(6);		//피격으로감
+						}
+						player.hurt();
+					}
+				}
+				else if (obj[i].getType() == 107)
+				{
+					if (player.getstealth() == 0)	//무적이 아니라면
+					{
+						if (player.getstate() == 7)//일반일때는 살짝 점프 뛰듯이 가는데 떨어지는중이면 살짝만 이동한다
+						{
+							if (player.getCMD_move() == 1)
+							{
+								player.setspike_hurt(-8);	//8번 왼쪽으로 감
+							}
+							else if (player.getCMD_move() == 2)
+							{
+								player.setspike_hurt(8);	//8번 오른쪽으로감
+							}
+
+							player.setstealth(100);	//무적시간 넣어줌 (이동하는로직은 state==7 일때 알아서 다뤄줌
+						}
+						else {
+							player.setstate(6);		//피격으로감
+						}
+						player.hurt();
+					}
+				}
 			}
 			else if (obj[i].getType() >= 201 && obj[i].getType() <= 300) //플레이어와 상호작용하는 오브젝트 ex)포탈
 			{
 				if (UPkey == true)
 				{
-					m.setblack_t(100);
-					m.CreateBlack(g_hinst);
+					m.setblack_t(50);
+					/*m.CreateBlack(g_hinst);*/
 					m.setmapnum(m.getmapnum() + 1);
 					player.initPos();
+					for (int j = 0; j < ocount; j++)
+						obj[j].ResetObject();
 					initObject(obj, m.getmapnum(), g_hinst);
+					return;
 				}
 			}
 			//if (ROWSPEED != 3)		//ROWSPEED를 임의로 바꿔주었다면 땅에 닿으면 초기화니 원래대로 돌려준다
@@ -203,7 +261,10 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int ocount, HINSTANCE g_h
 		player.fall2save();		//떨어지는 순간의 x좌표점 기억
 	}
 
+
 }
+
+
 //int(맵 번호) 에 따라 장애물 위치값 넣어주고 몇개의 오브젝트가 들어갔는지 알려주는 함수
 int initObject(OBJECT* obj, int mapnum, HINSTANCE g_hinst)
 {
@@ -236,11 +297,12 @@ int initObject(OBJECT* obj, int mapnum, HINSTANCE g_hinst)
 				break;
 			}
 			in >> x >> y >> w >> h >> type;
-			obj[i].setX(x);
+			obj[i].create(x, y, w, h, type);
+			/*obj[i].setX(x);
 			obj[i].setY(y);
 			obj[i].setW(w);
 			obj[i].setH(h);
-			obj[i].setType(type);
+			obj[i].setType(type);*/
 			obj[i].setHbit(g_hinst);
 
 		}

@@ -538,7 +538,7 @@ void PLAYER::move()
 	}
 	else if (state == 6)
 	{
-		ROWSPEED *= 4;
+		ROWSPEED *= 3;
 		stealth = 100;		//무적시간 2초
 		savey = y;			//피격과 동시에 y좌표저장(적당히 내려오기 위해)
 		COMMAND_hurt = true;	//피격함수 on

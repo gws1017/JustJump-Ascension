@@ -96,8 +96,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
 		//loaddc = CreateCompatibleDC(mem1dc);
 
-		if (0 >= map.getblack_t())hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/bk.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-		else if (map.getblack_t() > 0)hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/bk_black.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+		/*if (0 >= map.getblack_t())*/hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/bk.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+		//else if (map.getblack_t() > 0)hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/bk_black.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 		Uibit = (HBITMAP)LoadImage(g_hinst, TEXT("img/Ui.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 		HPbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/Ui_HP.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 		//hbitobj[0] = (HBITMAP)LoadImage(g_hinst, TEXT("img/foothold2.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
@@ -146,8 +146,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		//cout << "현재HP상태: " << player.gethp() << endl;
 
 
-		/*oldload = (HBITMAP) SelectObject(loaddc, loadbit);*/
-		/*if (map.getblack_t() > 0)
+		/*oldload = (HBITMAP) SelectObject(loaddc, loadbit);
+		if (map.getblack_t() > 0)
 		{
 			BitBlt(mem1dc, camera.getx(), camera.gety(), 1024, 768, loaddc, 0, 0, BLACKNESS);
 		}*/
@@ -193,6 +193,15 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 					}
 
 				}
+				if (obj[i].getType() == 106|| obj[i].getType() == 107)
+				{
+					if (object_t % 5 == 0)
+					{
+						obj[i].IndexChange();
+
+					}
+					obj[i].move();
+				}
 				else if (obj[i].getType() == 201)
 				{
 					if (object_t % 20 == 0)
@@ -202,9 +211,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 					}
 				}
 			}
-
 			if (object_t >= 27000) object_t = 0;
-			if (0 >= map.getblack_t()) map.CreateMap(g_hinst);
 			InvalidateRgn(hwnd, NULL, FALSE);
 			break;
 		case 2:

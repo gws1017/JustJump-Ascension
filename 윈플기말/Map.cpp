@@ -8,14 +8,13 @@ void MAP::setmapnum(int i) { mapnum = i; }
 
 void MAP::setblack_t(int i) { black_t = i; }
 
-void MAP::CreateBlack(HINSTANCE g_hinst)
-{
-	hbitbk = LoadBlack(hbitbk, g_hinst);
-}
+//void MAP::CreateBlack(HINSTANCE g_hinst)
+//{
+//	hbitbk = LoadBlack(hbitbk, g_hinst);
+//}
 
 void MAP::CreateMap(HINSTANCE g_hinst)
 {
-	if (0 >= black_t)
 	hbitbk = LoadBK(hbitbk,g_hinst);
 }
 
@@ -39,7 +38,8 @@ void MAP :: DrawBK(HDC& mem1dc, HDC& mem2dc, RECT& rectview)
 	mem2dc = CreateCompatibleDC(mem1dc);
 	SelectObject(mem2dc, hbitbk);
 	FillRect(mem1dc, &rectview, RGB(0, 0, 0));
-	BitBlt(mem1dc, 0, 0,MAPWIDTH, MAPHEIGHT, mem2dc, 0,0, SRCCOPY);	//맵 전체 새로고침
+	if(0>=black_t)BitBlt(mem1dc, 0, 0,MAPWIDTH, MAPHEIGHT, mem2dc, 0,0, SRCCOPY);	//맵 전체 새로고침
+	else if(black_t>0)BitBlt(mem1dc, 0, 0, MAPWIDTH, MAPHEIGHT, mem2dc, 0, 0, BLACKNESS);
 	DeleteObject(mem2dc);
 }
 //상태창

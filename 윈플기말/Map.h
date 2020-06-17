@@ -28,7 +28,7 @@ public:
 	void DrawUi(HDC&, HDC&, CAMERA);
 	//HP¹Ù
 	void DrawHP(HDC&, HDC&, CAMERA,PLAYER);
-	void CreateBlack(HINSTANCE);
+	/*void CreateBlack(HINSTANCE)*/;
 	void CreateMap(HINSTANCE);
 	void CreateUi(HINSTANCE);
 	void CreateHP(HINSTANCE);
