@@ -1,7 +1,21 @@
 #include "Map.h"
 #include "Load.h"
+int MAP::getmapnum() { return mapnum; }
+
+int MAP::getblack_t() { return black_t; }
+
+void MAP::setmapnum(int i) { mapnum = i; }
+
+void MAP::setblack_t(int i) { black_t = i; }
+
+void MAP::CreateBlack(HINSTANCE g_hinst)
+{
+	hbitbk = LoadBlack(hbitbk, g_hinst);
+}
+
 void MAP::CreateMap(HINSTANCE g_hinst)
 {
+	if (0 >= black_t)
 	hbitbk = LoadBK(hbitbk,g_hinst);
 }
 
@@ -15,10 +29,16 @@ void MAP::CreateHP(HINSTANCE g_hinst)
 	hbithp = LoadHP(hbitbk, g_hinst);
 }
 
+void MAP::BlackTime()
+{
+	if (black_t > 0) black_t--;
+}
+
 void MAP :: DrawBK(HDC& mem1dc, HDC& mem2dc, RECT& rectview)
 {
 	mem2dc = CreateCompatibleDC(mem1dc);
 	SelectObject(mem2dc, hbitbk);
+	FillRect(mem1dc, &rectview, RGB(0, 0, 0));
 	BitBlt(mem1dc, 0, 0,MAPWIDTH, MAPHEIGHT, mem2dc, 0,0, SRCCOPY);	//맵 전체 새로고침
 	DeleteObject(mem2dc);
 }
@@ -59,7 +79,8 @@ void MAP::DrawHP(HDC& mem1dc, HDC& mem2dc, CAMERA camera,PLAYER player)
 	TextOut(mem1dc, camera.getx() + 505, camera.gety() + 728, L"/100", lstrlenW(L"/100"));
 	//StretchBlt(mem1dc, camera.getx() + 421, camera.gety() + 728, hp, 65, mem2dc, 0, 0,hp, 65,SRCCOPY);
 	//BitBlt(mem1dc, 0, 0, MAPWIDTH, MAPHEIGHT, mem2dc, 0, 0, SRCCOPY);	//HP 전체 새로고침
-	DeleteObject(oldfont);
+	SelectObject(mem1dc, oldfont);
+	DeleteObject(hfont);
 	DeleteObject(mem2dc);
 }
 

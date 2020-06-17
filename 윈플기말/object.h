@@ -7,7 +7,7 @@
 class OBJECT {
 	int x, y;					//오브젝트의 x y 는 왼쪽상단이 기준이다.
 	int w, h;
-	int type;					//1~100 플랫폼 101~장애물
+	int type;					//1~100 플랫폼 101~장애물 201~상호작용 오브젝트
 	int index;					//애니메이션 돌릴때 배열의 인덱스를 바꿔주어 이미지를 바꾼다
 	HBITMAP hbit;				
 public:
@@ -18,7 +18,7 @@ public:
 	int getH();
 	int getindex();
 
-	//1~100 플랫폼 101~장애물
+	//1~100 플랫폼 101~장애물 201~상호작용 오브젝트
 	int getType();
 	//오브젝트가 몇개들어갔는지
 	int getocount();

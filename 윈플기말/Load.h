@@ -1,6 +1,7 @@
 #pragma once
 #include <Windows.h>
 
+HBITMAP LoadBlack(HBITMAP, HINSTANCE);
 HBITMAP LoadBK(HBITMAP, HINSTANCE);
 //상태 Ui표시
 HBITMAP LoadUi(HBITMAP, HINSTANCE);

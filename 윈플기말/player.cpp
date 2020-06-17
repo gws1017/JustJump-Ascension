@@ -28,6 +28,18 @@ PLAYER::PLAYER()
 	COMMAND_hurt = false;
 
 }
+void PLAYER::initPos()
+{
+	x = 80;
+	y = 3600;
+	state = 7;
+	dir = 2;
+	adjustspd = 0;
+	stealth = 0;
+	spike_hurt = 0;
+	COMMAND_move = false;
+	COMMAND_hurt = false;
+}
 void PLAYER::setx(int i)
 {
 	x = i;
@@ -782,7 +794,8 @@ void PLAYER::draw(HDC& mem1dc, HDC& pdc)
 				GdiAlphaBlend(mem1dc, x - charw, y - h, charw * 2, h * 2, gdidc, 0, 0, 62, 50, bf);
 		}
 	}
-	DeleteObject(SelectObject(gdidc, oldtmpdc));
+	SelectObject(gdidc, oldtmpdc);
+	DeleteObject(tmpdc);
 	DeleteObject(gdidc);
 	DeleteObject(pdc);
 
