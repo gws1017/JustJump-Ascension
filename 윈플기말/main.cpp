@@ -204,7 +204,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			}
 
 			if (object_t >= 27000) object_t = 0;
-			if (0 >= map.getblack_t()) map.CreateMap(g_hinst);
+			//if (0 >= map.getblack_t()) map.CreateMap(g_hinst);
 			InvalidateRgn(hwnd, NULL, FALSE);
 			break;
 		case 2:
