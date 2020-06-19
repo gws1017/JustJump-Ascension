@@ -1,0 +1,14 @@
+﻿  Camera.cpp
+  Load.cpp
+  main.cpp
+c:\users\sumin\documents\github\justjump\윈플기말\sound.h(2): fatal error C1083: 포함 파일을 열 수 없습니다. 'fmod.h': No such file or directory
+  Map.cpp
+c:\users\sumin\documents\github\justjump\윈플기말\sound.h(2): fatal error C1083: 포함 파일을 열 수 없습니다. 'fmod.h': No such file or directory
+  object.cpp
+c:\users\sumin\documents\github\justjump\윈플기말\sound.h(2): fatal error C1083: 포함 파일을 열 수 없습니다. 'fmod.h': No such file or directory
+  ObjectManager.cpp
+c:\users\sumin\documents\github\justjump\윈플기말\sound.h(2): fatal error C1083: 포함 파일을 열 수 없습니다. 'fmod.h': No such file or directory
+  player.cpp
+c:\users\sumin\documents\github\justjump\윈플기말\sound.h(2): fatal error C1083: 포함 파일을 열 수 없습니다. 'fmod.h': No such file or directory
+  Sound.cpp
+c:\users\sumin\documents\github\justjump\윈플기말\sound.h(2): fatal error C1083: 포함 파일을 열 수 없습니다. 'fmod.h': No such file or directory
