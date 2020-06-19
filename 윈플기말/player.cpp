@@ -4,11 +4,13 @@
 #include <iostream>
 int ROWSPEED = 3; 	//가로 이동속도
 int COLSPEED = 10;	//세로 이동속도
+int ROPESPEED = 2;
 bool LEFTkey = 0;//왼쪽키 눌렀는지 1이면 누름 0이면 안누름
 bool RIGHTkey = 0;//오른쪽키 눌렀는지 1이면 누름 0이면 안누름
 bool UPkey = 0;	//위쪽키 눌렀는지 1이면 누름 0이면 안누름
 bool DOWNkey = 0;//아래쪽키 눌렀는지 1이면 누름 0이면 안누름
 bool LRkey = 0;//왼쪽오른쪽키 동시에 눌렀는지 1이면눌림 0이면 안눌림
+bool UDkey = 0;
 PLAYER::PLAYER()
 {
 	// x y 는 캐릭터의 중심좌표이고 w,h 는 xy에서 좌우로 반틈씩만 간 좌표이다. 
@@ -196,7 +198,7 @@ int PLAYER::getspike_hurt()
 	return spike_hurt;
 }
 //플레이어 상태 변경
-void PLAYER::PlayerSetting(WPARAM wParam,Sound sound)
+void PLAYER::PlayerSetting(WPARAM wParam, Sound sound)
 {
 	if (wParam == VK_LEFT)
 	{
@@ -221,7 +223,7 @@ void PLAYER::PlayerSetting(WPARAM wParam,Sound sound)
 
 				state = 4;
 				dir = 1;
-				BitMove();
+				
 			}
 			else {
 				state = 4;
@@ -232,13 +234,13 @@ void PLAYER::PlayerSetting(WPARAM wParam,Sound sound)
 		}
 		else if (state == 2)
 		{
-	 		if (COMMAND_hurt != 1)	//쳐맞고있을때는 이 로직 안통해요~
+			if (COMMAND_hurt != 1)	//쳐맞고있을때는 이 로직 안통해요~
 				ROWSPEED = 1;	//점프했을때 방향을 바꾸려하면 드라마틱하게 다시 오는경우는 없지만 그래도 원했던것보단 조금 나감
 			dir = 1;	//방향은 바꿔주지만 움직임형태는 냅둠
 		}
 		else if (state == 3)
 		{
-			
+
 			h += 12;
 			y -= 12;
 			state = 4;
@@ -268,11 +270,11 @@ void PLAYER::PlayerSetting(WPARAM wParam,Sound sound)
 
 				state = 4;
 				dir = 2;
-				BitMove();
 			}
 			else {
 				state = 4;
 				dir = 2;
+				
 			}
 			COMMAND_move = 2;	//1이든 4든 누르면 일단은 움직임형태를 바꿔줌
 			std::cout << "RIGHT 눌림" << std::endl;
@@ -298,10 +300,29 @@ void PLAYER::PlayerSetting(WPARAM wParam,Sound sound)
 	{
 		UPkey = true;
 
-		if (state == 5)
+		if (DOWNkey == true)
 		{
-			COMMAND_move = 3;
+			UDkey = true;
+			if (state == 8)
+				state = 5;
+			return;
 		}
+		if (state == 5 || state == 8)
+		{
+			if (state == 5)//멈춰있다가 움직일때 한번 바로 움직여줘야함
+			{
+				state = 8;
+				dir = 3;
+			}
+			else {
+				
+				state = 8;
+				dir = 3;
+			}
+			COMMAND_move = 3;
+
+		}
+
 		//이부분에 사다리와의 충돌 체크를 하고 true면 줄에 매달리는 상태로 바꿔줄예정
 		return;
 	}
@@ -310,21 +331,40 @@ void PLAYER::PlayerSetting(WPARAM wParam,Sound sound)
 		if (COMMAND_hurt == 1)
 			return;
 		DOWNkey = true;
-
-		if (state == 5)
+		if (UPkey == true)
 		{
+			UDkey = true;
+			if (state == 8)
+				state = 5;
+			return;
+		}
+		if (state == 5 || state == 8)
+		{
+			
+			if (state == 5)//멈춰있다가 움직일때 한번 바로 움직여줘야함
+			{
+
+				state = 8;
+				dir = 4;
+			}
+			else {
+				//BitMove();
+				state = 8;
+				dir = 4;
+			}
 			COMMAND_move = 4;
+
 		}
 		else if (state == 1) {
 
-				state = 3;	//숙이는거는 가만히 있을때만 가능하다
-				h -= 12;		//숙이면 키도 줄어들어야한다.
-				y += 12;
+			state = 3;	//숙이는거는 가만히 있을때만 가능하다
+			h -= 12;		//숙이면 키도 줄어들어야한다.
+			y += 12;
 		}
 
 		return;
 	}
-	if (wParam == VK_SPACE)
+	if (wParam == VK_CONTROL)
 	{
 		if (DOWNkey == true)//수그리고있을땐 점프못함
 		{
@@ -345,6 +385,24 @@ void PLAYER::PlayerWaiting(WPARAM wParam)
 {
 	if (wParam == VK_DOWN)
 	{
+		if (UPkey == true)
+		{
+			dir = 3;
+			if (state == 5)			//둘다눌럿을때의 로직은 state==1일때에만 발동이 된다. 
+				COMMAND_move = 3;
+		}
+		else if (UPkey == false)	//오른쪽키를 누르고있지 않았다면 움직이는상태였을땐 멈춰줘야한다.
+		{
+			if (state == 8)
+			{
+				state = 5;
+				COMMAND_move = 0;	//움직이는 방향은 그대로지만 움직이지는 않는다.
+			}
+			else if (state == 5)	//종종버그성 플레이로인해서 (점프키와 동시에 키를 누른후 바닥에 닿음과 동시에 땔때) 이경우가있는데, 이때도 멈춰주도록한다.
+			{
+				COMMAND_move = 0;
+			}
+		}
 		if (DOWNkey == true)
 		{
 			if (state == 3)
@@ -354,6 +412,8 @@ void PLAYER::PlayerWaiting(WPARAM wParam)
 				state = 1;
 			}
 		}
+
+		UDkey = false;
 		DOWNkey = false;
 		return;
 	}
@@ -435,7 +495,26 @@ void PLAYER::PlayerWaiting(WPARAM wParam)
 	}
 	if (wParam == VK_UP)
 	{
+		if (DOWNkey == true)
+		{
+			dir = 4;
+			if (state == 5)			//둘다눌럿을때의 로직은 state==1일때에만 발동이 된다. 
+				COMMAND_move = 4;
+		}
+		else if (DOWNkey == false)	
+		{
+			if (state == 5)
+			{
+				state = 8;
+				COMMAND_move = 0;	//움직이는 방향은 그대로지만 움직이지는 않는다.
+			}
+			else if (state == 5)	//종종버그성 플레이로인해서 (점프키와 동시에 키를 누른후 바닥에 닿음과 동시에 땔때) 이경우가있는데, 이때도 멈춰주도록한다.
+			{
+				COMMAND_move = 0;
+			}
+		}
 		UPkey = false;
+		UDkey = false;
 		return;
 	}
 	return;
@@ -443,7 +522,7 @@ void PLAYER::PlayerWaiting(WPARAM wParam)
 
 
 //플레이어 움직임
-void PLAYER::move()
+void PLAYER::move(int obj_t)
 {
 
 	if (state == 1)
@@ -476,7 +555,7 @@ void PLAYER::move()
 		//}
 		//가만히있을때는 움직일수 없는데 왜 움직였냐 여태
 	}
-	else if (state == 2)	//점프상태일때도 진행방향으로 이동은해야함 
+	else if (state == 2 )	//점프상태일때도 진행방향으로 이동은해야함 
 	{
 		if (COMMAND_hurt == true)	//피격당한경우
 		{
@@ -541,6 +620,11 @@ void PLAYER::move()
 
 		}
 		else {
+			if (obj_t % 5 == 0)
+			{
+				BitMove();
+			}
+
 			if (COMMAND_move == 1)
 			{
 				x -= ROWSPEED;
@@ -553,14 +637,28 @@ void PLAYER::move()
 	}
 	else if (state == 5)
 	{
-		if (dir == 3)
+		
+		if (UDkey == true)
 		{
-			y -= 1;
+
 		}
-		else if (dir == 4)
+
+		else if (UPkey == true)
 		{
-			y += 1;
+			
+			dir = 3;
+			state = 8;
+
 		}
+		else if (DOWNkey == true)
+		{
+			
+			dir = 4;
+			state = 8;
+
+		}
+
+
 	}
 	else if (state == 6)
 	{
@@ -568,8 +666,8 @@ void PLAYER::move()
 		stealth = 100;		//무적시간 2초
 		savey = y;			//피격과 동시에 y좌표저장(적당히 내려오기 위해)
 		COMMAND_hurt = true;	//피격함수 on
- 		state = 2;				//피격하면 공중으로 한번 붕 뜬다
-		
+		state = 2;				//피격하면 공중으로 한번 붕 뜬다
+
 	}
 	else if (state == 7)
 	{
@@ -625,6 +723,25 @@ void PLAYER::move()
 					COMMAND_move = 0;
 		}
 	}
+	else if (state == 8)
+	{
+		if (UDkey == true)
+		{
+
+		}
+		else {
+			
+
+			if (COMMAND_move == 3)
+			{
+				y -= ROPESPEED;
+			}
+			else if (COMMAND_move == 4)
+			{
+				y += ROPESPEED;
+			}
+		}
+	}
 }
 
 //상태에따라 비트맵을 선택하는 함수
@@ -644,23 +761,27 @@ void PLAYER::selectBit()
 //비트맵을 바꿔주는함수 (애니메이션)
 void PLAYER::BitMove()
 {
+	bx += 1;//인덱스 형식으로 바꿈
 	if (state == 4)
 	{
-		bx += 68;
-		if (bx > 271) bx = 0;
+		if (bx >= 5) bx = 1;
 	}
+	if (state == 5)
+	{
 
+		if (bx >= 2) bx = 0;
+	}
 }
 
 //플레이어를 그려줌
 void PLAYER::draw(HDC& mem1dc, HDC& pdc)
 {
 	BLENDFUNCTION bf;
-	bf.AlphaFormat =0;
+	bf.AlphaFormat = 0;
 	bf.BlendFlags = 0;
 	bf.BlendOp = AC_SRC_OVER;
 	bf.SourceConstantAlpha = 255;
-	
+
 
 
 	pdc = CreateCompatibleDC(mem1dc);
@@ -670,7 +791,7 @@ void PLAYER::draw(HDC& mem1dc, HDC& pdc)
 	HBITMAP tmpdc = CreateCompatibleBitmap(mem1dc, 62, 50);
 	HBITMAP oldtmpdc = (HBITMAP)SelectObject(gdidc, tmpdc);
 	//여기서 0,0 ~62,50 까지의 비트맵을 캐릭터기준으로 바꿔준다 (플레이어가 있는 위치의 비트맵을 복사함)
-	BitBlt(gdidc, 0,0, charw*2, h*2, mem1dc, x - charw, y - h, SRCCOPY);
+	BitBlt(gdidc, 0, 0, charw * 2, h * 2, mem1dc, x - charw, y - h, SRCCOPY);
 	//기본 움직임
 	SelectObject(pdc, hbitcur);
 	if (state == 1) // 정지상태 
@@ -680,18 +801,18 @@ void PLAYER::draw(HDC& mem1dc, HDC& pdc)
 		{
 			//TransparentBlt(gdidc, x - charw, y - h, charw * 2, h * 2, pdc, 0, 0, 62, 50, RGB(255, 255, 255));
 			//gdidc는 0,0~ 62,50 이니까 이 위치에 투명한 캐릭터를 복사시켜주고 GdialphaBlend 를 통해 투명화처리 해준다.
-			TransparentBlt(gdidc, 0, 0, 62,50, pdc, 0, 0, 62, 50, RGB(255, 255, 255));
+			TransparentBlt(gdidc, 0, 0, 62, 50, pdc, 0, 0, 62, 50, RGB(255, 255, 255));
 
 			if (stealth > 0)
 			{
-			
-					bf.SourceConstantAlpha = 155;
-					GdiAlphaBlend(mem1dc, x - charw, y - h, charw * 2, h * 2, gdidc, 0, 0, 62, 50, bf);
-					bf.SourceConstantAlpha = 255;
-				
+
+				bf.SourceConstantAlpha = 155;
+				GdiAlphaBlend(mem1dc, x - charw, y - h, charw * 2, h * 2, gdidc, 0, 0, 62, 50, bf);
+				bf.SourceConstantAlpha = 255;
+
 			}
 			else
-				GdiAlphaBlend(mem1dc,  x - charw, y - h, charw * 2, h * 2, gdidc, 0, 0, 62, 50, bf);
+				GdiAlphaBlend(mem1dc, x - charw, y - h, charw * 2, h * 2, gdidc, 0, 0, 62, 50, bf);
 		}
 		else if (dir == 2)//오른쪽
 		{
@@ -716,7 +837,7 @@ void PLAYER::draw(HDC& mem1dc, HDC& pdc)
 		if (dir == 1)//왼쪽
 		{
 			//TransparentBlt(mem1dc, x - charw, y - h, charw * 2, h * 2, pdc, bx, by, bw, bh, RGB(255, 255, 255)); //68 0 130 50
-			TransparentBlt(gdidc, 0, 0, 62, 50, pdc, bx, by, bw, bh, RGB(255, 255, 255));
+			TransparentBlt(gdidc, 0, 0, 62, 50, pdc, bx * 68, by, bw, bh, RGB(255, 255, 255));
 			if (stealth > 0)
 			{
 
@@ -732,7 +853,7 @@ void PLAYER::draw(HDC& mem1dc, HDC& pdc)
 		else if (dir == 2)//오른쪽
 		{
 			//TransparentBlt(mem1dc, x - charw, y - h, charw * 2, h * 2, pdc, bx, by + 50, bw, bh, RGB(255, 255, 255));
-			TransparentBlt(gdidc, 0, 0, 62, 50, pdc, bx, by+50, bw, bh, RGB(255, 255, 255));
+			TransparentBlt(gdidc, 0, 0, 62, 50, pdc, bx * 68, by + 50, bw, bh, RGB(255, 255, 255));
 			if (stealth > 0)
 			{
 
@@ -785,9 +906,9 @@ void PLAYER::draw(HDC& mem1dc, HDC& pdc)
 	}
 	else if (state == 3) //숙이기
 	{
-	//h는 줄고 y는 늘고 
+		//h는 줄고 y는 늘고 
 
-		BitBlt(gdidc, 0, 0, charw * 2, 26, mem1dc, x - charw, y-h, SRCCOPY);
+		BitBlt(gdidc, 0, 0, charw * 2, 26, mem1dc, x - charw, y - h, SRCCOPY);
 		if (dir == 1)//왼쪽
 		{
 			//TransparentBlt(mem1dc, x - charw, y - h, charw * 2, h * 2, pdc, 0, 161, 62, 26, RGB(255, 255, 255)); //68 0 130 50
@@ -797,16 +918,16 @@ void PLAYER::draw(HDC& mem1dc, HDC& pdc)
 
 				bf.SourceConstantAlpha = 155;//투명도
 				//이 함수는 일반 stretchblt 와 비슷하다 gdidc 는 최대가 0,0 ~62,50 이므로 뒷 인자는 0 0 62 50
-				GdiAlphaBlend(mem1dc, x - charw, y - 12 - h + 12, charw * 2, h*2 , gdidc, 0, 0, 62, 26, bf);
+				GdiAlphaBlend(mem1dc, x - charw, y - 12 - h + 12, charw * 2, h * 2, gdidc, 0, 0, 62, 26, bf);
 				bf.SourceConstantAlpha = 255;
 
 			}
 			else
-				GdiAlphaBlend(mem1dc, x - charw, y - 12 - h + 12, charw * 2, h*2 , gdidc, 0, 0, 62, 26, bf);
+				GdiAlphaBlend(mem1dc, x - charw, y - 12 - h + 12, charw * 2, h * 2, gdidc, 0, 0, 62, 26, bf);
 		}
 		else if (dir == 2)//오른쪽
 		{
-		//	TransparentBlt(mem1dc, x - charw, y - h, charw * 2, h * 2, pdc, 77, 161, 62, 26, RGB(255, 255, 255));
+			//	TransparentBlt(mem1dc, x - charw, y - h, charw * 2, h * 2, pdc, 77, 161, 62, 26, RGB(255, 255, 255));
 			TransparentBlt(gdidc, 0, 0, 62, 26, pdc, 77, 161, 62, 26, RGB(255, 255, 255));
 			if (stealth > 0)
 			{
@@ -821,14 +942,28 @@ void PLAYER::draw(HDC& mem1dc, HDC& pdc)
 				GdiAlphaBlend(mem1dc, x - charw, y - h, charw * 2, h * 2, gdidc, 0, 0, 62, 26, bf);
 		}
 	}
+	else if (state == 5 || state == 8)
+	{
+		TransparentBlt(gdidc, 0, 0, 62, 50, pdc, bx * 77, 54, 62, 50, RGB(255, 255, 255));
+
+		if (stealth > 0)
+		{
+
+			bf.SourceConstantAlpha = 155;
+			GdiAlphaBlend(mem1dc, x - charw, y - h, charw * 2, h * 2, gdidc, 0, 0, 62, 50, bf);
+			bf.SourceConstantAlpha = 255;
+
+		}
+		else GdiAlphaBlend(mem1dc, x - charw, y - h, charw * 2, h * 2, gdidc, 0, 0, 62, 50, bf);
+
+	}
+
 	SelectObject(gdidc, oldtmpdc);
 	DeleteObject(tmpdc);
 	DeleteObject(gdidc);
 	DeleteObject(pdc);
 
-
 }
-
 
 void PLAYER::fall2save()
 {
@@ -856,7 +991,7 @@ void PLAYER::spike_hurttime()
 
 void PLAYER::hurt()
 {
-	if(COMMAND_die==false)
+	if (COMMAND_die == false)
 		hp -= 5;
 	if (hp <= 0)	//0 이하라면
 	{

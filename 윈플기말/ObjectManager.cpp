@@ -48,7 +48,7 @@ bool collp2w(PLAYER player, OBJECT object)
 
 
 //플레이어와 오브젝트간 상호작용 판단하고 그에맞게 바꿔줌
-void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int ocount, HINSTANCE g_hinst,Sound sound)
+void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int ocount, HINSTANCE g_hinst, Sound sound)
 {
 	int check_coll = 0;	//하나라도 부딪혔는지 판별하기위함
 	if (player.getx() - player.getw() < 0)
@@ -107,6 +107,11 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int ocount, HINSTANCE g_h
 
 					if (ROWSPEED != 3)		//ROWSPEED를 임의로 바꿔주었다면 땅에 닿으면 초기화니 원래대로 돌려준다
 						ROWSPEED = 3;
+				}
+
+				if (obj[i].getType() == 4)
+				{
+					player.setx(player.getx() + beltspeed);
 				}
 			}
 			else if (obj[i].getType() >= 101 && obj[i].getType() <= 200)	//장애물에 부딪히면
@@ -271,6 +276,8 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int ocount, HINSTANCE g_h
 			}
 			else if (obj[i].getType() >= 201 && obj[i].getType() <= 300) //플레이어와 상호작용하는 오브젝트 ex)포탈
 			{
+			if (obj[i].getType() == 201) //Portal
+			{
 				if (UPkey == true)
 				{
 					m.setblack_t(50);
@@ -286,6 +293,17 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int ocount, HINSTANCE g_h
 					FMOD_System_PlaySound(sound.System, sound.bgmSound[1], NULL, 0, &sound.Channel[0]);
 					return;
 				}
+			}
+			else if (obj[i].getType() == 202) //Rope
+			{
+				if (UPkey == true)
+				{
+					player.setstate(5);
+					//player.BitMove();
+				}
+					
+				
+			}
 			}
 			//if (ROWSPEED != 3)		//ROWSPEED를 임의로 바꿔주었다면 땅에 닿으면 초기화니 원래대로 돌려준다
 			//	ROWSPEED = 3; 잠깐 위로 올려줬음 주석처리하고 ㅇㅇ 근데 이게 맞을거같긴해
