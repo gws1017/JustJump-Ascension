@@ -83,7 +83,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 	static OBJECT obj[100];
 	static BLENDFUNCTION loadbf;
 	static Sound sound;
-	static int object_t = 0; //오브젝트 애니메이션을 1번타이머에 넣기위해 추가한 변수
+	static int obj_t = 0; //오브젝트 애니메이션을 1번타이머에 넣기위해 추가한 변수
 	static int ocount;		//obj 개수를 세주는 변수
 	switch (iMessage)
 	{
@@ -152,7 +152,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		else {
 			Ellipse(mem1dc, player.getx() - player.getw(), player.gety() - player.geth(), player.getx() + player.getw(), player.gety() + player.geth());
 		}*/
-		map.DrawLoadBK(mem1dc, mem2dc, loadbf);
+		if(map.getblack_t() >0) map.DrawLoadBK(mem1dc, mem2dc, loadbf);
 		//cout << "현재HP상태: " << player.gethp() << endl;
 
 
@@ -181,7 +181,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		switch (wParam)
 		{
 		case 1:
-			player.move();
+			obj_t += 1;
+			player.move(obj_t);
 
 			adjustPlayer(player, obj, map, ocount, g_hinst,sound);
 
@@ -200,13 +201,22 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			player.selectBit();
 			player.stealthtime();
 			player.spike_hurttime();
-			object_t += 1;
-
+			
+			// 이거를 따로 넣는게 낳을듯 오브젝트 멤버함수로다가
 			for (int i = 0; i <= ocount; i++)
 			{
+				if (obj[i].getType() == 4)
+				{
+					if (obj_t % 8 == 0)
+					{
+						obj[i].IndexChange();
+
+					}
+
+				}
 				if (obj[i].getType() == 103)
 				{
-					if (object_t % 30 == 0)
+					if (obj_t % 30 == 0)
 					{
 						obj[i].IndexChange();
 
@@ -215,7 +225,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 				}
 				if (obj[i].getType() == 106|| obj[i].getType() == 107)
 				{
-					if (object_t % 5 == 0)
+					if (obj_t % 5 == 0)
 					{
 						obj[i].IndexChange();
 
@@ -224,26 +234,25 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 				}
 				else if (obj[i].getType() == 201)
 				{
-					if (object_t % 20 == 0)
+					if (obj_t % 20 == 0)
 					{
 						obj[i].IndexChange();
 
 					}
 				}
 			}
-			if (object_t >= 27000) object_t = 0;
+			if (obj_t >= 27000) obj_t = 0;
 			InvalidateRgn(hwnd, NULL, FALSE);
 			break;
-		case 2:
-			player.BitMove();//위로 올려줘야함
-			InvalidateRgn(hwnd, NULL, FALSE);
-			break;
+		
 		}
 		break;
+	case WM_SYSKEYDOWN:
 	case WM_KEYDOWN:
 		player.PlayerSetting(wParam,sound);
 		InvalidateRgn(hwnd, NULL, FALSE);
 		break;
+	case WM_SYSKEYUP:
 	case WM_KEYUP:
 		player.PlayerWaiting(wParam);
 		InvalidateRgn(hwnd, NULL, FALSE);
