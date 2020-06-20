@@ -148,7 +148,7 @@ void OBJECT::DrawObj(HDC& mem1dc, HDC& odc)
 	{
 		TransparentBlt(mem1dc, x, y, w, h, odc, index*79, 55, 63, 135, RGB(0, 0, 0)); // ¿Œµ¶Ω∫∑Œ only x change
 	}
-	else if (type == 202)//Rope
+	else if (type == 301)//Rope
 	{
 		TransparentBlt(mem1dc, x, y, w, h, odc, 0, 1, 17, 75, RGB(255, 255, 255));
 	}

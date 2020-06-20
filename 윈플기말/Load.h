@@ -13,3 +13,7 @@ HBITMAP LoadObj(HBITMAP, HINSTANCE, int);
 HBITMAP LoadWalk(HINSTANCE);
 
 HBITMAP LoadEx(HINSTANCE);
+//죽으면 뜨는 상태창
+HBITMAP LoadDieNotice(HINSTANCE);
+//클릭,확인에 손 올라갈때 변화
+HBITMAP LoadDieNoticeChange(HINSTANCE, int);

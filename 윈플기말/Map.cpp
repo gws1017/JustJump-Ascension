@@ -20,12 +20,22 @@ void MAP::CreateMap(HINSTANCE g_hinst)
 
 void MAP::CreateUi(HINSTANCE g_hinst)
 {
-	hbitui = LoadUi(hbitbk, g_hinst);
+	hbitui = LoadUi(hbitui, g_hinst);
 }
 
 void MAP::CreateHP(HINSTANCE g_hinst)
 {
-	hbithp = LoadHP(hbitbk, g_hinst);
+	hbithp = LoadHP(hbithp, g_hinst);
+}
+
+void MAP::CreateDie(HINSTANCE g_hinst)
+{
+	hbitdie = LoadDieNotice(g_hinst);
+}
+
+void MAP::ChangeDieNotice(HINSTANCE g_hinst,int i)
+{
+	hbitdie = LoadDieNoticeChange(g_hinst, i);
 }
 
 bool MAP::BlackTime()
@@ -117,4 +127,34 @@ void MAP::DrawHP(HDC& mem1dc, HDC& mem2dc, CAMERA camera,PLAYER player)
 	DeleteObject(mem2dc);
 }
 
+void MAP::DrawDie(HDC& mem1dc, HDC& mem2dc, CAMERA camera, Sound sound)
+{
+	mem2dc = CreateCompatibleDC(mem1dc);
+	SelectObject(mem2dc, hbitdie);
+	TransparentBlt(mem1dc, camera.getx() + 380, camera.gety() + 240, 260, 130, mem2dc, 0, 0, 260, 130, RGB(255, 0, 0));
+	HFONT hfont = CreateFont(14, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("메이플스토리 bold"));
+	HFONT oldfont = (HFONT)SelectObject(mem1dc, hfont);
 
+	SetTextColor(mem1dc, RGB(32, 108, 168));
+	TextOut(mem1dc, camera.getx() + 459, camera.gety() + 260, L"확인을 누르시면 부활하게 됩니다.", lstrlenW(L"확인을 누르시면 부활하게 됩니다."));
+	TextOut(mem1dc, camera.getx() + 461, camera.gety() + 260, L"확인을 누르시면 부활하게 됩니다.", lstrlenW(L"확인을 누르시면 부활하게 됩니다."));
+	TextOut(mem1dc, camera.getx() + 460, camera.gety() + 259, L"확인을 누르시면 부활하게 됩니다.", lstrlenW(L"확인을 누르시면 부활하게 됩니다."));
+	TextOut(mem1dc, camera.getx() + 460, camera.gety() + 261, L"확인을 누르시면 부활하게 됩니다.", lstrlenW(L"확인을 누르시면 부활하게 됩니다."));
+
+	SetTextColor(mem1dc, RGB(255, 255, 255));
+	TextOut(mem1dc, camera.getx() + 460, camera.gety() + 260, L"확인을 누르시면 부활하게 됩니다.", lstrlenW(L"확인을 누르시면 부활하게 됩니다."));
+	SelectObject(mem1dc, oldfont);
+	DeleteObject(hfont);
+
+	hfont = CreateFont(12, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("메이플스토리 light"));
+	oldfont = (HFONT)SelectObject(mem1dc, hfont);
+	TextOut(mem1dc, camera.getx() + 460, camera.gety() + 285, L"아쉽지만 확인을 누르시면 맵의 맨 처음", lstrlenW(L"아쉽지만 확인을 누르시면 맵의 맨 처음."));
+	TextOut(mem1dc, camera.getx() + 460, camera.gety() + 297, L"위치로 돌아가게 됩니다. 포기하지 마세요!", lstrlenW(L"위치로 돌아가게 됩니다. 포기하지 마세요!"));
+
+
+
+	DeleteObject(mem2dc);
+
+
+
+}

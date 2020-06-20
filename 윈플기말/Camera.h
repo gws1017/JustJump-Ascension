@@ -1,4 +1,5 @@
 #pragma once
+#include <Windows.h>
 
 class CAMERA{
 	int x, y;
@@ -9,4 +10,5 @@ public:
 
 	int getx();
 	int gety();
+	void CameraSetting(WPARAM);
 };

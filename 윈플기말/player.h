@@ -13,7 +13,9 @@ class PLAYER {
 	int COMMAND_move;	//이게 움직이고있는 상황인지 아닌지 구분 1이면왼쪽으로움직임  2면 오른쪽으로 움직임0이면 안움직임 3이면 위로움직임 4면아래로움직임
 	bool COMMAND_hurt;	//쳐맞으면 1 아니면 0 점프할때 로직에 들어감
 	bool COMMAND_die;	//죽으면 1 아니면 0
+	bool Gamemode;		//0이면 일반 1이면 플라잉모드
 	int stealth;		//피격시 무적 2초를 기준으로한다.
+	int jumpignore;		//줄에서 점프시 줄 바로 못잡게한다. stealth 와 같이 돌아갈예정
 	int spike_hurt;		//하강중 가시로인한 강제적 좌표이동값 -이면 왼쪽으로가야함 + 이면 오른쪽으로 강제이동
 	HBITMAP hbitcur;    //현재 사용중인 비트맵
 	HBITMAP hbitwalk;   //걸을때 비트맵
@@ -49,6 +51,10 @@ public:
 	void setCMD_move(int);
 	//이게 피격상태인지 아닌지 구분 1이면 피격 0이면 피격아님
 	void setCMD_hurt(bool);
+	//죽은지 아닌지 1이면 죽음 0이면 삼
+	void setCMD_die(bool);
+	//게임모드설정 0이면 일반 1이면 플라잉
+	void setGamemode(bool);
 	//피격시 무적 시간 2초기준 0이면 무적시간 끝
 	void setstealth(int);
 	//하강중 가시로인한 강제적 좌표이동값 0이면 이동끝 -이면 왼쪽으로가야함 + 이면 오른쪽으로 강제이동
@@ -86,8 +92,14 @@ public:
 	int getCMD_move();
 	//이게 피격상태인지 아닌지 구분 1이면 피격 0이면 피격아님
 	bool getCMD_hurt();
+	//죽은지 아닌지 1이면 죽음 0이면 삼
+	bool getCMD_die();
+	//게임모드설정 0이면 일반 1이면 플라잉
+	bool getGamemode();
 	//피격시 무적 시간 2초기준 0이면 무적시간 끝
 	int getstealth();
+	//줄에서 점프시 다시 못잡는시간 0.3초정도?
+	int getjumpignore();
 	//하강중 가시로인한 강제적 좌표이동값 0이면 이동끝 -이면 왼쪽으로가야함 + 이면 오른쪽으로 강제이동
 	int getspike_hurt();
 
@@ -119,8 +131,8 @@ public:
 	void stealthtime();
 	//가시한테 찔렸을때 강제이동값
 	void spike_hurttime();
-	//다쳤을때 피 다는 계산식
-	void hurt();
+	//다쳤을때 피 다는 계산식 + 뒤지면초기화
+	void hurt(Sound sound);
 	//뒤지면 초기화
 	void die();
 };

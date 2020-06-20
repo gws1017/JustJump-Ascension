@@ -15,7 +15,8 @@ PLAYER::PLAYER()
 {
 	// x y 는 캐릭터의 중심좌표이고 w,h 는 xy에서 좌우로 반틈씩만 간 좌표이다. 
 	x = 80; //100 캐릭터의 중심x좌표
-	y = 3600; //3800 캐릭터의 중심y좌표
+	y = 3700; //3800 캐릭터의 중심y좌표
+	savey = 000;	//처음 캐릭터의 중심좌표
 	w = 14; //캐릭터 width의 절반
 	h = 25;	//캐릭터 hegiht의 절반
 	charw = 31;	//캐릭터이펙트 width의 절반
@@ -34,14 +35,19 @@ PLAYER::PLAYER()
 void PLAYER::initPos()
 {
 	x = 80;
-	y = 3600;
+	y = 3700;
+	savey = 3700;
+	w = 14;
+	h = 25;
 	state = 7;
 	dir = 2;
+	hp = 10;
 	adjustspd = 0;
 	stealth = 0;
 	spike_hurt = 0;
 	COMMAND_move = false;
 	COMMAND_hurt = false;
+	COMMAND_die = false;
 }
 void PLAYER::setx(int i)
 {
@@ -104,6 +110,14 @@ void PLAYER::setCMD_move(int i)
 void PLAYER::setCMD_hurt(bool i)
 {
 	COMMAND_hurt = i;
+}
+void PLAYER::setCMD_die(bool i)
+{
+	COMMAND_die = i;
+}
+void PLAYER::setGamemode(bool i)
+{
+	Gamemode = i;
 }
 void PLAYER::setstealth(int i)
 {
@@ -189,9 +203,21 @@ bool PLAYER::getCMD_hurt()
 {
 	return COMMAND_hurt;
 }
+bool PLAYER::getCMD_die()
+{
+	return COMMAND_die;
+}
+bool PLAYER::getGamemode()
+{
+	return Gamemode;
+}
 int PLAYER::getstealth()
 {
 	return stealth;
+}
+int PLAYER::getjumpignore()
+{
+	return jumpignore;
 }
 int PLAYER::getspike_hurt()
 {
@@ -202,6 +228,7 @@ void PLAYER::PlayerSetting(WPARAM wParam, Sound sound)
 {
 	if (wParam == VK_LEFT)
 	{
+		
 		LEFTkey = true;				//키 누름상태
 		if (RIGHTkey == true)		//좌우를 동시에 누르고있다면 움직이지않음
 		{
@@ -246,6 +273,11 @@ void PLAYER::PlayerSetting(WPARAM wParam, Sound sound)
 			state = 4;
 			dir = 1;
 			COMMAND_move = 1;
+		}
+		else if (state == 5 || state == 8)
+		{
+			dir = 1;
+			//COMMAND_move = 1;
 		}
 		return;
 	}
@@ -293,6 +325,11 @@ void PLAYER::PlayerSetting(WPARAM wParam, Sound sound)
 			dir = 2;
 			COMMAND_move = 2;
 		}
+		else if (state == 5 || state == 8)
+		{
+			dir = 2;
+			//COMMAND_move = 2;
+		}
 
 		return;
 	}
@@ -309,21 +346,11 @@ void PLAYER::PlayerSetting(WPARAM wParam, Sound sound)
 		}
 		if (state == 5 || state == 8)
 		{
-			if (state == 5)//멈춰있다가 움직일때 한번 바로 움직여줘야함
-			{
-				state = 8;
-				dir = 3;
-			}
-			else {
-				
-				state = 8;
-				dir = 3;
-			}
+			state = 8;
 			COMMAND_move = 3;
 
 		}
 
-		//이부분에 사다리와의 충돌 체크를 하고 true면 줄에 매달리는 상태로 바꿔줄예정
 		return;
 	}
 	if (wParam == VK_DOWN)
@@ -345,12 +372,10 @@ void PLAYER::PlayerSetting(WPARAM wParam, Sound sound)
 			{
 
 				state = 8;
-				dir = 4;
 			}
 			else {
 				//BitMove();
 				state = 8;
-				dir = 4;
 			}
 			COMMAND_move = 4;
 
@@ -364,13 +389,25 @@ void PLAYER::PlayerSetting(WPARAM wParam, Sound sound)
 
 		return;
 	}
-	if (wParam == VK_CONTROL)
+	if (wParam == VK_SPACE)
 	{
 		if (DOWNkey == true)//수그리고있을땐 점프못함
 		{
 			return;	//아무것도해주지않는다 현상태유지
 		}
-		if (state != 2 && state != 7)
+		if (state == 5 || state == 8)//줄에 매달렸을때
+		{
+			if (LRkey == 0)		//동시에 좌우키가 눌리지 않았으면서
+			{
+				if (LEFTkey == 1 || RIGHTkey == 1)	//둘중에 하나의 키라도 누르고있었다면 점프뜀 하지만 아니면 못뜀
+				{
+					COMMAND_move = dir;	//그리고 이때 어디로뛸건지 강제로 정함
+					jumpignore = 2;	//점프시 다시못잡게도 바꿔줌
+				}
+				else return;//아니면못뜀
+			}else return;//아니면 못뜀
+		}
+		if (state != 2 && state != 7)	//점프나 공중이아니라면 점프뛸수있다. 하지만 줄에매달렸을때도 안되긴 마찬가지
 		{
 			FMOD_Channel_Stop(sound.Channel[1]);
 			FMOD_System_PlaySound(sound.System, sound.effectSound[0], NULL, 0, &sound.Channel[1]);
@@ -387,7 +424,6 @@ void PLAYER::PlayerWaiting(WPARAM wParam)
 	{
 		if (UPkey == true)
 		{
-			dir = 3;
 			if (state == 5)			//둘다눌럿을때의 로직은 state==1일때에만 발동이 된다. 
 				COMMAND_move = 3;
 		}
@@ -497,22 +533,18 @@ void PLAYER::PlayerWaiting(WPARAM wParam)
 	{
 		if (DOWNkey == true)
 		{
-			dir = 4;
-			if (state == 5)			//둘다눌럿을때의 로직은 state==1일때에만 발동이 된다. 
+			if (state == 5)			//둘다눌럿을때의 로직은 state==5일때에만 발동이 된다. 
 				COMMAND_move = 4;
 		}
 		else if (DOWNkey == false)	
 		{
-			if (state == 5)
+			if (state == 8)
 			{
-				state = 8;
+				state = 5;
 				COMMAND_move = 0;	//움직이는 방향은 그대로지만 움직이지는 않는다.
 			}
-			else if (state == 5)	//종종버그성 플레이로인해서 (점프키와 동시에 키를 누른후 바닥에 닿음과 동시에 땔때) 이경우가있는데, 이때도 멈춰주도록한다.
-			{
-				COMMAND_move = 0;
-			}
 		}
+
 		UPkey = false;
 		UDkey = false;
 		return;
@@ -637,28 +669,24 @@ void PLAYER::move(int obj_t)
 	}
 	else if (state == 5)
 	{
-		
+
+	savey = y;	//줄에매달렸을때는 그자리가 저장지점이다
 		if (UDkey == true)
 		{
 
 		}
-
 		else if (UPkey == true)
 		{
 			
-			dir = 3;
 			state = 8;
 
 		}
 		else if (DOWNkey == true)
 		{
 			
-			dir = 4;
 			state = 8;
 
 		}
-
-
 	}
 	else if (state == 6)
 	{
@@ -725,6 +753,9 @@ void PLAYER::move(int obj_t)
 	}
 	else if (state == 8)
 	{
+		savey = y;	//줄에매달렸을때는 그자리가 저장지점이다
+		if(obj_t%10==0)	//10번 타이머 돌아갈때 한번 움직이게해준다
+			BitMove();
 		if (UDkey == true)
 		{
 
@@ -766,7 +797,7 @@ void PLAYER::BitMove()
 	{
 		if (bx >= 5) bx = 1;
 	}
-	if (state == 5)
+	if (state == 5||state==8)
 	{
 
 		if (bx >= 2) bx = 0;
@@ -942,7 +973,7 @@ void PLAYER::draw(HDC& mem1dc, HDC& pdc)
 				GdiAlphaBlend(mem1dc, x - charw, y - h, charw * 2, h * 2, gdidc, 0, 0, 62, 26, bf);
 		}
 	}
-	else if (state == 5 || state == 8)
+	else if (state == 5 || state == 8)	//줄에 매달린상태
 	{
 		TransparentBlt(gdidc, 0, 0, 62, 50, pdc, bx * 77, 54, 62, 50, RGB(255, 255, 255));
 
@@ -972,8 +1003,11 @@ void PLAYER::fall2save()
 
 void PLAYER::stealthtime()
 {
+	if(COMMAND_die==0)	//죽으면 무적안풀림
 	if (stealth > 0)
 		stealth--;
+	if (jumpignore > 0)
+		jumpignore--;
 }
 void PLAYER::spike_hurttime()
 {
@@ -989,7 +1023,7 @@ void PLAYER::spike_hurttime()
 	}
 }
 
-void PLAYER::hurt()
+void PLAYER::hurt(Sound sound)
 {
 	if (COMMAND_die == false)
 		hp -= 5;
@@ -997,5 +1031,16 @@ void PLAYER::hurt()
 	{
 		hp = 0;
 		COMMAND_die = true;
+		COMMAND_move = false;
+		state = 3;
+		y += 12;
+		h = 13;
+		stealth = 1;
+		LEFTkey = 0;
+		RIGHTkey = 0;
+		UPkey = 0;
+		DOWNkey = 0;
+		FMOD_Channel_Stop(sound.Channel[1]);
+		FMOD_System_PlaySound(sound.System, sound.effectSound[2], NULL, 0, &sound.Channel[1]);
 	}
 }

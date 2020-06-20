@@ -7,7 +7,7 @@ bool collp2w(PLAYER player, OBJECT object)
 {
 	int adjust = 10;
 	//왜 101이 먼저오냐면 발판보다는 장애물이 우선순위기때문임
-	if (object.getType() >= 101) { //장애물일때는 플레이어 네모빡스가 히트박스가된다
+	if (101<=object.getType() &&object.getType()<301) { //장애물일때는 플레이어 네모빡스가 히트박스가된다
 		if (object.getType() == 106 || object.getType() == 107)
 		{
 			if (player.getx() + player.getw() < object.getX()+object.getmx() || player.getx() - player.getw() > object.getX() + object.getmx() + object.getW()) return 0;
@@ -21,6 +21,34 @@ bool collp2w(PLAYER player, OBJECT object)
 		
 
 		return 1;
+	} 
+	else if (301 <= object.getType() && object.getType() < 401)	//로프,밧줄같은 딱코 맞춰야하는 오브젝 위로는 플레이어 발까지 닿아야하고 아래로는 플레이어 중점에서 끝난다 하지만 내려갈수도 있어야하므로 조금 후하게 준다
+	{
+
+		if (player.gety() + player.geth() < object.getY() || player.gety() - player.geth() > object.getY() + object.getH()) return 0;	//일단먼저 닿았으면 들어와
+
+		if (object.getX() < player.getx() && player.getx() < object.getX() + object.getW())	//파이프가 그래도 좀 두꺼우니 이안에들어오면 cehck
+		{
+			if (UPkey == true)//여기는 특이하게 올라가면 올라가는쪽 체크는 끝이나야한다.
+			{
+
+				if (player.gety() + player.geth() <= object.getY())	//올라갔을때 아랫키를 만족하면 충돌체크 x 안그러면 반응해서 계속 줄에매달리는 오류
+					return 0;
+				if (player.gety() < object.getY() + object.getH())
+					return 1;
+			}
+			else if (DOWNkey == true)
+			{
+
+				if (player.gety() + player.geth() <= object.getY())
+					return 1;
+			}
+
+			if (player.gety() + player.geth() <= object.getY() || player.gety() < object.getY() + object.getH())
+				return 1;
+		}
+		
+		return 0;
 	}
 	else if (object.getType() == 1)	//땅바닥일때
 	{
@@ -81,7 +109,7 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int ocount, HINSTANCE g_h
 						{
 							player.setCMD_move(player.getdir());	//보고있는방향으로 앞으로 나가게, 떨어졌는데 가만히있진 않지요
 							player.setstate(6);		//피격으로감
-							player.hurt();
+							player.hurt(sound);
 							return;
 						}
 					}
@@ -142,7 +170,7 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int ocount, HINSTANCE g_h
 						else {
 							player.setstate(6);		//피격으로감
 						}
-						player.hurt();
+						player.hurt(sound);
 					}
 				}
 				else if (obj[i].getType() == 102) //Break Pipe Left
@@ -205,7 +233,7 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int ocount, HINSTANCE g_h
 								player.setCMD_move(1); //무조건 왼쪽임
 								player.setstate(6);
 							}
-							player.hurt();
+							player.hurt(sound);
 						}
 					}
 				}
@@ -242,7 +270,7 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int ocount, HINSTANCE g_h
 						else {
 							player.setstate(6);		//피격으로감
 						}
-						player.hurt();
+						player.hurt(sound);
 					}
 				}
 				else if (obj[i].getType() == 107)
@@ -270,40 +298,57 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int ocount, HINSTANCE g_h
 						else {
 							player.setstate(6);		//피격으로감
 						}
-						player.hurt();
+						player.hurt(sound);
 					}
 				}
 			}
 			else if (obj[i].getType() >= 201 && obj[i].getType() <= 300) //플레이어와 상호작용하는 오브젝트 ex)포탈
 			{
-			if (obj[i].getType() == 201) //Portal
-			{
-				if (UPkey == true)
+				if (obj[i].getType() == 201) //Portal
 				{
-					m.setblack_t(50);
-					/*m.CreateBlack(g_hinst);*/
-					m.setmapnum(m.getmapnum() + 1);
-					player.initPos();
-					for (int j = 0; j < ocount; j++)
-						obj[j].ResetObject();
-					initObject(obj, m.getmapnum(), g_hinst);
-					FMOD_Channel_Stop(sound.Channel[1]);
-					FMOD_System_PlaySound(sound.System, sound.effectSound[1], NULL, 0, &sound.Channel[1]);
-					FMOD_Channel_Stop(sound.Channel[0]);
-					FMOD_System_PlaySound(sound.System, sound.bgmSound[1], NULL, 0, &sound.Channel[0]);
-					return;
+					if (UPkey == true)
+					{
+						m.setblack_t(50);
+						/*m.CreateBlack(g_hinst);*/
+						m.setmapnum(m.getmapnum() + 1);
+						player.initPos();
+						for (int j = 0; j < ocount; j++)
+							obj[j].ResetObject();
+						initObject(obj, m.getmapnum(), g_hinst);
+						FMOD_Channel_Stop(sound.Channel[1]);
+						FMOD_System_PlaySound(sound.System, sound.effectSound[1], NULL, 0, &sound.Channel[1]);
+						FMOD_Channel_Stop(sound.Channel[0]);
+						FMOD_System_PlaySound(sound.System, sound.bgmSound[1], NULL, 0, &sound.Channel[0]);
+						return;
+					}
 				}
 			}
-			else if (obj[i].getType() == 202) //Rope
+			else if (obj[i].getType() == 301) //Rope
 			{
-				if (UPkey == true)
+				if (player.getjumpignore() <= 0)
 				{
-					player.setstate(5);
-					//player.BitMove();
+					if (UPkey == true || DOWNkey == true)
+					{
+						if (DOWNkey == true && (player.getstate() == 2 || player.getstate() == 7))	//공중에있거나 점프중일때 아랫키로는 줄에 붙을수없다
+							return;
+						if (player.getstate() != 5 && player.getstate() != 8)	//줄에 매달려있지 않았다면 줄에 매달리는 상태를 만들어준다. 이미붙어있다면 해줄필요없음
+						{
+							player.setstate(5);
+							if(UPkey==true)
+								player.setCMD_move(3);
+							if (DOWNkey == true)
+								player.setCMD_move(4);
+							player.setx(obj[i].getX() + (obj[i].getW()/2));
+							if (DOWNkey == true)	//이때는 수그리기아니라 밧줄 아래로 내려가는것이므로 수그리기로 깍인거 돌려준다
+							{
+								player.sety(player.gety() - 12);
+								player.seth(25);
+							}
+						}
+						player.BitMove();
+						//player.BitMove();
+					}
 				}
-					
-				
-			}
 			}
 			//if (ROWSPEED != 3)		//ROWSPEED를 임의로 바꿔주었다면 땅에 닿으면 초기화니 원래대로 돌려준다
 			//	ROWSPEED = 3; 잠깐 위로 올려줬음 주석처리하고 ㅇㅇ 근데 이게 맞을거같긴해
@@ -313,7 +358,7 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int ocount, HINSTANCE g_h
 	}
 	if (check_coll != 0)
 		return;	//하나라도 부딪혔다면 그대로 탈출
-	if (player.getstate() == 4 || player.getstate() == 1)	//하나도 못부딪혔으면 공중에있는거니까 떨어져야한다
+	if ((player.getstate() == 4 || player.getstate() == 1)||(player.getstate()==5||player.getstate()==8))	//하나도 못부딪혔으면 공중에있는거니까 떨어져야한다
 	{
 		player.setstate(7);
 		player.fall2save();		//떨어지는 순간의 x좌표점 기억

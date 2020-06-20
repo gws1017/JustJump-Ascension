@@ -10,6 +10,7 @@ class MAP {
 	HBITMAP hbitbk;
 	HBITMAP hbitui;
 	HBITMAP hbithp;
+	HBITMAP hbitdie;
 public:
 	//맵번호를 읽음 10~
 	int getmapnum();
@@ -30,8 +31,13 @@ public:
 	void DrawUi(HDC&, HDC&, CAMERA);
 	//HP바
 	void DrawHP(HDC&, HDC&, CAMERA,PLAYER);
+	//die ui
+	void DrawDie(HDC&, HDC&, CAMERA, Sound);
+	//die 상태변화
+	void ChangeDieNotice(HINSTANCE,int);
 	/*void CreateBlack(HINSTANCE)*/;
 	void CreateMap(HINSTANCE);
 	void CreateUi(HINSTANCE);
 	void CreateHP(HINSTANCE);
+	void CreateDie(HINSTANCE);
 };

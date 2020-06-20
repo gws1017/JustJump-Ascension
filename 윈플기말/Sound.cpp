@@ -14,5 +14,9 @@ void Sound::Sound_Setup()
 		FMOD_System_CreateSound(System, string, FMOD_LOOP_NORMAL, 0, &bgmSound[i]);
 	}
 	FMOD_System_CreateSound(System, "sound/Jump.mp3", FMOD_DEFAULT, 0, &effectSound[0]);
-	FMOD_System_CreateSound(System, "sound/Portal.mp3", FMOD_DEFAULT, 0, &effectSound[1]);
+	FMOD_System_CreateSound(System, "sound/Portal.mp3", FMOD_DEFAULT, 0, &effectSound[1]);	
+	FMOD_System_CreateSound(System, "sound/Tombstone.mp3", FMOD_DEFAULT, 0, &effectSound[2]);
+	FMOD_System_CreateSound(System, "sound/BtMouseClick.mp3", FMOD_DEFAULT, 0, &effectSound[3]);	
+	FMOD_System_CreateSound(System, "sound/BtMouseOver.mp3", FMOD_DEFAULT, 0, &effectSound[4]);
+	
 }
