@@ -15,7 +15,8 @@ void MAP::setblack_t(int i) { black_t = i; }
 
 void MAP::CreateMap(HINSTANCE g_hinst)
 {
-	hbitbk = LoadBK(hbitbk,g_hinst);
+	hbitbk = LoadBK(hbitbk,g_hinst, mapnum);
+	if (mapnum == 9) ms = 0;
 }
 
 void MAP::CreateUi(HINSTANCE g_hinst)
@@ -33,11 +34,31 @@ void MAP::CreateDie(HINSTANCE g_hinst)
 	hbitdie = LoadDieNotice(g_hinst);
 }
 
+void MAP::CreateStart(HINSTANCE g_hinst)
+{
+	hbitstart = LoadStart(hbitstart,g_hinst);
+}
+
+void MAP::CreateHelp(HINSTANCE g_hinst)
+{
+	hbithelp = LoadHelp(hbithelp,g_hinst);
+}
+
+
 void MAP::ChangeDieNotice(HINSTANCE g_hinst,int i)
 {
 	hbitdie = LoadDieNoticeChange(g_hinst, i);
 }
 
+void MAP::ChangeHelp(HINSTANCE g_hinst, int i)
+{
+	hbithelp = LoadHelpChange(g_hinst, i);
+}
+
+void MAP::ChangeStartButton(HINSTANCE g_hinst, int i)
+{
+	hbitstart = LoadStartChange(g_hinst, i);
+}
 bool MAP::BlackTime()
 {
 	if (black_t > 0) {
@@ -47,13 +68,25 @@ bool MAP::BlackTime()
 	return false;
 }
 
+void MAP::movemap()
+{
+	ms += MAPSPEED;
+	if (ms >= 3021) ms = 0;
+}
 
 void MAP :: DrawBK(HDC& mem1dc, HDC& mem2dc, RECT& rectview)
 {
+	
 	mem2dc = CreateCompatibleDC(mem1dc);
 	SelectObject(mem2dc, hbitbk);
 	FillRect(mem1dc, &rectview, RGB(0, 0, 0));
-	if (0 >= black_t)	//일반
+	if (mapnum == 9)
+	{
+		BitBlt(mem1dc, 0, 0, 3021, 768, mem2dc, ms, 0, SRCCOPY);
+		if (ms >= 1997)
+		BitBlt(mem1dc, (3021 - ms), 0, rectview.right, 768, mem2dc, 0, 0, SRCCOPY);
+	}
+	else	//일반
 	{
 		BitBlt(mem1dc, 0, 0, MAPWIDTH, MAPHEIGHT, mem2dc, 0, 0, SRCCOPY);	//맵 전체 새로고침
 	}
@@ -156,5 +189,32 @@ void MAP::DrawDie(HDC& mem1dc, HDC& mem2dc, CAMERA camera, Sound sound)
 	DeleteObject(mem2dc);
 
 
+
+}
+
+void MAP::DrawStart(HDC& mem1dc, HDC& mem2dc)
+{
+	mem2dc = CreateCompatibleDC(mem1dc);
+	SelectObject(mem2dc, hbitstart);
+	TransparentBlt(mem1dc, 292, 490, 138, 82, mem2dc, 0, 0,138,82,RGB(255,0,0));
+	
+
+	DeleteObject(mem2dc);
+
+
+
+}
+void MAP::DrawHelp(HDC& mem1dc, HDC& mem2dc, int i)
+{
+	mem2dc = CreateCompatibleDC(mem1dc);
+	SelectObject(mem2dc, hbithelp);
+	if (i == 0)
+	{
+		TransparentBlt(mem1dc, 290, 345, 138,82, mem2dc, 0, 0, 138, 82, RGB(60, 60, 60));
+	}
+	
+	else if(i == 1) TransparentBlt(mem1dc, 215,300, 400, 200, mem2dc, 0, 0, 400, 200, RGB(0, 0, 0));
+
+	DeleteObject(mem2dc);
 
 }

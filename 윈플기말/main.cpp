@@ -12,6 +12,7 @@
 #pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
 #endif
 
+
 HINSTANCE g_hinst;
 LPCTSTR lpszClass = L"Just Jump";
 LPCTSTR lpszWinodwName = L"Just Jump";
@@ -74,22 +75,27 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hPrevinstance, LPSTR lpszCmdPa
 LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
 	static PAINTSTRUCT ps;
-	static HDC hdc, mem1dc, mem2dc, loaddc, playerdc, odc, pdc, ui_dc, hp_dc,die_dc; // odc = 오브젝트 dc, pdc = player dc,ui_Dc : 아래 전체적인 ui hp_Dc: hp통만 나오는거 dic_dc : 사망 ui 
+	static HDC hdc, mem1dc, mem2dc, loaddc, playerdc, odc, pdc, ui_dc, hp_dc,die_dc,start_dc,help_dc; // odc = 오브젝트 dc, pdc = player dc,ui_Dc : 아래 전체적인 ui hp_Dc: hp통만 나오는거 dic_dc : 사망 ui 
 	static RECT rectview;
-	static HBITMAP hbit1,loadbit,oldload, oldbit1, hbitobj[100], Uibit, HPbit,Diebit;
+	static HBITMAP hbit1,loadbit,oldload, oldbit1, hbitobj[100], Uibit, HPbit,Diebit,Startbit,Helpbit;
 	static PLAYER player;
 	static MAP map;
 	static CAMERA camera;
 	static OBJECT obj[100];
 	static BLENDFUNCTION loadbf;
 	static Sound sound;
+	
 	static int obj_t = 0; //오브젝트 애니메이션을 1번타이머에 넣기위해 추가한 변수
 	static int ocount;		//obj 개수를 세주는 변수
+	static int help_button = 0; //조작법 온오프
 	static bool occur_button = 0;	//사망했을때의 button이 활성화되었는지 
 	static bool gamemode = 0;	//0이면 기본 1이면 자유모드
 	switch (iMessage)
 	{
 	case WM_CREATE:
+
+		
+
 		AddFontResourceA("font/Maplestory Bold.ttf");
 		AddFontResourceA("font/Maplestory Light.ttf");
 		GetClientRect(hwnd, &rectview);
@@ -97,8 +103,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		map.CreateUi(g_hinst);
 		map.CreateHP(g_hinst);
 		map.CreateDie(g_hinst);
+		map.CreateStart(g_hinst);
 		player.setBit(g_hinst);
 		player.initBitPos();
+
+		camera.setx(0);
+		camera.sety(0);
+		cout << camera.getx() << endl;
 		sound.Sound_Setup();
 		loadbf.AlphaFormat = 0;
 		loadbf.BlendFlags = 0;
@@ -107,15 +118,19 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		//loaddc = CreateCompatibleDC(mem1dc);
 		FMOD_Channel_Stop(sound.Channel[0]);
 		FMOD_System_PlaySound(sound.System, sound.bgmSound[0], NULL, 0, &sound.Channel[0]);
-		/*if (0 >= map.getblack_t())*/hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/bk.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+		
+		if(map.getmapnum() == 9) hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/start_rayer1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+		
 		//else if (map.getblack_t() > 0)hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/bk_black.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+		Helpbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/help1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+		Startbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/start1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 		Uibit = (HBITMAP)LoadImage(g_hinst, TEXT("img/Ui.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 		HPbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/Ui_HP.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 		Diebit = (HBITMAP)LoadImage(g_hinst, TEXT("img/Notice3.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 		//hbitobj[0] = (HBITMAP)LoadImage(g_hinst, TEXT("img/foothold2.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 		//obj[0].create(0, 3910, 1023, 3999-3910, 1);
 		//obj[1].create(537, 3825, 607-537, 100, 2);
-		ocount = initObject(obj, 10, g_hinst);
+		ocount = initObject(obj, 9, g_hinst);
 
 		//ocount = 2;
 		SetTimer(hwnd, 1, 1, NULL);
@@ -130,10 +145,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			hbit1 = CreateCompatibleBitmap(hdc, rectview.right, rectview.bottom);
 		}
 
+		if (map.getmapnum() == 10)cout << ocount << endl;
 		SelectObject(mem1dc, hbit1);
 		SelectObject(ui_dc, Uibit);
 		SelectObject(hp_dc, HPbit);
 		SelectObject(die_dc, Diebit);
+		SelectObject(start_dc, Startbit);
+		SelectObject(help_dc, Helpbit);
+
 		//map.DrawBK(mem1dc, mem2dc, rectview);
 
 		if (0 >= map.getblack_t())
@@ -145,11 +164,21 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		for (int i = 0; i <= ocount; i++)
 			obj[i].DrawObj(mem1dc, odc);
 
+		
+		if (map.getmapnum() >= 10)
+		{
+			map.DrawUi(mem1dc, ui_dc, camera);
+			map.DrawHP(mem1dc, hp_dc, camera, player);
+			if (player.getCMD_die() == 1)
+				map.DrawDie(mem1dc, die_dc, camera, sound);
+		}
+		else
+		{
+			map.DrawStart(mem1dc, start_dc);
+			map.DrawHelp(mem1dc, help_dc, help_button);
+			//cout << help_button << endl;
+		}
 		player.draw(mem1dc, pdc);
-		map.DrawUi(mem1dc, ui_dc, camera);
-		map.DrawHP(mem1dc, hp_dc, camera, player);
-		if(player.getCMD_die()==1)
-			map.DrawDie(mem1dc, die_dc, camera, sound);
 		/*if (player.getstate() == 3)
 		{
 			Ellipse(mem1dc, player.getx() - player.getw(), player.gety() - player.geth() + player.geth() / 2, player.getx() + player.getw(), player.gety() + player.geth());
@@ -187,9 +216,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		{
 		case 1:
 			obj_t += 1;
-			player.move(obj_t);
 
+			player.move(obj_t);
 			adjustPlayer(player, obj, map, ocount, g_hinst,sound);
+
+			map.movemap();
 
 			if (map.BlackTime())
 			{
@@ -211,6 +242,15 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			// 이거를 따로 넣는게 낳을듯 오브젝트 멤버함수로다가
 			for (int i = 0; i <= ocount; i++)
 			{
+				if (obj[i].getType() == 0)
+				{
+					if (obj_t % 10 == 0)
+					{
+						obj[i].IndexChange();
+
+					}
+
+				}
 				if (obj[i].getType() == 4)
 				{
 					if (obj_t % 8 == 0)
@@ -293,6 +333,44 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			map.ChangeDieNotice(g_hinst, 0);
 			occur_button = 0;
 		}
+		if (map.getmapnum() == 9)
+		{
+			if (290 < LOWORD(lParam) && LOWORD(lParam) < 430)
+			{
+				if (490 < HIWORD(lParam) && HIWORD(lParam) < 572)
+				{
+					map.ChangeStartButton(g_hinst, 1);
+					if (occur_button == 0)
+					{
+						FMOD_Channel_Stop(sound.Channel[1]);
+						FMOD_System_PlaySound(sound.System, sound.effectSound[4], NULL, 0, &sound.Channel[1]);
+						occur_button = 1;
+					}
+					break;
+				}
+			}
+			
+			if (290 < LOWORD(lParam) && LOWORD(lParam) < 428)
+			{
+				if (345 < HIWORD(lParam) && HIWORD(lParam) < 427)
+				{
+					
+					help_button = 1;
+					map.ChangeHelp(g_hinst, help_button);
+					if (occur_button == 0)
+					{
+						FMOD_Channel_Stop(sound.Channel[1]);
+						FMOD_System_PlaySound(sound.System, sound.effectSound[4], NULL, 0, &sound.Channel[1]);
+						occur_button = 1;
+					}
+					break;
+				}
+			}
+			map.ChangeStartButton(g_hinst, 0);
+			map.ChangeHelp(g_hinst, 0);
+			help_button = 0;
+			occur_button = 0;
+		}
 		break;
 	case WM_LBUTTONDOWN:
 		SetCursor(LoadCursorFromFile(TEXT("cursor/cursor4.cur")));
@@ -310,6 +388,20 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 				}
 			}
 		}
+		if (map.getmapnum() == 9)
+		{
+			if (290 < LOWORD(lParam) && LOWORD(lParam) < 430)
+			{
+				if (490 < HIWORD(lParam) && HIWORD(lParam) < 572)
+				{
+					map.ChangeStartButton(g_hinst, 2);
+					FMOD_Channel_Stop(sound.Channel[1]);
+					FMOD_System_PlaySound(sound.System, sound.effectSound[3], NULL, 0, &sound.Channel[1]);
+					break;
+				}
+			}
+			
+		}
 		cout << LOWORD(lParam) << endl;
 		cout << HIWORD(lParam) << endl;
 		break;
@@ -325,6 +417,32 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 					break;
 				}
 			}
+		}
+		if (map.getmapnum() == 9)
+		{
+			if (290 < LOWORD(lParam) && LOWORD(lParam) < 430)
+			{
+				if (490 < HIWORD(lParam) && HIWORD(lParam) < 572)
+				{
+					map.ChangeStartButton(g_hinst, 0);
+					map.setblack_t(50);			
+					map.setmapnum(map.getmapnum() + 1);
+					player.initPos();
+					for (int j = 0; j < ocount; j++)
+						obj[j].ResetObject();
+					ocount = initObject(obj, map.getmapnum(), g_hinst);
+					map.CreateMap(g_hinst);
+					hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/bk.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+					sound.setindex(sound.getindex() + 1);
+					FMOD_Channel_Stop(sound.Channel[1]);
+					FMOD_System_PlaySound(sound.System, sound.effectSound[1], NULL, 0, &sound.Channel[1]);
+					FMOD_Channel_Stop(sound.Channel[0]);
+					FMOD_System_PlaySound(sound.System, sound.bgmSound[1], NULL, 0, &sound.Channel[0]);
+					InvalidateRgn(hwnd, NULL, FALSE);
+					break;
+				}
+			}
+			
 		}
 		break;
 	case WM_CHAR:

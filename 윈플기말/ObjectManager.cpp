@@ -98,7 +98,7 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int ocount, HINSTANCE g_h
 		if (collp2w(player, obj[i]))
 		{
 			check_coll++;	//하나라도 부딪혔으면 coll이 올라감
-			if (obj[i].getType() < 101)			//근데 그게 땅바닥이였다?
+			if (obj[i].getType() < 101 && obj[i].getType()>0)			//근데 그게 땅바닥이였다?
 			{
 
 				if (player.getstate() == 7) //떨어지는 중일때 부딪혔다 ?
@@ -315,10 +315,11 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int ocount, HINSTANCE g_h
 						for (int j = 0; j < ocount; j++)
 							obj[j].ResetObject();
 						initObject(obj, m.getmapnum(), g_hinst);
+						sound.setindex(sound.getindex() + 1);
 						FMOD_Channel_Stop(sound.Channel[1]);
 						FMOD_System_PlaySound(sound.System, sound.effectSound[1], NULL, 0, &sound.Channel[1]);
 						FMOD_Channel_Stop(sound.Channel[0]);
-						FMOD_System_PlaySound(sound.System, sound.bgmSound[1], NULL, 0, &sound.Channel[0]);
+						FMOD_System_PlaySound(sound.System, sound.bgmSound[sound.getindex()], NULL, 0, &sound.Channel[0]);
 						return;
 					}
 				}
@@ -350,6 +351,10 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int ocount, HINSTANCE g_h
 					}
 				}
 			}
+			else if (obj[i].getType() == 0)
+			{
+
+			}
 			//if (ROWSPEED != 3)		//ROWSPEED를 임의로 바꿔주었다면 땅에 닿으면 초기화니 원래대로 돌려준다
 			//	ROWSPEED = 3; 잠깐 위로 올려줬음 주석처리하고 ㅇㅇ 근데 이게 맞을거같긴해
 
@@ -375,7 +380,11 @@ int initObject(OBJECT* obj, int mapnum, HINSTANCE g_hinst)
 	int objcount = 0;
 
 	ifstream in;
-	if (mapnum == 10)
+	if (mapnum == 9)
+	{
+		in.open("map/map_0.txt", ios::in);
+	}
+	else if (mapnum == 10)
 	{
 		in.open("map/map_1.txt", ios::in);
 	}

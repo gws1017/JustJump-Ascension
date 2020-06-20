@@ -2,11 +2,15 @@
 #include <Windows.h>
 
 //HBITMAP LoadBlack(HBITMAP, HINSTANCE);
-HBITMAP LoadBK(HBITMAP, HINSTANCE);
+HBITMAP LoadBK(HBITMAP, HINSTANCE, int);
 //상태 Ui표시
 HBITMAP LoadUi(HBITMAP, HINSTANCE);
 //HP Ui 표시
 HBITMAP LoadHP(HBITMAP, HINSTANCE);
+//시작버튼
+HBITMAP LoadStart(HBITMAP , HINSTANCE );
+//조작법
+HBITMAP LoadHelp(HBITMAP, HINSTANCE);
 
 HBITMAP LoadObj(HBITMAP, HINSTANCE, int);
 
@@ -17,3 +21,8 @@ HBITMAP LoadEx(HINSTANCE);
 HBITMAP LoadDieNotice(HINSTANCE);
 //클릭,확인에 손 올라갈때 변화
 HBITMAP LoadDieNoticeChange(HINSTANCE, int);
+//클릭,확인에 손 올라갈때 변화
+HBITMAP LoadStartChange(HINSTANCE, int);
+
+//클릭,확인에 손 올라갈때 변화
+HBITMAP LoadHelpChange(HINSTANCE, int);
