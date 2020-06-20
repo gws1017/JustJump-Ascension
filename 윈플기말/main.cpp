@@ -107,8 +107,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		player.setBit(g_hinst);
 		player.initBitPos();
 
-		camera.setx(0);
-		camera.sety(0);
+		if (map.getmapnum() == 9)
+		{
+			camera.setx(0);
+			camera.sety(0);
+		}
+		
+
 		cout << camera.getx() << endl;
 		sound.Sound_Setup();
 		loadbf.AlphaFormat = 0;
@@ -176,7 +181,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		{
 			map.DrawStart(mem1dc, start_dc);
 			map.DrawHelp(mem1dc, help_dc, help_button);
-			//cout << help_button << endl;
+			
 		}
 		player.draw(mem1dc, pdc);
 		/*if (player.getstate() == 3)
@@ -438,6 +443,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 					FMOD_System_PlaySound(sound.System, sound.effectSound[1], NULL, 0, &sound.Channel[1]);
 					FMOD_Channel_Stop(sound.Channel[0]);
 					FMOD_System_PlaySound(sound.System, sound.bgmSound[1], NULL, 0, &sound.Channel[0]);
+					
+					camera.setx(0);
+					camera.sety(3232);
 					InvalidateRgn(hwnd, NULL, FALSE);
 					break;
 				}
