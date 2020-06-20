@@ -9,12 +9,13 @@ class MAP {
 	int mapnum = 9;
 	int black_t = 0;
 	int ms;
+	int index;
 	HBITMAP hbitbk;
 	HBITMAP hbitui;
 	HBITMAP hbithp;
 	HBITMAP hbitdie;
-	HBITMAP hbitstart;
-	HBITMAP hbithelp;
+	HBITMAP hbitstart[3];
+	HBITMAP hbithelp[2];
 public:
 	//맵번호를 읽음 10~
 	int getmapnum();
@@ -40,12 +41,11 @@ public:
 	//die ui
 	void DrawDie(HDC&, HDC&, CAMERA, Sound);
 	//시작 버튼
-	void DrawStart(HDC&, HDC&);
+	void DrawStart(HDC&, HDC&, int);
 	//조작법
 	void DrawHelp(HDC&, HDC&,int);
 	//die 상태변화
 	void ChangeDieNotice(HINSTANCE,int);
-	void ChangeStartButton(HINSTANCE, int);
 	void ChangeHelp(HINSTANCE, int);
 	/*void CreateBlack(HINSTANCE)*/;
 	void CreateMap(HINSTANCE);
