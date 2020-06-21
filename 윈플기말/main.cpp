@@ -87,7 +87,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 	
 	static int obj_t = 0; //오브젝트 애니메이션을 1번타이머에 넣기위해 추가한 변수
 	static int ocount;		//obj 개수를 세주는 변수
-	static int help_button = 0; //조작법 온오프
+	static int help_button = 0,start_button = 0; //조작법 온오프
 	static bool occur_button = 0;	//사망했을때의 button이 활성화되었는지 
 	static bool gamemode = 0;	//0이면 기본 1이면 자유모드
 	switch (iMessage)
@@ -104,11 +104,17 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		map.CreateHP(g_hinst);
 		map.CreateDie(g_hinst);
 		map.CreateStart(g_hinst);
+		map.CreateHelp(g_hinst);
 		player.setBit(g_hinst);
 		player.initBitPos();
 
-		camera.setx(0);
-		camera.sety(0);
+		if (map.getmapnum() == 9)
+		{
+			camera.setx(0);
+			camera.sety(0);
+		}
+		
+
 		cout << camera.getx() << endl;
 		sound.Sound_Setup();
 		loadbf.AlphaFormat = 0;
@@ -145,7 +151,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			hbit1 = CreateCompatibleBitmap(hdc, rectview.right, rectview.bottom);
 		}
 
-		if (map.getmapnum() == 10)cout << ocount << endl;
+		
 		SelectObject(mem1dc, hbit1);
 		SelectObject(ui_dc, Uibit);
 		SelectObject(hp_dc, HPbit);
@@ -174,9 +180,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		}
 		else
 		{
-			map.DrawStart(mem1dc, start_dc);
+			map.DrawStart(mem1dc, start_dc,start_button);
 			map.DrawHelp(mem1dc, help_dc, help_button);
-			//cout << help_button << endl;
+			
 		}
 		player.draw(mem1dc, pdc);
 		/*if (player.getstate() == 3)
@@ -293,7 +299,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		
 		}
 		break;
-	case WM_SYSKEYDOWN:
 	case WM_KEYDOWN:
 		if (player.getCMD_die() == 1)
 			break;
@@ -303,7 +308,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			camera.CameraSetting(wParam);
 		InvalidateRgn(hwnd, NULL, FALSE);
 		break;
-	case WM_SYSKEYUP:
 	case WM_KEYUP:
 		if (player.getCMD_die() == 1)
 			break;
@@ -339,12 +343,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			{
 				if (490 < HIWORD(lParam) && HIWORD(lParam) < 572)
 				{
-					map.ChangeStartButton(g_hinst, 1);
-					if (occur_button == 0)
+					//map.ChangeStartButton(g_hinst, 1);
+					if (start_button == 0)
 					{
 						FMOD_Channel_Stop(sound.Channel[1]);
 						FMOD_System_PlaySound(sound.System, sound.effectSound[4], NULL, 0, &sound.Channel[1]);
-						occur_button = 1;
+						start_button = 1;
 					}
 					break;
 				}
@@ -354,20 +358,21 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			{
 				if (345 < HIWORD(lParam) && HIWORD(lParam) < 427)
 				{
-					
-					help_button = 1;
-					map.ChangeHelp(g_hinst, help_button);
-					if (occur_button == 0)
+
+					//map.ChangeHelp(g_hinst, help_button);
+					if (help_button == 0)
 					{
+						
 						FMOD_Channel_Stop(sound.Channel[1]);
 						FMOD_System_PlaySound(sound.System, sound.effectSound[4], NULL, 0, &sound.Channel[1]);
-						occur_button = 1;
+						help_button = 1;
 					}
 					break;
 				}
 			}
-			map.ChangeStartButton(g_hinst, 0);
-			map.ChangeHelp(g_hinst, 0);
+			//map.ChangeStartButton(g_hinst, 0);
+			//map.ChangeHelp(g_hinst, 0);
+			start_button = 0;
 			help_button = 0;
 			occur_button = 0;
 		}
@@ -394,10 +399,16 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			{
 				if (490 < HIWORD(lParam) && HIWORD(lParam) < 572)
 				{
-					map.ChangeStartButton(g_hinst, 2);
-					FMOD_Channel_Stop(sound.Channel[1]);
-					FMOD_System_PlaySound(sound.System, sound.effectSound[3], NULL, 0, &sound.Channel[1]);
-					break;
+					if (start_button == 1)
+					{
+						
+						//map.ChangeStartButton(g_hinst, 2);
+						FMOD_Channel_Stop(sound.Channel[1]);
+						FMOD_System_PlaySound(sound.System, sound.effectSound[3], NULL, 0, &sound.Channel[1]);
+						start_button = 2;
+						break;
+					}
+					
 				}
 			}
 			
@@ -424,7 +435,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			{
 				if (490 < HIWORD(lParam) && HIWORD(lParam) < 572)
 				{
-					map.ChangeStartButton(g_hinst, 0);
+					occur_button = 0;
 					map.setblack_t(50);			
 					map.setmapnum(map.getmapnum() + 1);
 					player.initPos();
@@ -438,6 +449,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 					FMOD_System_PlaySound(sound.System, sound.effectSound[1], NULL, 0, &sound.Channel[1]);
 					FMOD_Channel_Stop(sound.Channel[0]);
 					FMOD_System_PlaySound(sound.System, sound.bgmSound[1], NULL, 0, &sound.Channel[0]);
+					
+					camera.setx(0);
+					camera.sety(3232);
 					InvalidateRgn(hwnd, NULL, FALSE);
 					break;
 				}

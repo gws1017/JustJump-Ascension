@@ -36,12 +36,15 @@ void MAP::CreateDie(HINSTANCE g_hinst)
 
 void MAP::CreateStart(HINSTANCE g_hinst)
 {
-	hbitstart = LoadStart(hbitstart,g_hinst);
+	hbitstart[0] = LoadStart(hbitstart[0],g_hinst,0);
+	hbitstart[1] = LoadStart(hbitstart[1], g_hinst,1);
+	hbitstart[2] = LoadStart(hbitstart[2], g_hinst,2);
 }
 
 void MAP::CreateHelp(HINSTANCE g_hinst)
 {
-	hbithelp = LoadHelp(hbithelp,g_hinst);
+	hbithelp[0] = LoadHelp(hbithelp[0],g_hinst,0);
+	hbithelp[1] = LoadHelp(hbithelp[1], g_hinst,1);
 }
 
 
@@ -52,13 +55,10 @@ void MAP::ChangeDieNotice(HINSTANCE g_hinst,int i)
 
 void MAP::ChangeHelp(HINSTANCE g_hinst, int i)
 {
-	hbithelp = LoadHelpChange(g_hinst, i);
+	
 }
 
-void MAP::ChangeStartButton(HINSTANCE g_hinst, int i)
-{
-	hbitstart = LoadStartChange(g_hinst, i);
-}
+
 bool MAP::BlackTime()
 {
 	if (black_t > 0) {
@@ -192,10 +192,10 @@ void MAP::DrawDie(HDC& mem1dc, HDC& mem2dc, CAMERA camera, Sound sound)
 
 }
 
-void MAP::DrawStart(HDC& mem1dc, HDC& mem2dc)
+void MAP::DrawStart(HDC& mem1dc, HDC& mem2dc,int i)
 {
 	mem2dc = CreateCompatibleDC(mem1dc);
-	SelectObject(mem2dc, hbitstart);
+	SelectObject(mem2dc, hbitstart[i]);
 	TransparentBlt(mem1dc, 292, 490, 138, 82, mem2dc, 0, 0,138,82,RGB(255,0,0));
 	
 
@@ -207,7 +207,7 @@ void MAP::DrawStart(HDC& mem1dc, HDC& mem2dc)
 void MAP::DrawHelp(HDC& mem1dc, HDC& mem2dc, int i)
 {
 	mem2dc = CreateCompatibleDC(mem1dc);
-	SelectObject(mem2dc, hbithelp);
+	SelectObject(mem2dc, hbithelp[i]);
 	if (i == 0)
 	{
 		TransparentBlt(mem1dc, 290, 345, 138,82, mem2dc, 0, 0, 138, 82, RGB(60, 60, 60));

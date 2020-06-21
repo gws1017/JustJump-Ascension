@@ -60,22 +60,17 @@ HBITMAP LoadDieNoticeChange(HINSTANCE g_hinst,int i)
 		hbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/notice5.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //상대경로로 변경
 	return hbit;
 }
-//시작버튼 Ui 상태변화
-HBITMAP LoadStartChange(HINSTANCE g_hinst, int i)
+
+//시작버튼
+HBITMAP LoadStart(HBITMAP hbit, HINSTANCE g_hinst, int i)
 {
-	HBITMAP hbit = NULL;
+
 	if (i == 0)
 		hbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/start1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //상대경로로 변경
 	else if (i == 1)
 		hbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/start2.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //상대경로로 변경
 	else if (i == 2)
 		hbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/start3.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //상대경로로 변경
-	return hbit;
-}
-//시작버튼
-HBITMAP LoadStart(HBITMAP hbit, HINSTANCE g_hinst)
-{
-	hbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/start1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //상대경로로 변경
 	return hbit;
 }
 
@@ -90,9 +85,12 @@ HBITMAP LoadHelpChange(HINSTANCE g_hinst, int i)
 	return hbit;
 }
 //조작법
-HBITMAP LoadHelp(HBITMAP hbit, HINSTANCE g_hinst)
+HBITMAP LoadHelp(HBITMAP hbit, HINSTANCE g_hinst,int i)
 {
-	hbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/help1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //상대경로로 변경
+	if (i == 0)
+		hbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/help1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //상대경로로 변경
+	else if (i == 1)
+		hbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/help2.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //상대경로로 변경
 	return hbit;
 }
 HBITMAP LoadObj(HBITMAP hbit1, HINSTANCE g_hinst, int type) //오브젝트의 이미지파일을 불러옴
