@@ -81,7 +81,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 	static PLAYER player;
 	static MAP map;
 	static CAMERA camera;
-	static OBJECT obj[100];
+	static OBJECT obj[150];
 	static BLENDFUNCTION loadbf;
 	static Sound sound;
 	
@@ -120,27 +120,23 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		loadbf.AlphaFormat = 0;
 		loadbf.BlendFlags = 0;
 		loadbf.BlendOp = AC_SRC_OVER;
-		loadbf.SourceConstantAlpha = 0;	//검은창으로 서서히 바뀌게 될 예정
-		//loaddc = CreateCompatibleDC(mem1dc);
+		loadbf.SourceConstantAlpha = 0;	
 		FMOD_Channel_Stop(sound.Channel[0]);
 		FMOD_System_PlaySound(sound.System, sound.bgmSound[0], NULL, 0, &sound.Channel[0]);
 		
 		if(map.getmapnum() == 9) hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/start_rayer1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+		else if(map.getmapnum() == 13) hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/clear.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 		
-		//else if (map.getblack_t() > 0)hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/bk_black.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 		Helpbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/help1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 		Startbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/start1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 		Uibit = (HBITMAP)LoadImage(g_hinst, TEXT("img/Ui.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 		HPbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/Ui_HP.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 		Diebit = (HBITMAP)LoadImage(g_hinst, TEXT("img/Notice3.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-		//hbitobj[0] = (HBITMAP)LoadImage(g_hinst, TEXT("img/foothold2.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-		//obj[0].create(0, 3910, 1023, 3999-3910, 1);
-		//obj[1].create(537, 3825, 607-537, 100, 2);
+	
 		ocount = initObject(obj, 9, g_hinst);
 
-		//ocount = 2;
+	
 		SetTimer(hwnd, 1, 1, NULL);
-		SetTimer(hwnd, 2, 100, NULL);
 		break;
 	case WM_PAINT:
 		hdc = BeginPaint(hwnd, &ps);
@@ -159,7 +155,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		SelectObject(start_dc, Startbit);
 		SelectObject(help_dc, Helpbit);
 
-		//map.DrawBK(mem1dc, mem2dc, rectview);
+		
 
 		if (0 >= map.getblack_t())
 		{
@@ -169,8 +165,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
 		for (int i = 0; i <= ocount; i++)
 			obj[i].DrawObj(mem1dc, odc);
+	
+		if (map.getmapnum() == 9)
+		{
+			map.DrawStart(mem1dc, start_dc, start_button);
+			map.DrawHelp(mem1dc, help_dc, help_button);
 
-		
+		}
+		player.draw(mem1dc, pdc);
 		if (map.getmapnum() >= 10)
 		{
 			map.DrawUi(mem1dc, ui_dc, camera);
@@ -178,42 +180,16 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			if (player.getCMD_die() == 1)
 				map.DrawDie(mem1dc, die_dc, camera, sound);
 		}
-		else
-		{
-			map.DrawStart(mem1dc, start_dc,start_button);
-			map.DrawHelp(mem1dc, help_dc, help_button);
-			
-		}
-		player.draw(mem1dc, pdc);
-		/*if (player.getstate() == 3)
-		{
-			Ellipse(mem1dc, player.getx() - player.getw(), player.gety() - player.geth() + player.geth() / 2, player.getx() + player.getw(), player.gety() + player.geth());
-		}
-		else {
-			Ellipse(mem1dc, player.getx() - player.getw(), player.gety() - player.geth(), player.getx() + player.getw(), player.gety() + player.geth());
-		}*/
+		
+		
+		
 		if(map.getblack_t() >0) map.DrawLoadBK(mem1dc, mem2dc, loadbf);
-		//cout << "현재HP상태: " << player.gethp() << endl;
-
-
-		/*oldload = (HBITMAP) SelectObject(loaddc, loadbit);
-		if (map.getblack_t() > 0)
-		{
-			BitBlt(mem1dc, camera.getx(), camera.gety(), 1024, 768, loaddc, 0, 0, BLACKNESS);
-		}*/
-
-		/*if (map.getblack_t() > 0)
-		{
-			map.DrawBK(mem1dc, mem2dc, rectview);
-		}*/
-
+		
 
 		BitBlt(hdc, 0, 0, 1024, 768, mem1dc, camera.getx(), camera.gety(), SRCCOPY);
 		
 
-		/*SelectObject(loaddc, oldload);
-		DeleteObject(loadbit);
-		DeleteObject(loaddc);*/
+		
 		DeleteObject(mem1dc);
 		EndPaint(hwnd, &ps);
 		break;
@@ -258,6 +234,15 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
 				}
 				if (obj[i].getType() == 4)
+				{
+					if (obj_t % 8 == 0)
+					{
+						obj[i].IndexChange();
+
+					}
+
+				}
+				if (obj[i].getType() == 6)
 				{
 					if (obj_t % 8 == 0)
 					{
@@ -406,6 +391,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 						FMOD_Channel_Stop(sound.Channel[1]);
 						FMOD_System_PlaySound(sound.System, sound.effectSound[3], NULL, 0, &sound.Channel[1]);
 						start_button = 2;
+
 						break;
 					}
 					
@@ -414,7 +400,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			
 		}
 		cout << LOWORD(lParam) << endl;
-		cout << HIWORD(lParam) << endl;
+		cout << HIWORD(lParam) + camera.gety() << endl;
 		break;
 	case WM_LBUTTONUP:
 		if (player.getCMD_die() == 1)
@@ -442,6 +428,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 					for (int j = 0; j < ocount; j++)
 						obj[j].ResetObject();
 					ocount = initObject(obj, map.getmapnum(), g_hinst);
+					
 					map.CreateMap(g_hinst);
 					hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/bk.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 					sound.setindex(sound.getindex() + 1);
@@ -449,21 +436,21 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 					FMOD_System_PlaySound(sound.System, sound.effectSound[1], NULL, 0, &sound.Channel[1]);
 					FMOD_Channel_Stop(sound.Channel[0]);
 					FMOD_System_PlaySound(sound.System, sound.bgmSound[1], NULL, 0, &sound.Channel[0]);
-					
+					player.sethp(100);
 					camera.setx(0);
 					camera.sety(3232);
 					InvalidateRgn(hwnd, NULL, FALSE);
 					break;
 				}
 			}
-			
+			//obj[0].getType()
 		}
 		break;
 	case WM_CHAR:
 		if (wParam == 'r')
 		{
-			player.setx(0);
-			player.sety(300);
+			player.setx(obj[ocount-1].getX()+10);
+			player.sety(obj[ocount-1].getY() - 25);
 			break;
 		}
 		if (wParam == 'c')

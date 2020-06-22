@@ -76,7 +76,7 @@ bool collp2w(PLAYER player, OBJECT object)
 
 
 //플레이어와 오브젝트간 상호작용 판단하고 그에맞게 바꿔줌
-void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int ocount, HINSTANCE g_hinst, Sound sound)
+void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_hinst, Sound sound)
 {
 	int check_coll = 0;	//하나라도 부딪혔는지 판별하기위함
 	if (player.getx() - player.getw() < 0)
@@ -140,6 +140,10 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int ocount, HINSTANCE g_h
 				if (obj[i].getType() == 4)
 				{
 					player.setx(player.getx() + beltspeed);
+				}
+				if (obj[i].getType() == 6)
+				{
+					player.setx(player.getx() - beltspeed);
 				}
 			}
 			else if (obj[i].getType() >= 101 && obj[i].getType() <= 200)	//장애물에 부딪히면
@@ -222,7 +226,7 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int ocount, HINSTANCE g_h
 							}
 							if (player.getstate() == 7)
 							{
-								if (player.getCMD_move() == 1 || player.getCMD_move() == 2) //무조건 왼쪽으로감
+								if (player.getdir() == 1 || player.getdir() == 2) //무조건 왼쪽으로감
 								{
 									player.setspike_hurt(-8);
 								}
@@ -256,11 +260,11 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int ocount, HINSTANCE g_h
 						}
 						if (player.getstate() == 7)//일반일때는 살짝 점프 뛰듯이 가는데 떨어지는중이면 살짝만 이동한다
 						{
-							if (player.getCMD_move() == 1)
+							if (player.getdir() == 1)
 							{
 								player.setspike_hurt(-8);	//8번 왼쪽으로 감
 							}
-							else if (player.getCMD_move() == 2)
+							else if (player.getdir() == 2)
 							{
 								player.setspike_hurt(8);	//8번 오른쪽으로감
 							}
@@ -268,6 +272,7 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int ocount, HINSTANCE g_h
 							player.setstealth(100);	//무적시간 넣어줌 (이동하는로직은 state==7 일때 알아서 다뤄줌
 						}
 						else {
+							player.setCMD_move(player.getdir());
 							player.setstate(6);		//피격으로감
 						}
 						player.hurt(sound);
@@ -284,11 +289,11 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int ocount, HINSTANCE g_h
 						}
 						if (player.getstate() == 7)//일반일때는 살짝 점프 뛰듯이 가는데 떨어지는중이면 살짝만 이동한다
 						{
-							if (player.getCMD_move() == 1)
+							if (player.getdir() == 1)
 							{
 								player.setspike_hurt(-8);	//8번 왼쪽으로 감
 							}
-							else if (player.getCMD_move() == 2)
+							else if (player.getdir() == 2)
 							{
 								player.setspike_hurt(8);	//8번 오른쪽으로감
 							}
@@ -296,6 +301,7 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int ocount, HINSTANCE g_h
 							player.setstealth(100);	//무적시간 넣어줌 (이동하는로직은 state==7 일때 알아서 다뤄줌
 						}
 						else {
+							player.setCMD_move(player.getdir());
 							player.setstate(6);		//피격으로감
 						}
 						player.hurt(sound);
@@ -312,10 +318,12 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int ocount, HINSTANCE g_h
 						/*m.CreateBlack(g_hinst);*/
 						m.setmapnum(m.getmapnum() + 1);
 						player.initPos();
+						if (m.getmapnum() == 13) m.CreateMap(g_hinst);
 						for (int j = 0; j < ocount; j++)
 							obj[j].ResetObject();
-						initObject(obj, m.getmapnum(), g_hinst);
-						sound.setindex(sound.getindex() + 1);
+						ocount = initObject(obj, m.getmapnum(), g_hinst);
+						m.CreateMap(g_hinst);
+						sound.setindex(m.getmapnum()-9);
 						FMOD_Channel_Stop(sound.Channel[1]);
 						FMOD_System_PlaySound(sound.System, sound.effectSound[1], NULL, 0, &sound.Channel[1]);
 						FMOD_Channel_Stop(sound.Channel[0]);
@@ -332,6 +340,7 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int ocount, HINSTANCE g_h
 					{
 						if (DOWNkey == true && (player.getstate() == 2 || player.getstate() == 7))	//공중에있거나 점프중일때 아랫키로는 줄에 붙을수없다
 							return;
+				
 						if (player.getstate() != 5 && player.getstate() != 8)	//줄에 매달려있지 않았다면 줄에 매달리는 상태를 만들어준다. 이미붙어있다면 해줄필요없음
 						{
 							player.setstate(5);
@@ -392,6 +401,14 @@ int initObject(OBJECT* obj, int mapnum, HINSTANCE g_hinst)
 	{
 		in.open("map/map_2.txt", ios::in);
 	}
+	else if (mapnum == 12)
+	{
+		in.open("map/map_3.txt", ios::in);
+	}
+	else if (mapnum == 13)
+	{
+		in.open("map/map_4.txt", ios::in);
+	}
 	else {
 		return 0;		//맵 값이 잘못입력되었으면 그대로 탈출
 	}
@@ -401,7 +418,7 @@ int initObject(OBJECT* obj, int mapnum, HINSTANCE g_hinst)
 
 	if (in.is_open())
 	{
-		for (int i = 0; i < 100; ++i)
+		for (int i = 0; i < 150; ++i)
 		{
 			if (in.eof())
 			{
@@ -410,11 +427,6 @@ int initObject(OBJECT* obj, int mapnum, HINSTANCE g_hinst)
 			}
 			in >> x >> y >> w >> h >> type;
 			obj[i].create(x, y, w, h, type);
-			/*obj[i].setX(x);
-			obj[i].setY(y);
-			obj[i].setW(w);
-			obj[i].setH(h);
-			obj[i].setType(type);*/
 			obj[i].setHbit(g_hinst);
 
 		}

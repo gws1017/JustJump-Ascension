@@ -53,10 +53,6 @@ void MAP::ChangeDieNotice(HINSTANCE g_hinst,int i)
 	hbitdie = LoadDieNoticeChange(g_hinst, i);
 }
 
-void MAP::ChangeHelp(HINSTANCE g_hinst, int i)
-{
-	
-}
 
 
 bool MAP::BlackTime()
