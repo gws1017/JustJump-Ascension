@@ -16,7 +16,7 @@ PLAYER::PLAYER()
 	// x y 는 캐릭터의 중심좌표이고 w,h 는 xy에서 좌우로 반틈씩만 간 좌표이다. 
 	x = 80; //100 캐릭터의 중심x좌표
 	y = 655; //3800 캐릭터의 중심y좌표
-	savey = 000;	//처음 캐릭터의 중심좌표
+	savey = 3700;	//처음 캐릭터의 중심좌표
 	w = 14; //캐릭터 width의 절반
 	h = 25;	//캐릭터 hegiht의 절반
 	charw = 31;	//캐릭터이펙트 width의 절반
@@ -30,7 +30,7 @@ PLAYER::PLAYER()
 	COMMAND_move = false;
 	COMMAND_hurt = false;
 	COMMAND_die = false;
-
+	
 }
 void PLAYER::initPos()
 {
@@ -41,7 +41,6 @@ void PLAYER::initPos()
 	h = 25;
 	state = 7;
 	dir = 2;
-	hp = 10;
 	adjustspd = 0;
 	stealth = 0;
 	spike_hurt = 0;

@@ -8,7 +8,7 @@
 class OBJECT {
 	int x, y;					//오브젝트의 x y 는 왼쪽상단이 기준이다.
 	int w, h;
-	int type;					//1~100 플랫폼 101~장애물 201~상호작용 오브젝트
+	int type;					//1.바닥 2.기본 발판 3.작은발판 4.컨베이어 벨트 5.투명바닥 101.나사못 102.깨진파이프 103.증기 106,107.톱니바퀴 201.포탈 301.로프
 	int index;					//애니메이션 돌릴때 배열의 인덱스를 바꿔주어 이미지를 바꾼다
 	int mx, my;					//Variables that increase/decrease based on the object's x,y coordinates
 	int s;						//sign bit
@@ -22,7 +22,7 @@ public:
 	int getH();
 	int getindex();
 
-	//1~100 플랫폼 101~장애물 201~상호작용 오브젝트
+	//1.바닥 2.기본 발판 3.작은발판 4.컨베이어 벨트 5.투명바닥 101.나사못 102.깨진파이프 103.증기 106,107.톱니바퀴 201.포탈 301.로프
 	int getType();
 	//오브젝트가 몇개들어갔는지
 	int getocount();

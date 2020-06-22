@@ -1,7 +1,7 @@
 #pragma comment (lib, "Msimg32.lib")
 #include "object.h"
 #include "Load.h"
-
+#include <iostream>
 int OBJECT::getX()
 {
 	return x;
@@ -104,7 +104,7 @@ void OBJECT::IndexChange()
 	{
 		if (index >= 7) index = 0;
 	}
-	else if (type == 4)
+	else if (type == 4 || type ==6)
 	{
 		if (index >= 4) index = 0;
 	}
@@ -127,13 +127,33 @@ void OBJECT::DrawObj(HDC& mem1dc, HDC& odc)
 {
 	odc = CreateCompatibleDC(mem1dc);
 	SelectObject(odc, hbit);
-	if (type == 1) TransparentBlt(mem1dc, x, y, w, h, odc, 0, 0, 1023, 62, RGB(255, 255, 255));
+	if (type == 1)
+	{
+	  TransparentBlt(mem1dc, x, y, w , h, odc, 0, 0, 1023, 62, RGB(255, 255, 255));
+	}
 	else if(type == 0)TransparentBlt(mem1dc, x, y, w, h, odc, 0, 0 + index * 768, 1024, 768, RGB(142, 203, 162));
 	else if (type == 2) TransparentBlt(mem1dc, x, y, w, h + 17, odc, 11, 15, 77, 18, RGB(255, 255, 255));	// 원본그림에서 x 11~88 y 15 33 만큼 잘라내서 투명처리후 출력
 	else if (type == 3) TransparentBlt(mem1dc, x, y, w, h + 18, odc, 0, 0, 19, 19, RGB(255, 255, 255));
 	else if (type == 4) TransparentBlt(mem1dc, x, y, w, h + 42, odc, 16 + index * 272, 9, 250, 43, RGB(0, 0, 0));
+	else if (type == 6) TransparentBlt(mem1dc, x, y, w, h + 42, odc, 16 + index * 272, 9, 250, 43, RGB(0, 0, 0));
+	else if (type == 7)
+	{
+		//23 50 // 1.73 / 2.123  /3.173 4.223 5.273 6.323 7. 373 350 
+		TransparentBlt(mem1dc, x, y, 14, h+17, odc, 11, 15, 14, 18, RGB(255, 255, 255));//head
+
+		
+		for (int i = 0; i < 6; i++)
+		{
+			TransparentBlt(mem1dc, x + 14 + 50 * i, y ,50, h+17, odc, 27, 15, 50, 18, RGB(255, 255, 255));//body
+		}
+			
+
+	
+
+		TransparentBlt(mem1dc, x + 14 + 300, y , 13, h+17, odc, 78, 15, 13, 18, RGB(255, 255, 255));//tail
+	}
 	else if (type == 5) TransparentBlt(mem1dc, x, y, w, h , odc, 0, 9, 0, 0, RGB(255, 255, 255));
-	else if (type == 101) TransparentBlt(mem1dc, x, y, w, h, odc, 1, 0, 26, 15, RGB(255, 255, 255));
+	else if (type == 101) TransparentBlt(mem1dc, x, y, w+11, h, odc, 1, 0, 26, 15, RGB(255, 255, 255));
 	else if (type == 102) TransparentBlt(mem1dc, x, y, w, h, odc, 0, 1, 17, 75, RGB(255, 255, 255));
 	else if (type == 103) // 103번의 경우 102번의 y값에서 51을 뺀 위치가 파이프 깨진부분이다.
 	{
@@ -156,7 +176,17 @@ void OBJECT::DrawObj(HDC& mem1dc, HDC& odc)
 	}
 	else if (type == 301)//Rope
 	{
-		TransparentBlt(mem1dc, x, y, w, h, odc, 0, 1, 17, 75, RGB(255, 255, 255));
+		//머리+ 꼬리 53 몸통 41 전체 94 기본 길이 94 더긴거는 135 176 217 258 299 340 381 422 463
+		int body = (h - 53) / 41;
+		TransparentBlt(mem1dc, x, y, w, 32, odc, 0, 0, 24,32, RGB(255, 255, 255));//head
+		
+		for (int i = 0; i < body; i++)
+		{
+			TransparentBlt(mem1dc, x, y + 32 + i * 41, w, 41, odc, 0, 33, 24, 41, RGB(255, 255, 255));//body
+			
+		}
+		
+		TransparentBlt(mem1dc, x, y + 32 + body * 41, w, 21, odc, 0, 148, 24, 21, RGB(255, 255, 255));//tail
 	}
 	DeleteObject(odc);
 }

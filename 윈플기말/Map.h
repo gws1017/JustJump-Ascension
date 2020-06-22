@@ -46,7 +46,6 @@ public:
 	void DrawHelp(HDC&, HDC&,int);
 	//die 상태변화
 	void ChangeDieNotice(HINSTANCE,int);
-	void ChangeHelp(HINSTANCE, int);
 	/*void CreateBlack(HINSTANCE)*/;
 	void CreateMap(HINSTANCE);
 	void CreateUi(HINSTANCE);
