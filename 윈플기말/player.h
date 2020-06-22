@@ -12,6 +12,7 @@ class PLAYER {
 	int adjustspd;		//떨어질때 x값 천천히 이동시켜주기 위한 변수
 	int COMMAND_move;	//이게 움직이고있는 상황인지 아닌지 구분 1이면왼쪽으로움직임  2면 오른쪽으로 움직임0이면 안움직임 3이면 위로움직임 4면아래로움직임
 	bool COMMAND_hurt;	//쳐맞으면 1 아니면 0 점프할때 로직에 들어감
+	bool COMMAND_ropehurt;	//로프에서 쳐맞으면 1 아니면 0
 	bool COMMAND_die;	//죽으면 1 아니면 0
 	bool Gamemode;		//0이면 일반 1이면 플라잉모드
 	int stealth;		//피격시 무적 2초를 기준으로한다.
@@ -51,6 +52,8 @@ public:
 	void setCMD_move(int);
 	//이게 피격상태인지 아닌지 구분 1이면 피격 0이면 피격아님
 	void setCMD_hurt(bool);
+	//이게 피격상태인지 아닌지 구분 1이면 피격 0이면 피격아님
+	void setCMD_ropehurt(bool);
 	//죽은지 아닌지 1이면 죽음 0이면 삼
 	void setCMD_die(bool);
 	//게임모드설정 0이면 일반 1이면 플라잉
@@ -92,6 +95,8 @@ public:
 	int getCMD_move();
 	//이게 피격상태인지 아닌지 구분 1이면 피격 0이면 피격아님
 	bool getCMD_hurt();
+	//이게 피격상태인지 아닌지 구분 1이면 피격 0이면 피격아님
+	bool getCMD_ropehurt();
 	//죽은지 아닌지 1이면 죽음 0이면 삼
 	bool getCMD_die();
 	//게임모드설정 0이면 일반 1이면 플라잉
@@ -144,4 +149,6 @@ extern bool LEFTkey;//왼쪽키 눌렀는지 1이면 누름 0이면 안누름
 extern bool RIGHTkey;//오른쪽키 눌렀는지 1이면 누름 0이면 안누름
 extern bool UPkey;	//위쪽키 눌렀는지 1이면 누름 0이면 안누름
 extern bool DOWNkey;//아래쪽키 눌렀는지 1이면 누름 0이면 안누름
+extern int jumpcount;
+extern int diecount;
 		//왼쪽오른쪽키 동시에 눌려있는지확인

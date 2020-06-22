@@ -87,7 +87,22 @@ void MAP :: DrawBK(HDC& mem1dc, HDC& mem2dc, RECT& rectview)
 		BitBlt(mem1dc, 0, 0, MAPWIDTH, MAPHEIGHT, mem2dc, 0, 0, SRCCOPY);	//¸Ê ÀüÃ¼ »õ·Î°íÄ§
 	}
 
-	
+	if (mapnum == 13)
+	{
+		HFONT hfont = CreateFont(50, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("¸ÞÀÌÇÃ½ºÅä¸® light"));
+		HFONT oldfont = (HFONT)SelectObject(mem1dc, hfont);
+		TCHAR count[100];
+		TextOut(mem1dc, 100, 3400, L"Á¡ÇÁ È½¼ö : ", lstrlenW(L"Á¡ÇÁ È½¼ö : "));
+		_itow_s(jumpcount, count, 10);
+		TextOut(mem1dc, 300, 3400, count, lstrlenW(count));
+
+		TextOut(mem1dc, 400, 3400, L"Á×Àº È½¼ö : ", lstrlenW(L"Á×Àº È½¼ö : "));
+		_itow_s(diecount, count, 10);
+		TextOut(mem1dc, 600, 3400, count, lstrlenW(count));
+		SelectObject(mem1dc, oldfont);
+		DeleteObject(hfont);
+	}
+
 
 	DeleteObject(mem2dc);
 }
