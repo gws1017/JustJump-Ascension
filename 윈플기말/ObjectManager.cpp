@@ -76,7 +76,7 @@ bool collp2w(PLAYER player, OBJECT object)
 
 
 //플레이어와 오브젝트간 상호작용 판단하고 그에맞게 바꿔줌
-void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_hinst, Sound sound)
+void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_hinst, Sound& sound)
 {
 	int check_coll = 0;	//하나라도 부딪혔는지 판별하기위함
 	if (player.getx() - player.getw() < 0)
@@ -324,10 +324,12 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_
 						ocount = initObject(obj, m.getmapnum(), g_hinst);
 						m.CreateMap(g_hinst);
 						sound.setindex(m.getmapnum()-9);
-						FMOD_Channel_Stop(sound.Channel[1]);
-						FMOD_System_PlaySound(sound.System, sound.effectSound[1], NULL, 0, &sound.Channel[1]);
+						FMOD_System_Update(sound.System);
 						FMOD_Channel_Stop(sound.Channel[0]);
 						FMOD_System_PlaySound(sound.System, sound.bgmSound[sound.getindex()], NULL, 0, &sound.Channel[0]);
+						FMOD_Channel_Stop(sound.Channel[1]);
+						FMOD_System_PlaySound(sound.System, sound.effectSound[1], NULL, 0, &sound.Channel[1]);
+						
 						return;
 					}
 				}

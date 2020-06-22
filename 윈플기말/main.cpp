@@ -198,7 +198,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		{
 		case 1:
 			obj_t += 1;
-
+			
 			player.move(obj_t);
 			adjustPlayer(player, obj, map, ocount, g_hinst,sound);
 
@@ -465,7 +465,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		InvalidateRect(hwnd, NULL, FALSE);
 		break;
 	case WM_DESTROY:
-
+		for (int i = 0; i < 5; i++) FMOD_Sound_Release(sound.bgmSound[i]);
+		for (int i = 0; i < 3; i++) FMOD_Sound_Release(sound.effectSound[i]);
+		FMOD_System_Close(sound.System);
+		FMOD_System_Release(sound.System);
 		PostQuitMessage(0);
 		return 0;
 	}
