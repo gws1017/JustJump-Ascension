@@ -234,7 +234,7 @@ int PLAYER::getspike_hurt()
 	return spike_hurt;
 }
 //플레이어 상태 변경
-void PLAYER::PlayerSetting(WPARAM wParam, Sound sound)
+void PLAYER::PlayerSetting(WPARAM wParam, Sound& sound)
 {
 	if (wParam == VK_LEFT)
 	{
@@ -1039,7 +1039,7 @@ void PLAYER::spike_hurttime()
 	}
 }
 
-void PLAYER::hurt(Sound sound)
+void PLAYER::hurt(Sound& sound)
 {
 	if (COMMAND_die == false)
 		hp -= 5;

@@ -96,9 +96,9 @@ void MAP :: DrawBK(HDC& mem1dc, HDC& mem2dc, RECT& rectview)
 		_itow_s(jumpcount, count, 10);
 		TextOut(mem1dc, 300, 3400, count, lstrlenW(count));
 
-		TextOut(mem1dc, 400, 3400, L"Á×Àº È½¼ö : ", lstrlenW(L"Á×Àº È½¼ö : "));
+		TextOut(mem1dc, 500, 3400, L"Á×Àº È½¼ö : ", lstrlenW(L"Á×Àº È½¼ö : "));
 		_itow_s(diecount, count, 10);
-		TextOut(mem1dc, 600, 3400, count, lstrlenW(count));
+		TextOut(mem1dc, 700, 3400, count, lstrlenW(count));
 		SelectObject(mem1dc, oldfont);
 		DeleteObject(hfont);
 	}
@@ -171,7 +171,7 @@ void MAP::DrawHP(HDC& mem1dc, HDC& mem2dc, CAMERA camera,PLAYER player)
 	DeleteObject(mem2dc);
 }
 
-void MAP::DrawDie(HDC& mem1dc, HDC& mem2dc, CAMERA camera, Sound sound)
+void MAP::DrawDie(HDC& mem1dc, HDC& mem2dc, CAMERA camera, Sound& sound)
 {
 	mem2dc = CreateCompatibleDC(mem1dc);
 	SelectObject(mem2dc, hbitdie);

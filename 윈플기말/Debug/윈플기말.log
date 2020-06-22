@@ -1,2 +1,8 @@
-﻿  main.cpp
+﻿  Camera.cpp
+  Map.cpp
+  ObjectManager.cpp
+  main.cpp
+  object.cpp
+  player.cpp
+  코드를 생성하고 있습니다...
   윈플기말.vcxproj -> C:\Users\sumin\Documents\GitHub\JustJump\Debug\윈플기말.exe
