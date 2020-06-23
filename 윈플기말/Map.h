@@ -39,7 +39,7 @@ public:
 	//HP바
 	void DrawHP(HDC&, HDC&, CAMERA,PLAYER);
 	//die ui
-	void DrawDie(HDC&, HDC&, CAMERA, Sound);
+	void DrawDie(HDC&, HDC&, CAMERA, Sound&);
 	//시작 버튼
 	void DrawStart(HDC&, HDC&, int);
 	//조작법

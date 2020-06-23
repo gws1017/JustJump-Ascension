@@ -11,6 +11,8 @@ bool UPkey = 0;	//위쪽키 눌렀는지 1이면 누름 0이면 안누름
 bool DOWNkey = 0;//아래쪽키 눌렀는지 1이면 누름 0이면 안누름
 bool LRkey = 0;//왼쪽오른쪽키 동시에 눌렀는지 1이면눌림 0이면 안눌림
 bool UDkey = 0;
+int jumpcount = 0;
+int diecount = 0;
 PLAYER::PLAYER()
 {
 	// x y 는 캐릭터의 중심좌표이고 w,h 는 xy에서 좌우로 반틈씩만 간 좌표이다. 
@@ -30,6 +32,7 @@ PLAYER::PLAYER()
 	COMMAND_move = false;
 	COMMAND_hurt = false;
 	COMMAND_die = false;
+	COMMAND_ropehurt = false;
 	
 }
 void PLAYER::initPos()
@@ -109,6 +112,10 @@ void PLAYER::setCMD_move(int i)
 void PLAYER::setCMD_hurt(bool i)
 {
 	COMMAND_hurt = i;
+}
+void PLAYER::setCMD_ropehurt(bool i)
+{
+	COMMAND_ropehurt = i;
 }
 void PLAYER::setCMD_die(bool i)
 {
@@ -202,6 +209,10 @@ bool PLAYER::getCMD_hurt()
 {
 	return COMMAND_hurt;
 }
+bool PLAYER::getCMD_ropehurt()
+{
+	return COMMAND_ropehurt;
+}
 bool PLAYER::getCMD_die()
 {
 	return COMMAND_die;
@@ -223,7 +234,7 @@ int PLAYER::getspike_hurt()
 	return spike_hurt;
 }
 //플레이어 상태 변경
-void PLAYER::PlayerSetting(WPARAM wParam, Sound sound)
+void PLAYER::PlayerSetting(WPARAM wParam, Sound& sound)
 {
 	if (wParam == VK_LEFT)
 	{
@@ -410,6 +421,7 @@ void PLAYER::PlayerSetting(WPARAM wParam, Sound sound)
 		{
 			FMOD_Channel_Stop(sound.Channel[1]);
 			FMOD_System_PlaySound(sound.System, sound.effectSound[0], NULL, 0, &sound.Channel[1]);
+			jumpcount++;
 			state = 2;
 			savey = y;
 		}
@@ -1003,10 +1015,15 @@ void PLAYER::fall2save()
 void PLAYER::stealthtime()
 {
 	if(COMMAND_die==0)	//죽으면 무적안풀림
-	if (stealth > 0)
-		stealth--;
+		if (stealth > 0)
+		{
+			stealth--;
+			if (stealth == 0)
+				COMMAND_hurt = 0;
+		}
 	if (jumpignore > 0)
 		jumpignore--;
+	
 }
 void PLAYER::spike_hurttime()
 {
@@ -1022,7 +1039,7 @@ void PLAYER::spike_hurttime()
 	}
 }
 
-void PLAYER::hurt(Sound sound)
+void PLAYER::hurt(Sound& sound)
 {
 	if (COMMAND_die == false)
 		hp -= 5;
@@ -1041,5 +1058,6 @@ void PLAYER::hurt(Sound sound)
 		DOWNkey = 0;
 		FMOD_Channel_Stop(sound.Channel[1]);
 		FMOD_System_PlaySound(sound.System, sound.effectSound[2], NULL, 0, &sound.Channel[1]);
+		diecount++;
 	}
 }

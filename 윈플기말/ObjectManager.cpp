@@ -132,6 +132,7 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_
 					else player.setstate(1);				//숙이던게 아니였으면 땅에부딪혔으니 정지상태해줌
 					player.setadjspd(0);			//떨어질때가속도를 위한거니 이것도 정지해줌
 					player.setCMD_hurt(0);			//땅에 닿았으면 피격아님
+					player.setCMD_ropehurt(0);		//땅에 닿았으면 피격아님
 
 					if (ROWSPEED != 3)		//ROWSPEED를 임의로 바꿔주었다면 땅에 닿으면 초기화니 원래대로 돌려준다
 						ROWSPEED = 3;
@@ -153,6 +154,10 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_
 				{
 					if (player.getstealth() == 0)	//무적이 아니라면
 					{
+						if (player.getstate() == 5 || player.getstate() == 8)
+						{
+							player.setCMD_ropehurt(1);
+						}
 						if (player.getstate()==3) //숙이고있었다면
 						{
 							player.sety(player.gety() - 12);
@@ -196,6 +201,7 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_
 						player.setstate(1);				//그리고 땅에부딪혔으니 정지상태해줌
 						player.setadjspd(0);			//떨어질때가속도를 위한거니 이것도 정지해줌
 						player.setCMD_hurt(0);			//땅에 닿았으면 피격아님
+						player.setCMD_ropehurt(0);		//땅에 닿았으면 피격아님
 
 						if (ROWSPEED != 3)		//ROWSPEED를 임의로 바꿔주었다면 땅에 닿으면 초기화니 원래대로 돌려준다
 							ROWSPEED = 3;
@@ -219,6 +225,10 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_
 					{
 						if (player.getstealth() == 0)
 						{
+							if (player.getstate() == 5 || player.getstate() == 8)
+							{
+								player.setCMD_ropehurt(1);
+							}
 							if (player.getstate() == 3) //숙이고있었다면
 							{
 								player.sety(player.gety() - 12);
@@ -253,6 +263,10 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_
 				{
 					if (player.getstealth() == 0)	//무적이 아니라면
 					{
+						if (player.getstate() == 5 || player.getstate() == 8)
+						{
+							player.setCMD_ropehurt(1);
+						}
 						if (player.getstate() == 3) //숙이고있었다면
 						{
 							player.sety(player.gety() - 12);
@@ -282,6 +296,10 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_
 				{
 					if (player.getstealth() == 0)	//무적이 아니라면
 					{
+						if (player.getstate() == 5 || player.getstate() == 8)
+						{
+							player.setCMD_ropehurt(1);
+						}
 						if (player.getstate() == 3) //숙이고있었다면
 						{
 							player.sety(player.gety() - 12);
@@ -338,27 +356,30 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_
 			{
 				if (player.getjumpignore() <= 0)
 				{
-					if (UPkey == true || DOWNkey == true)
+					if (player.getCMD_ropehurt() == 0)	//로프에서 맞으면 다시 로프 못탐
 					{
-						if (DOWNkey == true && (player.getstate() == 2 || player.getstate() == 7))	//공중에있거나 점프중일때 아랫키로는 줄에 붙을수없다
-							return;
-				
-						if (player.getstate() != 5 && player.getstate() != 8)	//줄에 매달려있지 않았다면 줄에 매달리는 상태를 만들어준다. 이미붙어있다면 해줄필요없음
+						if (UPkey == true || DOWNkey == true)
 						{
-							player.setstate(5);
-							if(UPkey==true)
-								player.setCMD_move(3);
-							if (DOWNkey == true)
-								player.setCMD_move(4);
-							player.setx(obj[i].getX() + (obj[i].getW()/2));
-							if (DOWNkey == true)	//이때는 수그리기아니라 밧줄 아래로 내려가는것이므로 수그리기로 깍인거 돌려준다
+							if (DOWNkey == true && (player.getstate() == 2 || player.getstate() == 7))	//공중에있거나 점프중일때 아랫키로는 줄에 붙을수없다
+								return;
+
+							if (player.getstate() != 5 && player.getstate() != 8)	//줄에 매달려있지 않았다면 줄에 매달리는 상태를 만들어준다. 이미붙어있다면 해줄필요없음
 							{
-								player.sety(player.gety() - 12);
-								player.seth(25);
+								player.setstate(5);
+								if (UPkey == true)
+									player.setCMD_move(3);
+								if (DOWNkey == true)
+									player.setCMD_move(4);
+								player.setx(obj[i].getX() + (obj[i].getW() / 2));
+								if (DOWNkey == true)	//이때는 수그리기아니라 밧줄 아래로 내려가는것이므로 수그리기로 깍인거 돌려준다
+								{
+									player.sety(player.gety() - 12);
+									player.seth(25);
+								}
 							}
+							player.BitMove();
+							//player.BitMove();
 						}
-						player.BitMove();
-						//player.BitMove();
 					}
 				}
 			}
