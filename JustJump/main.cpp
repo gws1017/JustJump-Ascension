@@ -489,8 +489,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 						&sound.Channel[1]
 					);
 
-					if (sound.Channel[1]) {
-						sound.Channel[1]->stop();
+					if (sound.Channel[0]) {
+						sound.Channel[0]->stop();
 					}
 
 					 result = sound.System->playSound(
