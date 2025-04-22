@@ -534,9 +534,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 				sound.effectSound[i]->release();
 				sound.effectSound[i] = nullptr;
 			}
-
+		}
+		for (int i = 0; i < 2; ++i)
+		{
 			if (sound.Channel[i]) {
-				sound.Channel[i]->stop();       // 필요하면 정지
+				sound.Channel[i]->stop();       
 				sound.Channel[i] = nullptr;
 			}
 		}
