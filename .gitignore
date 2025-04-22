@@ -5,3 +5,10 @@
 *.db
 .vs/윈플기말/v15/.suo
 .vs/윈플기말/v15/Browse.VC.opendb
+윈플기말/x64/Debug/
+.vs/
+JustJump/Debug/
+JustJump/x64/Debug/
+JustJump/Release/윈플기말.tlog/CL.write.1.tlog
+JustJump/Release/
+x64/Debug/
