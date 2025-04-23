@@ -1,5 +1,8 @@
 #include "Map.h"
 #include "Load.h"
+#include "Camera.h"
+#include "player.h"
+
 int MAP::getmapnum() { return mapnum; }
 
 int MAP::getblack_t() { return black_t; }

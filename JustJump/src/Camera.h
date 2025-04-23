@@ -1,5 +1,4 @@
 #pragma once
-#include <Windows.h>
 #include "player.h"
 class CAMERA{
 	int x, y;

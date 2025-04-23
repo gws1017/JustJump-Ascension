@@ -1,7 +1,6 @@
+#include "Global.h"
 #include "Sound.h"
-#include <fmod.hpp>
-#include <fmod_errors.h>
-#include <iostream>
+
 
 int Sound::getindex()
 {

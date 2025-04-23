@@ -1,7 +1,9 @@
 #pragma comment (lib, "Msimg32.lib")
+#include "Global.h"
+
 #include "object.h"
 #include "Load.h"
-#include <iostream>
+
 int OBJECT::getX()
 {
 	return x;

@@ -1,7 +1,5 @@
 #pragma once
-#include <fstream>
-#include <iostream>
-#include <Windows.h>
+
 #include "player.h"
 #include "object.h"
 #include "Camera.h"

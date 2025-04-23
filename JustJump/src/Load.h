@@ -1,5 +1,4 @@
 #pragma once
-#include <Windows.h>
 
 //HBITMAP LoadBlack(HBITMAP, HINSTANCE);
 HBITMAP LoadBK(HBITMAP, HINSTANCE, int);

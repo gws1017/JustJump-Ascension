@@ -1,5 +1,7 @@
+#include "Global.h"
 #include "ObjectManager.h"
-#include <fmod.hpp>
+#include <fstream>
+
 
 //오브젝트와 플레이어 충돌체크 1이면 부닥침
 bool collp2w(PLAYER player, OBJECT object)

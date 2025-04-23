@@ -1,7 +1,7 @@
 #pragma once
-#include <windows.h>
 #include "Camera.h"
 #include "player.h"
+
 #define MAPWIDTH 1024
 #define MAPHEIGHT 4098
 #define MAPSPEED 5

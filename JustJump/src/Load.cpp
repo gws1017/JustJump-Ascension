@@ -1,7 +1,7 @@
+#include "Global.h"
 #include "Load.h"
-#include "resource.h"
-#include <windows.h>
-#include <tchar.h>
+#include "../resource.h"
+
 
 //HBITMAP LoadBlack(HBITMAP hbit1, HINSTANCE g_hinst)
 //{

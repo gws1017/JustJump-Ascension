@@ -1,3 +1,4 @@
+#include "Global.h"
 #include "Camera.h"
 
 CAMERA::CAMERA()

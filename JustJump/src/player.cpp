@@ -1,8 +1,9 @@
-#pragma comment (lib, "Msimg32.lib")
+#include "Global.h"
 #include "player.h"
+#pragma comment (lib, "Msimg32.lib")
+
 #include "Load.h"
-#include <fmod.hpp>
-#include <iostream>
+
 int ROWSPEED = 3; 	//가로 이동속도
 int COLSPEED = 10;	//세로 이동속도
 int ROPESPEED = 2;

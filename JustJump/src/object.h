@@ -1,5 +1,4 @@
 #pragma once
-#include <windows.h>
 #include "player.h"
 
 #define beltspeed 2 //belt speed

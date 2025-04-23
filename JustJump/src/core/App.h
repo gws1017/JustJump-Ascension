@@ -1,5 +1,12 @@
 #pragma once
 
+namespace 
+{
+	constexpr int APP_WIDTH = 1024;
+	constexpr int APP_HEIGHT = 768;
+}
+
+
 struct Window;
 
 class App
@@ -35,4 +42,6 @@ protected:
 public:
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 };
+
+std::unique_ptr<App> CreateApp();
 
