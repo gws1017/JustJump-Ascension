@@ -6,7 +6,7 @@ namespace
 	constexpr int APP_HEIGHT = 768;
 }
 
-
+class Timer;
 struct Window;
 
 class App
@@ -38,6 +38,9 @@ protected:
 
 	std::wstring m_app_name;
 	std::shared_ptr<Window> m_window;
+
+private:
+	std::unique_ptr<Timer> m_timer;
 
 public:
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);

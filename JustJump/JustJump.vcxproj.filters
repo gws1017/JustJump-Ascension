@@ -54,6 +54,9 @@
     <ClCompile Include="src\JustJumpApp.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="src\core\Timer.cpp">
+      <Filter>소스 파일\src\core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Camera.h">
@@ -90,6 +93,12 @@
       <Filter>소스 파일\src</Filter>
     </ClInclude>
     <ClInclude Include="src\core\entry_point.h">
+      <Filter>소스 파일\src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\Timer.h">
       <Filter>소스 파일\src\core</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,6 +1,7 @@
 #include "Global.h"
 #include "core/App.h"
 #include "core/window.h"
+#include "core/Timer.h"
 
 #include "Load.h"
 #include "Map.h"
@@ -18,7 +19,7 @@ App::App(std::wstring_view app_name)
  : m_app_name(app_name)
 {
 	s_instance = this;
-
+	m_timer = std::make_unique<Timer>();
 	m_window = std::make_shared<Window>(APP_WIDTH, APP_HEIGHT);
 }
 
@@ -32,6 +33,13 @@ bool App::Initialize()
 	if (result == false)
 	{
 		std::cout << "Fail Window Initialize" << std::endl;
+		return false;
+	}
+
+	result = m_timer->Initialize();
+	if (result == false)
+	{
+		std::cout << "Fail Timer Initialize" << std::endl;
 		return false;
 	}
 	return true;
@@ -64,7 +72,8 @@ void App::Run()
 		}
 		else
 		{
-			Update(0.00016f);
+			m_timer->Update();
+			Update(m_timer->GetDeltaTime());
 			Render();
 		}
 		if (bDone) break;
