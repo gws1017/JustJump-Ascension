@@ -15,8 +15,11 @@
 
 
 HINSTANCE g_hinst;
-LPCTSTR lpszClass = L"Just Jump";
-LPCTSTR lpszWinodwName = L"Just Jump";
+
+constexpr LPCTSTR lpszClass = L"Just Jump";
+constexpr LPCTSTR lpszWinodwName = L"Just Jump";
+constexpr int  ClientWidth = 1024;
+constexpr int  ClientHeight = 768;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam);
 
@@ -29,44 +32,52 @@ using namespace std;
 int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hPrevinstance, LPSTR lpszCmdParam, int nCmdShow)
 {
 	HWND hWnd;
-	MSG Message;
-	WNDCLASSEX WndClass;
 	g_hinst = hinstance;
 
-	WndClass.cbSize = sizeof(WndClass);
-	WndClass.style = CS_HREDRAW | CS_VREDRAW;
-	WndClass.lpfnWndProc = (WNDPROC)WndProc;
-	WndClass.cbClsExtra = 0;
-	WndClass.cbWndExtra = 0;
-	WndClass.hInstance = hinstance;
-	WndClass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-	WndClass.hCursor = LoadCursorFromFile(TEXT("cursor/cursor2.cur"));
-	WndClass.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
-	WndClass.lpszMenuName = NULL;
-	WndClass.lpszClassName = lpszClass;
-	WndClass.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
-	RegisterClassEx(&WndClass);
+	WNDCLASSEX wc{ sizeof(wc) };
+	wc.style = CS_HREDRAW | CS_VREDRAW;
+	wc.lpfnWndProc = (WNDPROC)WndProc;
+	wc.cbClsExtra = 0;
+	wc.cbWndExtra = 0;
+	wc.hInstance = hinstance;
+	wc.hIcon = LoadIcon(nullptr, IDI_APPLICATION);
+	wc.hCursor = LoadCursorFromFile(TEXT("cursor/cursor2.cur"));
+	wc.hbrBackground = reinterpret_cast<HBRUSH>(WHITE_BRUSH);
+	wc.lpszMenuName = nullptr;
+	wc.lpszClassName = lpszClass;
+	wc.hIconSm = LoadIcon(nullptr, IDI_APPLICATION);
 
+	if (!RegisterClassEx(&wc)) {
+		MessageBox(nullptr, _T("Failed to register window class"), lpszWinodwName, MB_ICONERROR);
+		return EXIT_FAILURE;
+	}
 
-	hWnd = CreateWindow
+	RECT wr{ 0, 0, ClientWidth, ClientHeight };
+	AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE);
+
+	hWnd = CreateWindowEx
 	(
-		lpszClass, lpszWinodwName,
+		0,lpszClass, lpszWinodwName,
 		WS_OVERLAPPEDWINDOW,
 		100, 50, 1040, 807,
-		NULL, (HMENU)NULL,
-		hinstance, NULL
+		nullptr, (HMENU)nullptr,
+		hinstance, nullptr
 	);
 
+	if (!hWnd) {
+		MessageBox(nullptr, _T("Failed to create window"), lpszWinodwName, MB_ICONERROR);
+		return EXIT_FAILURE;
+	}
 
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
 
-
-	while (GetMessage(&Message, 0, 0, 0)) {
+	MSG Message;
+	while (GetMessage(&Message, nullptr, 0, 0) > 0) {
 		TranslateMessage(&Message);
 		DispatchMessage(&Message);
 	}
-	return Message.wParam;
+	return static_cast<int>(Message.wParam);
 
 
 }
@@ -139,13 +150,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		ocount = initObject(obj, 9, g_hinst);
 
 
-		SetTimer(hwnd, 1, 1, NULL);
+		SetTimer(hwnd, 1, 1, nullptr);
 		break;
 	case WM_PAINT:
 		hdc = BeginPaint(hwnd, &ps);
 
 		mem1dc = CreateCompatibleDC(hdc);
-		if (hbit1 == NULL)
+		if (hbit1 == nullptr)
 		{
 			hbit1 = CreateCompatibleBitmap(hdc, rectview.right, rectview.bottom);
 		}
@@ -283,7 +294,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 				}
 			}
 			if (obj_t >= 27000) obj_t = 0;
-			InvalidateRgn(hwnd, NULL, FALSE);
+			InvalidateRgn(hwnd, nullptr, FALSE);
 			break;
 
 		}
@@ -295,7 +306,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			player.PlayerSetting(wParam, sound);
 		else if (player.getGamemode() == 1)
 			camera.CameraSetting(wParam);
-		InvalidateRgn(hwnd, NULL, FALSE);
+		InvalidateRgn(hwnd, nullptr, FALSE);
 		break;
 	case WM_KEYUP:
 		if (player.getCMD_die() == 1)
@@ -304,7 +315,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			player.PlayerWaiting(wParam);
 		else if (player.getGamemode() == 1)
 			camera.CameraSetting(wParam);
-		InvalidateRgn(hwnd, NULL, FALSE);
+		InvalidateRgn(hwnd, nullptr, FALSE);
 		break;
 	case WM_MOUSEMOVE:
 		if (player.getCMD_die() == 1)
@@ -502,7 +513,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 					player.sethp(100);
 					camera.setx(0);
 					camera.sety(3232);
-					InvalidateRgn(hwnd, NULL, FALSE);
+					InvalidateRgn(hwnd, nullptr, FALSE);
 					break;
 				}
 			}
@@ -525,7 +536,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 				player.setGamemode(0);
 			break;
 		}
-		InvalidateRect(hwnd, NULL, FALSE);
+		InvalidateRect(hwnd, nullptr, FALSE);
 		break;
 	case WM_DESTROY:
 		for (int i = 0; i < 5; ++i)

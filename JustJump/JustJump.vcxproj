@@ -107,7 +107,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)..External\FMOD\inc\x64</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..External\FMOD\inc\x64;$(ProjectDir)src</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -162,8 +163,11 @@
     <ClCompile Include="ObjectManager.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="Sound.cpp" />
+    <ClCompile Include="src\core\App.cpp" />
+    <ClCompile Include="src\core\window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="App.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Load.h" />
     <ClInclude Include="Map.h" />
@@ -172,6 +176,9 @@
     <ClInclude Include="player.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Sound.h" />
+    <ClInclude Include="src\core\App.h" />
+    <ClInclude Include="src\core\window.h" />
+    <ClInclude Include="src\Global.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />
