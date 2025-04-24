@@ -145,9 +145,9 @@ void MAP::DrawUi(HDC& mem1dc, HDC& mem2dc,CAMERA camera)
 //HP바
 void MAP::DrawHP(HDC& mem1dc, HDC& mem2dc, CAMERA camera,PLAYER player)
 {
-	int hp = player.gethp() * 171 / 100;
+	int hp = player.GetCurrentHP() * 171 / 100;
 	TCHAR hpname[100];
-	_itow_s(player.gethp(), hpname, 10);
+	_itow_s(player.GetCurrentHP(), hpname, 10);
 	HFONT hfont = CreateFont(14, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("메이플스토리 light"));
 	HFONT oldfont =(HFONT)SelectObject(mem1dc, hfont);
 	mem2dc = CreateCompatibleDC(mem1dc);

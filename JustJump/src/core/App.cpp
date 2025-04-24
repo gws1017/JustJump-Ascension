@@ -203,8 +203,8 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 		map.CreateDie(app->m_window->hInstance);
 		map.CreateStart(app->m_window->hInstance);
 		map.CreateHelp(app->m_window->hInstance);
-		player.setBit(app->m_window->hInstance);
-		player.initBitPos();
+		player.SetBitMap(app->m_window->hInstance);
+		player.InitializeAnimPosition();
 
 		if (map.getmapnum() == 9)
 		{
@@ -272,12 +272,12 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 			map.DrawHelp(mem1dc, help_dc, help_button);
 
 		}
-		player.draw(mem1dc, pdc);
+		player.Render(mem1dc, pdc);
 		if (map.getmapnum() >= 10)
 		{
 			map.DrawUi(mem1dc, ui_dc, camera);
 			map.DrawHP(mem1dc, hp_dc, camera, player);
-			if (player.getCMD_die() == 1)
+			if (player.IsDead() == 1)
 				map.DrawDie(mem1dc, die_dc, camera, sound);
 		}
 
@@ -299,7 +299,7 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 		case 1:
 			obj_t += 1;
 
-			player.move(obj_t);
+			player.UpdateMovement(obj_t);
 			adjustPlayer(player, obj, map, ocount, app->m_window->hInstance, sound);
 
 			map.movemap();
@@ -314,13 +314,13 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 			}
 			else {
 				//캐릭터가 로딩중일땐 카메라 이동 금지 , 일반모드일때만 카메라 움직임
-				if (player.getGamemode() == 0)
+				if (player.GetGameMode() == 0)
 					adjustCamera(camera, player);
 			}
 
 			player.selectBit();
-			player.stealthtime();
-			player.spike_hurttime();
+			player.UpdateInvincibilityTimer();
+			player.UpdateSpikeKnockback();
 
 			// 이거를 따로 넣는게 낳을듯 오브젝트 멤버함수로다가
 			for (int i = 0; i <= ocount; i++)
@@ -386,25 +386,25 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 		}
 		break;
 	case WM_KEYDOWN:
-		if (player.getCMD_die() == 1)
+		if (player.IsDead() == 1)
 			break;
-		if (player.getGamemode() == 0)
-			player.PlayerSetting(wParam, sound);
-		else if (player.getGamemode() == 1)
+		if (player.GetGameMode() == 0)
+			player.OnKeyPressed(wParam, sound);
+		else if (player.GetGameMode() == 1)
 			camera.CameraSetting(wParam);
 		InvalidateRgn(hwnd, nullptr, FALSE);
 		break;
 	case WM_KEYUP:
-		if (player.getCMD_die() == 1)
+		if (player.IsDead() == 1)
 			break;
-		if (player.getGamemode() == 0)
-			player.PlayerWaiting(wParam);
-		else if (player.getGamemode() == 1)
+		if (player.GetGameMode() == 0)
+			player.OnKeyReleased(wParam);
+		else if (player.GetGameMode() == 1)
 			camera.CameraSetting(wParam);
 		InvalidateRgn(hwnd, nullptr, FALSE);
 		break;
 	case WM_MOUSEMOVE:
-		if (player.getCMD_die() == 1)
+		if (player.IsDead() == 1)
 		{
 			if (584 < LOWORD(lParam) && LOWORD(lParam) < 620)
 			{
@@ -490,7 +490,7 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 	case WM_LBUTTONDOWN:
 		SetCursor(LoadCursorFromFile(TEXT("cursor/cursor4.cur")));
 
-		if (player.getCMD_die() == 1)
+		if (player.IsDead() == 1)
 		{
 			if (584 < LOWORD(lParam) && LOWORD(lParam) < 620)
 			{
@@ -544,15 +544,15 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 		cout << HIWORD(lParam) + camera.GetY() << endl;
 		break;
 	case WM_LBUTTONUP:
-		if (player.getCMD_die() == 1)
+		if (player.IsDead() == 1)
 		{
 			if (584 < LOWORD(lParam) && LOWORD(lParam) < 620)
 			{
 				if (338 < HIWORD(lParam) && HIWORD(lParam) < 352)
 				{
 					map.ChangeDieNotice(app->m_window->hInstance, 0);
-					player.initPos();
-					player.sethp(100);
+					player.Initialzie();
+					player.SetCurrentHP(100);
 					break;
 				}
 			}
@@ -566,7 +566,7 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 					occur_button = 0;
 					map.setblack_t(50);
 					map.setmapnum(map.getmapnum() + 1);
-					player.initPos();
+					player.Initialzie();
 					for (int j = 0; j < ocount; j++)
 						obj[j].ResetObject();
 					ocount = initObject(obj, map.getmapnum(), app->m_window->hInstance);
@@ -596,7 +596,7 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 						false,
 						&sound.Channel[0]
 					);
-					player.sethp(100);
+					player.SetCurrentHP(100);
 					camera.SetX(0);
 					camera.SetY(3232);
 					InvalidateRgn(hwnd, nullptr, FALSE);
@@ -609,17 +609,17 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 	case WM_CHAR:
 		if (wParam == 'r')
 		{
-			player.setx(obj[ocount - 1].getX() + 10);
-			player.sety(obj[ocount - 1].getY() - 25);
+			player.SetPositionX(obj[ocount - 1].getX() + 10);
+			player.SetPositionY(obj[ocount - 1].getY() - 25);
 			break;
 		}
 		if (wParam == 'c')
 		{
-			player.setCMD_move(0);
-			if (player.getGamemode() == 0)
-				player.setGamemode(1);
+			player.SetCMDMove(0);
+			if (player.GetGameMode() == 0)
+				player.SetGameMode(1);
 			else
-				player.setGamemode(0);
+				player.SetGameMode(0);
 			break;
 		}
 		InvalidateRect(hwnd, nullptr, FALSE);
