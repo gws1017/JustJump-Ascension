@@ -19,8 +19,8 @@ App::App(std::wstring_view app_name)
  : m_app_name(app_name)
 {
 	s_instance = this;
-	m_timer = std::make_unique<Timer>();
-	m_window = std::make_shared<Window>(APP_WIDTH, APP_HEIGHT);
+	m_timer = CreateUPtr<Timer>();
+	m_window = CreateSPtr<Window>(APP_WIDTH, APP_HEIGHT);
 }
 
 App::~App()

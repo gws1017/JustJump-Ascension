@@ -172,6 +172,7 @@
     <ClInclude Include="src\core\App.h" />
     <ClInclude Include="src\core\entry_point.h" />
     <ClInclude Include="src\core\Timer.h" />
+    <ClInclude Include="src\core\util\ptr_template.h" />
     <ClInclude Include="src\core\window.h" />
     <ClInclude Include="src\Global.h" />
     <ClInclude Include="src\object\character\player.h" />

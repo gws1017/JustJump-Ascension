@@ -122,6 +122,9 @@
     <ClInclude Include="src\object\character\player.h">
       <Filter>소스 파일\src\object\character</Filter>
     </ClInclude>
+    <ClInclude Include="src\core\util\ptr_template.h">
+      <Filter>소스 파일\src\core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc">

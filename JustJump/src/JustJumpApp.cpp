@@ -25,7 +25,7 @@ public:
 
 };
 
-std::unique_ptr<App> CreateApp()
+UPtr<App> CreateApp()
 {
-	return std::make_unique<JustJumpApp>();
+	return CreateUPtr<JustJumpApp>();
 }
