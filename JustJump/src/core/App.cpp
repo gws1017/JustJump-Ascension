@@ -318,7 +318,7 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 					adjustCamera(camera, player);
 			}
 
-			player.selectBit();
+			player.SelectBitmap();
 			player.UpdateInvincibilityTimer();
 			player.UpdateSpikeKnockback();
 
@@ -615,7 +615,7 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 		}
 		if (wParam == 'c')
 		{
-			player.SetCMDMove(0);
+			player.SetMoveCommand(EMoveCommand::None);
 			if (player.GetGameMode() == 0)
 				player.SetGameMode(1);
 			else

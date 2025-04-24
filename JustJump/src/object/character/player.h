@@ -4,6 +4,35 @@
 
 class Sound;
 
+// 너무 많지않나
+// hurt bool 이있는데 왜또 스테이트가있지
+// crouch일때 비트맵 셋해주는 식으로 함수 묶을수잇을듯
+enum class EPlayerState
+{
+	Idle = 1,
+	Jump,
+	Crouch,
+	Move,
+	RopeIdle,
+	Hurt,
+	Airborne,
+	RopeMove
+};
+enum class EPlayerDirection 
+{
+	Left = 1,
+	Right,
+	Up,
+	Down
+};
+enum class EMoveCommand {
+	None = 0,
+	Left = 1,
+	Right = 2,
+	Up = 3,
+	Down = 4
+};
+
 class PLAYER {
 
 public:
@@ -24,13 +53,14 @@ public:
 	void SetSaveY(int y) { SavedY = y; }
 	void SetCurrentHP(int hp) { CurrentHP = hp; }
 	void SetFallSpeed(int speed) { FallAdjustSpeed = speed; }
-	void SetState(int state_) { state = state_; }
-
-	void SetDirection(int dir_) { dir = dir_; }
-	void SetCMDMove(int value) { COMMAND_move = value; }
-	void SetCMDHurt(bool value) { bIsHurt = value; }
-	void SetCMDRopeHurt(bool value) { bIsRopHurt = value; }
-	void SetCMDDie(bool value) { bIsDead = value; }
+	void SetState(EPlayerState state) { PlayerState = state; }
+	
+	//bool변수 너무많지않나
+	void SetDirection(EPlayerDirection dir) { PlayerDirection = dir; }
+	void SetMoveCommand(EMoveCommand command) { MoveCommand = command; }
+	void SetHurt(bool value) { bIsHurt = value; }
+	void SetRopeHurt(bool value) { bIsRopHurt = value; }
+	void SetDead(bool value) { bIsDead = value; }
 
 	void SetGameMode(bool value) { IsGameMode = value; }
 	void SetInvicible(int value) { InvincibleTime = value; }
@@ -49,10 +79,10 @@ public:
 
 	int GetCurrentHP() { return CurrentHP; }
 	int GetFallSpeed() { return FallAdjustSpeed; }
-	int GetState() { return state; }
+	EPlayerState GetState() { return PlayerState; }
 
-	int GetDirection() { return dir; }
-	int GetCMDMove() { return COMMAND_move; }
+	EPlayerDirection GetDirection() { return PlayerDirection; }
+	EMoveCommand GetMoveCommand() { return MoveCommand; }
 	bool IsHurt() { return bIsHurt; }
 	bool IsRopeHurt() { return bIsRopHurt; }
 	bool IsDead() { return bIsDead; }
@@ -71,9 +101,9 @@ public:
 	//플레이어 무브
 	void UpdateMovement(int delta_time);
 	//플레이어 스프라이트선택
-	void selectBit();
+	void SelectBitmap();
 	//애니메이션
-	void BitMove();
+	void PlayAnim();
 	//플레이어 그림
 	void Render(HDC& backDC, HDC& playerDC);
 	//피격시 무적시간
@@ -83,7 +113,20 @@ public:
 	//다쳤을때 피 다는 계산식 + 뒤지면초기화
 	void TakeDamage(Sound& sound);
 	//뒤지면 초기화
-	void Die();
+	void Die(Sound& sound);
+
+private:
+
+	void HandleLeftPressed();
+	void HandleRightPressed();
+	void HandleUpPressed();
+	void HandleDownPressed();
+	void HandleSpacePressed(Sound& sound);
+
+	void HandleLeftReleased();
+	void HandleRightReleased();
+	void HandleUpReleased();
+	void HandleDownReleased();
 
 private:
 	int PositionX, PositionY, HalfWidth, HalfHeight;		// x y 는 캐릭터의 중심좌표이고 w,h 는 xy에서 좌우로 반틈씩만 간 좌표이다.
@@ -91,11 +134,11 @@ private:
 	int SavedX, SavedY;	//savey 는 점프뛸때 그 순간의 y좌표를 기억하기 위함이고 x는 혹시몰라서 넣어둠
 
 	int CurrentHP;				//플레이어의 hp이다.
-	int dir;			//1왼쪽 2오른쪽 3위 4아래 플레이어가 보고있는'방향'
-	int state;			//1기본상태,2점프상태,3숙이기상태,4이동상태,5줄 정지,6피격상태,7공중에있는상태 8 줄이동
+	EPlayerDirection PlayerDirection;			//1왼쪽 2오른쪽 3위 4아래 플레이어가 보고있는'방향'
+	EPlayerState PlayerState;			//1기본상태,2점프상태,3숙이기상태,4이동상태,5줄 정지,6피격상태,7공중에있는상태 8 줄이동
 	int FallAdjustSpeed;		//떨어질때 x값 천천히 이동시켜주기 위한 변수
 
-	int COMMAND_move;	//이게 움직이고있는 상황인지 아닌지 구분 1이면왼쪽으로움직임  2면 오른쪽으로 움직임0이면 안움직임 3이면 위로움직임 4면아래로움직임
+	EMoveCommand MoveCommand;	//이게 움직이고있는 상황인지 아닌지 구분 1이면왼쪽으로움직임  2면 오른쪽으로 움직임0이면 안움직임 3이면 위로움직임 4면아래로움직임
 	bool bIsHurt;	//쳐맞으면 1 아니면 0 점프할때 로직에 들어감
 	bool bIsRopHurt;	//로프에서 쳐맞으면 1 아니면 0
 	bool bIsDead;	//죽으면 1 아니면 0

@@ -9,10 +9,10 @@ bool collp2w(PLAYER player, OBJECT object)
 {
 	int adjust = 10;
 	//왜 101이 먼저오냐면 발판보다는 장애물이 우선순위기때문임
-	if (101<=object.getType() &&object.getType()<301) { //장애물일때는 플레이어 네모빡스가 히트박스가된다
+	if (101 <= object.getType() && object.getType() < 301) { //장애물일때는 플레이어 네모빡스가 히트박스가된다
 		if (object.getType() == 106 || object.getType() == 107)
 		{
-			if (player.GetPositionX() + player.GetHalfWidth() < object.getX()+object.getmx() || player.GetPositionX() - player.GetHalfWidth() > object.getX() + object.getmx() + object.getW()) return 0;
+			if (player.GetPositionX() + player.GetHalfWidth() < object.getX() + object.getmx() || player.GetPositionX() - player.GetHalfWidth() > object.getX() + object.getmx() + object.getW()) return 0;
 			if (player.GetPositionY() + player.GetHalfHeight() < object.getY() + object.getmy() || player.GetPositionY() - player.GetHalfHeight() > object.getY() + object.getmy() + object.getH()) return 0;
 		}
 		else
@@ -20,10 +20,10 @@ bool collp2w(PLAYER player, OBJECT object)
 			if (player.GetPositionX() + player.GetHalfWidth() < object.getX() || player.GetPositionX() - player.GetHalfWidth() > object.getX() + object.getW()) return 0;
 			if (player.GetPositionY() + player.GetHalfHeight() < object.getY() || player.GetPositionY() - player.GetHalfHeight() > object.getY() + object.getH()) return 0;
 		}
-		
+
 
 		return 1;
-	} 
+	}
 	else if (301 <= object.getType() && object.getType() < 401)	//로프,밧줄같은 딱코 맞춰야하는 오브젝 위로는 플레이어 발까지 닿아야하고 아래로는 플레이어 중점에서 끝난다 하지만 내려갈수도 있어야하므로 조금 후하게 준다
 	{
 
@@ -49,7 +49,7 @@ bool collp2w(PLAYER player, OBJECT object)
 			if (player.GetPositionY() + player.GetHalfHeight() <= object.getY() || player.GetPositionY() < object.getY() + object.getH())
 				return 1;
 		}
-		
+
 		return 0;
 	}
 	else if (object.getType() == 1)	//땅바닥일때
@@ -84,12 +84,12 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_
 	if (player.GetPositionX() - player.GetHalfWidth() < 0)
 	{
 		player.SetPositionX(player.GetHalfWidth());
-		player.SetCMDMove(0);
+		player.SetMoveCommand(EMoveCommand::None);
 	}
 	else if (player.GetPositionX() + player.GetHalfWidth() > 1023)
 	{
 		player.SetPositionX(1023 - player.GetHalfWidth());
-		player.SetCMDMove(0);
+		player.SetMoveCommand(EMoveCommand::None);
 	}
 	for (int i = 0; i < ocount; ++i)
 	{
@@ -100,17 +100,17 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_
 		if (collp2w(player, obj[i]))
 		{
 			check_coll++;	//하나라도 부딪혔으면 coll이 올라감
-			if (obj[i].getType() < 101 && obj[i].getType()>0)			//근데 그게 땅바닥이였다?
+			if (obj[i].getType() < 101 && obj[i].getType() > 0)			//근데 그게 땅바닥이였다?
 			{
 
-				if (player.GetState() == 7) //떨어지는 중일때 부딪혔다 ?
+				if (player.GetState() == EPlayerState::Airborne) //떨어지는 중일때 부딪혔다 ?
 				{
 					if (abs(player.GetSaveY() - player.GetPositionY()) > 200)	//낙뎀을받아야한다면
 					{
 						if (player.GetInvincibleTime() == 0)	//무적이 아니라면
 						{
-							player.SetCMDMove(player.GetDirection());	//보고있는방향으로 앞으로 나가게, 떨어졌는데 가만히있진 않지요
-							player.SetState(6);		//피격으로감
+							player.SetMoveCommand(static_cast<EMoveCommand>(player.GetDirection()));	//보고있는방향으로 앞으로 나가게, 떨어졌는데 가만히있진 않지요
+							player.SetState(EPlayerState::Hurt);		//피격으로감
 							player.TakeDamage(sound);
 							return;
 						}
@@ -118,23 +118,23 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_
 					player.SetPositionY(obj[i].getY() - player.GetHalfHeight());//발판위로 y좌표 세팅해주고
 
 					if (LEFTkey == 0 && RIGHTkey == 0)	//근데 그와중에도 아무키도 안누르고있었다 ? 
-						player.SetCMDMove(false);	//그럼 진행방향으로 가는걸 멈추도록해준다.
+						player.SetMoveCommand(EMoveCommand::None);	//그럼 진행방향으로 가는걸 멈추도록해준다.
 					else if (LEFTkey == 1 && RIGHTkey == 1)
-						player.SetCMDMove(false);	//동시에 누르고있었어도 멈춰준다
+						player.SetMoveCommand(EMoveCommand::None);	//동시에 누르고있었어도 멈춰준다
 					else if (LEFTkey == 1)	//하지만 뭔가를 누르고있었다?
-						player.SetCMDMove(1);
+						player.SetMoveCommand(EMoveCommand::Left);
 					else if (RIGHTkey == 1)			//그에맞춰바꿔준다
-						player.SetCMDMove(2);
+						player.SetMoveCommand(EMoveCommand::Right);
 
 					if (DOWNkey == true) {
-						player.SetState(3);	//숙이고있던 상태였다면 계속 숙이고있어줌
+						player.SetState(EPlayerState::Crouch);	//숙이고있던 상태였다면 계속 숙이고있어줌
 						player.SetPositionY(player.GetPositionY() + 12);
 						player.SetHalfHeight(player.GetHalfHeight() - 12);	//계산이 끝났다면 다시 숙이기상태로 돌려줌
 					}
-					else player.SetState(1);				//숙이던게 아니였으면 땅에부딪혔으니 정지상태해줌
+					else player.SetState(EPlayerState::Idle);				//숙이던게 아니였으면 땅에부딪혔으니 정지상태해줌
 					player.SetFallSpeed(0);			//떨어질때가속도를 위한거니 이것도 정지해줌
-					player.SetCMDHurt(0);			//땅에 닿았으면 피격아님
-					player.SetCMDRopeHurt(0);		//땅에 닿았으면 피격아님
+					player.SetHurt(0);			//땅에 닿았으면 피격아님
+					player.SetRopeHurt(0);		//땅에 닿았으면 피격아님
 
 					if (ROWSPEED != 3)		//ROWSPEED를 임의로 바꿔주었다면 땅에 닿으면 초기화니 원래대로 돌려준다
 						ROWSPEED = 3;
@@ -156,22 +156,22 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_
 				{
 					if (player.GetInvincibleTime() == 0)	//무적이 아니라면
 					{
-						if (player.GetState() == 5 || player.GetState() == 8)
+						if (player.GetState() == EPlayerState::RopeIdle || player.GetState() == EPlayerState::RopeMove)
 						{
-							player.SetCMDRopeHurt(1);
+							player.SetRopeHurt(1);
 						}
-						if (player.GetState()==3) //숙이고있었다면
+						if (player.GetState() == EPlayerState::Crouch) //숙이고있었다면
 						{
 							player.SetPositionY(player.GetPositionY() - 12);
 							player.SetHalfHeight(player.GetHalfHeight() + 12);	//계산전에 돌려놓고 시작한다. 이건 땅에 닿을시점에 다시돌려준다
 						}
-						if (player.GetState() == 7)//일반일때는 살짝 점프 뛰듯이 가는데 떨어지는중이면 살짝만 이동한다
+						if (player.GetState() == EPlayerState::Airborne)//일반일때는 살짝 점프 뛰듯이 가는데 떨어지는중이면 살짝만 이동한다
 						{
-							if (player.GetCMDMove() == 1)
+							if (player.GetMoveCommand() == EMoveCommand::Left)
 							{
 								player.SetSpikeHurt(-8);	//8번 왼쪽으로 감
 							}
-							else if (player.GetCMDMove() == 2)
+							else if (player.GetMoveCommand() == EMoveCommand::Right)
 							{
 								player.SetSpikeHurt(8);	//8번 오른쪽으로감
 							}
@@ -179,7 +179,7 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_
 							player.SetInvicible(100);	//무적시간 넣어줌 (이동하는로직은 state==7 일때 알아서 다뤄줌
 						}
 						else {
-							player.SetState(6);		//피격으로감
+							player.SetState(EPlayerState::Hurt);		//피격으로감
 						}
 						player.TakeDamage(sound);
 					}
@@ -187,36 +187,36 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_
 				else if (obj[i].getType() == 102) //Break Pipe Left
 				{
 					//Copy and Paste is very good (Y Collapse)
-					if (player.GetState() == 7) //떨어지는 중일때 부딪혔다 ?
+					if (player.GetState() == EPlayerState::Airborne) //떨어지는 중일때 부딪혔다 ?
 					{
 						player.SetPositionY(obj[i].getY() - player.GetHalfHeight());//발판위로 y좌표 세팅해주고
 
 						if (LEFTkey == 0 && RIGHTkey == 0)	//근데 그와중에도 아무키도 안누르고있었다 ? 
-							player.SetCMDMove(false);	//그럼 진행방향으로 가는걸 멈추도록해준다.
+							player.SetMoveCommand(EMoveCommand::None);	//그럼 진행방향으로 가는걸 멈추도록해준다.
 						else if (LEFTkey == 1 && RIGHTkey == 1)
-							player.SetCMDMove(false);	//동시에 누르고있었어도 멈춰준다
+							player.SetMoveCommand(EMoveCommand::None);	//동시에 누르고있었어도 멈춰준다
 						else if (LEFTkey == 1)	//하지만 뭔가를 누르고있었다?
-							player.SetCMDMove(1);
+							player.SetMoveCommand(EMoveCommand::Left);
 						else if (RIGHTkey == 1)			//그에맞춰바꿔준다
-							player.SetCMDMove(2);
+							player.SetMoveCommand(EMoveCommand::Right);
 
-						player.SetState(1);				//그리고 땅에부딪혔으니 정지상태해줌
+						player.SetState(EPlayerState::Idle);				//그리고 땅에부딪혔으니 정지상태해줌
 						player.SetFallSpeed(0);			//떨어질때가속도를 위한거니 이것도 정지해줌
-						player.SetCMDHurt(0);			//땅에 닿았으면 피격아님
-						player.SetCMDRopeHurt(0);		//땅에 닿았으면 피격아님
+						player.SetHurt(0);			//땅에 닿았으면 피격아님
+						player.SetRopeHurt(0);		//땅에 닿았으면 피격아님
 
 						if (ROWSPEED != 3)		//ROWSPEED를 임의로 바꿔주었다면 땅에 닿으면 초기화니 원래대로 돌려준다
 							ROWSPEED = 3;
 					}
 					//X Collapse
-					if (player.GetState() == 1 || player.GetState() == 4) //Walking Collpse
+					if (player.GetState() == EPlayerState::Idle || player.GetState() == EPlayerState::Move) //Walking Collpse
 					{
 						if (obj[i].getY() < player.GetPositionY() - player.GetHalfHeight())
 						{
 							if (obj[i].getX() < player.GetPositionX() + player.GetHalfWidth()) //Left Collpse
 							{
 								player.SetPositionX(obj[i].getX() - player.GetHalfWidth());// x좌표 세팅해주고
-								player.SetCMDMove(0);//Don't Move
+								player.SetMoveCommand(EMoveCommand::None);
 							}
 						}
 					}
@@ -227,18 +227,18 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_
 					{
 						if (player.GetInvincibleTime() == 0)
 						{
-							if (player.GetState() == 5 || player.GetState() == 8)
+							if (player.GetState() == EPlayerState::RopeIdle || player.GetState() == EPlayerState::RopeMove)
 							{
-								player.SetCMDRopeHurt(1);
+								player.SetRopeHurt(1);
 							}
-							if (player.GetState() == 3) //숙이고있었다면
+							if (player.GetState() == EPlayerState::Crouch) //숙이고있었다면
 							{
 								player.SetPositionY(player.GetPositionY() - 12);
 								player.SetHalfHeight(player.GetHalfHeight() + 12);	//계산전에 돌려놓고 시작한다. 이건 땅에 닿을시점에 다시돌려준다
 							}
-							if (player.GetState() == 7)
+							if (player.GetState() == EPlayerState::Airborne)
 							{
-								if (player.GetDirection() == 1 || player.GetDirection() == 2) //무조건 왼쪽으로감
+								if (player.GetDirection() == EPlayerDirection::Left || player.GetDirection() == EPlayerDirection::Right) //무조건 왼쪽으로감
 								{
 									player.SetSpikeHurt(-8);
 								}
@@ -246,8 +246,8 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_
 								player.SetInvicible(100);
 							}
 							else {
-								player.SetCMDMove(1); //무조건 왼쪽임
-								player.SetState(6);
+								player.SetMoveCommand(EMoveCommand::Left); //무조건 왼쪽임
+								player.SetState(EPlayerState::Hurt);
 							}
 							player.TakeDamage(sound);
 						}
@@ -265,22 +265,22 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_
 				{
 					if (player.GetInvincibleTime() == 0)	//무적이 아니라면
 					{
-						if (player.GetState() == 5 || player.GetState() == 8)
+						if (player.GetState() == EPlayerState::RopeIdle || player.GetState() == EPlayerState::RopeMove)
 						{
-							player.SetCMDRopeHurt(1);
+							player.SetRopeHurt(1);
 						}
-						if (player.GetState() == 3) //숙이고있었다면
+						if (player.GetState() == EPlayerState::Crouch) //숙이고있었다면
 						{
 							player.SetPositionY(player.GetPositionY() - 12);
 							player.SetHalfHeight(player.GetHalfHeight() + 12);	//계산전에 돌려놓고 시작한다. 이건 땅에 닿을시점에 다시돌려준다
 						}
-						if (player.GetState() == 7)//일반일때는 살짝 점프 뛰듯이 가는데 떨어지는중이면 살짝만 이동한다
+						if (player.GetState() == EPlayerState::Airborne)//일반일때는 살짝 점프 뛰듯이 가는데 떨어지는중이면 살짝만 이동한다
 						{
-							if (player.GetDirection() == 1)
+							if (player.GetDirection() == EPlayerDirection::Left)
 							{
 								player.SetSpikeHurt(-8);	//8번 왼쪽으로 감
 							}
-							else if (player.GetDirection() == 2)
+							else if (player.GetDirection() == EPlayerDirection::Right)
 							{
 								player.SetSpikeHurt(8);	//8번 오른쪽으로감
 							}
@@ -288,8 +288,8 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_
 							player.SetInvicible(100);	//무적시간 넣어줌 (이동하는로직은 state==7 일때 알아서 다뤄줌
 						}
 						else {
-							player.SetCMDMove(player.GetDirection());
-							player.SetState(6);		//피격으로감
+							player.SetMoveCommand(static_cast<EMoveCommand>(player.GetDirection()));
+							player.SetState(EPlayerState::Hurt);		//피격으로감
 						}
 						player.TakeDamage(sound);
 					}
@@ -298,22 +298,22 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_
 				{
 					if (player.GetInvincibleTime() == 0)	//무적이 아니라면
 					{
-						if (player.GetState() == 5 || player.GetState() == 8)
+						if (player.GetState() == EPlayerState::RopeIdle || player.GetState() == EPlayerState::RopeMove)
 						{
-							player.SetCMDRopeHurt(1);
+							player.SetRopeHurt(1);
 						}
-						if (player.GetState() == 3) //숙이고있었다면
+						if (player.GetState() == EPlayerState::Crouch) //숙이고있었다면
 						{
 							player.SetPositionY(player.GetPositionY() - 12);
 							player.SetHalfHeight(player.GetHalfHeight() + 12);	//계산전에 돌려놓고 시작한다. 이건 땅에 닿을시점에 다시돌려준다
 						}
-						if (player.GetState() == 7)//일반일때는 살짝 점프 뛰듯이 가는데 떨어지는중이면 살짝만 이동한다
+						if (player.GetState() == EPlayerState::Airborne)//일반일때는 살짝 점프 뛰듯이 가는데 떨어지는중이면 살짝만 이동한다
 						{
-							if (player.GetDirection() == 1)
+							if (player.GetDirection() == EPlayerDirection::Left)
 							{
 								player.SetSpikeHurt(-8);	//8번 왼쪽으로 감
 							}
-							else if (player.GetDirection() == 2)
+							else if (player.GetDirection() == EPlayerDirection::Right)
 							{
 								player.SetSpikeHurt(8);	//8번 오른쪽으로감
 							}
@@ -321,8 +321,8 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_
 							player.SetInvicible(100);	//무적시간 넣어줌 (이동하는로직은 state==7 일때 알아서 다뤄줌
 						}
 						else {
-							player.SetCMDMove(player.GetDirection());
-							player.SetState(6);		//피격으로감
+							player.SetMoveCommand(static_cast<EMoveCommand>(player.GetDirection()));
+							player.SetState(EPlayerState::Hurt);		//피격으로감
 						}
 						player.TakeDamage(sound);
 					}
@@ -343,7 +343,7 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_
 							obj[j].ResetObject();
 						ocount = initObject(obj, m.getmapnum(), g_hinst);
 						m.CreateMap(g_hinst);
-						sound.setindex(m.getmapnum()-9);
+						sound.setindex(m.getmapnum() - 9);
 						sound.System->update();
 						sound.Channel[0]->stop();
 						sound.System->playSound(
@@ -360,7 +360,7 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_
 							&sound.Channel[1]
 						);
 
-						
+
 						return;
 					}
 				}
@@ -373,16 +373,16 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_
 					{
 						if (UPkey == true || DOWNkey == true)
 						{
-							if (DOWNkey == true && (player.GetState() == 2 || player.GetState() == 7))	//공중에있거나 점프중일때 아랫키로는 줄에 붙을수없다
+							if (DOWNkey == true && (player.GetState() == EPlayerState::Jump || player.GetState() == EPlayerState::Airborne))	//공중에있거나 점프중일때 아랫키로는 줄에 붙을수없다
 								return;
 
-							if (player.GetState() != 5 && player.GetState() != 8)	//줄에 매달려있지 않았다면 줄에 매달리는 상태를 만들어준다. 이미붙어있다면 해줄필요없음
+							if (player.GetState() != EPlayerState::RopeIdle && player.GetState() != EPlayerState::RopeMove)	//줄에 매달려있지 않았다면 줄에 매달리는 상태를 만들어준다. 이미붙어있다면 해줄필요없음
 							{
-								player.SetState(5);
+								player.SetState(EPlayerState::RopeIdle);
 								if (UPkey == true)
-									player.SetCMDMove(3);
+									player.SetMoveCommand(EMoveCommand::Up);
 								if (DOWNkey == true)
-									player.SetCMDMove(4);
+									player.SetMoveCommand(EMoveCommand::Down);
 								player.SetPositionX(obj[i].getX() + (obj[i].getW() / 2));
 								if (DOWNkey == true)	//이때는 수그리기아니라 밧줄 아래로 내려가는것이므로 수그리기로 깍인거 돌려준다
 								{
@@ -390,7 +390,7 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_
 									player.SetHalfHeight(25);
 								}
 							}
-							player.BitMove();
+							player.PlayAnim();
 							//player.BitMove();
 						}
 					}
@@ -408,9 +408,10 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_
 	}
 	if (check_coll != 0)
 		return;	//하나라도 부딪혔다면 그대로 탈출
-	if ((player.GetState() == 4 || player.GetState() == 1)||(player.GetState()==5||player.GetState()==8))	//하나도 못부딪혔으면 공중에있는거니까 떨어져야한다
+	if ((player.GetState() == EPlayerState::Move || player.GetState() == EPlayerState::Idle) 
+		|| (player.GetState() == EPlayerState::RopeIdle || player.GetState() == EPlayerState::RopeMove))	//하나도 못부딪혔으면 공중에있는거니까 떨어져야한다
 	{
-		player.SetState(7);
+		player.SetState(EPlayerState::Airborne);
 		player.SavePositionX();		//떨어지는 순간의 x좌표점 기억
 	}
 
@@ -496,7 +497,7 @@ void adjustCamera(CAMERA& camera, PLAYER player)
 	}
 	else if (camera.GetY() + 600 != player.GetPositionY())		//카메라가 정해진 위치에 있지않다면
 	{
-		if (player.GetState() != 7)							//그리고 떨어질때까지 카메라를 바꿔주면 너무 흔들려서 이때는 무시함
+		if (player.GetState() != EPlayerState::Airborne)							//그리고 떨어질때까지 카메라를 바꿔주면 너무 흔들려서 이때는 무시함
 		{
 			if (camera.GetY() <= 0)	//최상점일땐 이동해주지않음
 			{
