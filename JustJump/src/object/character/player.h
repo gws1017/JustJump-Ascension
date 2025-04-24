@@ -1,6 +1,6 @@
 #pragma once
 #include <Windows.h>
-#include"Sound.h"
+#include"system/Sound.h"
 
 class PLAYER {
 	int x, y, w, h;		// x y 는 캐릭터의 중심좌표이고 w,h 는 xy에서 좌우로 반틈씩만 간 좌표이다.

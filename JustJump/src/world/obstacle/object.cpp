@@ -2,7 +2,7 @@
 #include "Global.h"
 
 #include "object.h"
-#include "Load.h"
+#include "system/Load.h"
 
 int OBJECT::getX()
 {

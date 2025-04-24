@@ -1,5 +1,5 @@
 #pragma once
-#include "player.h"
+#include "object/character/player.h"
 
 #define beltspeed 2 //belt speed
 #define gearrowspeed 5 //row gear speed

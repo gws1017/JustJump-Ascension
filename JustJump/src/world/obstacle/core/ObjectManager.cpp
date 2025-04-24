@@ -1,5 +1,5 @@
 #include "Global.h"
-#include "ObjectManager.h"
+#include "world/obstacle/core/ObjectManager.h"
 #include <fstream>
 
 
@@ -474,69 +474,69 @@ int initObject(OBJECT* obj, int mapnum, HINSTANCE g_hinst)
 void adjustCamera(CAMERA& camera, PLAYER player)
 {
 	//플레이어의 머리부분이 카메라의 꼭대기점을 넘어가면 바로 따라붙게한다
-	if (player.gety() - player.geth() < camera.gety())
+	if (player.gety() - player.geth() < camera.GetY())
 	{
-		if (camera.gety() <= 0)	//최상점일땐 이동해주지않음
+		if (camera.GetY() <= 0)	//최상점일땐 이동해주지않음
 		{
 
 		}
 		else {
-			camera.sety(player.gety() - player.geth());		//384는 맵 크기 768의 절반
+			camera.SetY(player.gety() - player.geth());		//384는 맵 크기 768의 절반
 		}
 	}
-	else if (player.gety() + player.geth() > camera.gety() + 768)	//캐릭터의 발바닥이 카메라밖을 넘어서면
+	else if (player.gety() + player.geth() > camera.GetY() + 768)	//캐릭터의 발바닥이 카메라밖을 넘어서면
 	{
-		if (camera.gety() >= 3232)	//최하점일땐 이동해주지않음
+		if (camera.GetY() >= 3232)	//최하점일땐 이동해주지않음
 		{
 
 		}
 		else {
-			camera.sety(player.gety() + player.geth() - 768);	//따라가준다
+			camera.SetY(player.gety() + player.geth() - 768);	//따라가준다
 		}
 	}
-	else if (camera.gety() + 600 != player.gety())		//카메라가 정해진 위치에 있지않다면
+	else if (camera.GetY() + 600 != player.gety())		//카메라가 정해진 위치에 있지않다면
 	{
 		if (player.getstate() != 7)							//그리고 떨어질때까지 카메라를 바꿔주면 너무 흔들려서 이때는 무시함
 		{
-			if (camera.gety() <= 0)	//최상점일땐 이동해주지않음
+			if (camera.GetY() <= 0)	//최상점일땐 이동해주지않음
 			{
-				camera.sety(0);
+				camera.SetY(0);
 			}
-			else if (camera.gety() + 540 > player.gety())		//얼마나 멀리있느냐에 따라 속도비를 다르게해서 카메라를 따라오게한다
+			else if (camera.GetY() + 540 > player.gety())		//얼마나 멀리있느냐에 따라 속도비를 다르게해서 카메라를 따라오게한다
 			{
-				camera.sety(camera.gety() - 4);
+				camera.SetY(camera.GetY() - 4);
 			}
-			else if (camera.gety() + 580 > player.gety())
+			else if (camera.GetY() + 580 > player.gety())
 			{
-				camera.sety(camera.gety() - 2);
+				camera.SetY(camera.GetY() - 2);
 			}
-			else if (camera.gety() + 600 > player.gety())
+			else if (camera.GetY() + 600 > player.gety())
 			{
-				camera.sety(camera.gety() - 1);
+				camera.SetY(camera.GetY() - 1);
 			}
-			else if (camera.gety() + 700 < player.gety())
+			else if (camera.GetY() + 700 < player.gety())
 			{
-				camera.sety(camera.gety() + 10);
+				camera.SetY(camera.GetY() + 10);
 			}
-			else if (camera.gety() + 680 < player.gety())
+			else if (camera.GetY() + 680 < player.gety())
 			{
-				camera.sety(camera.gety() + 8);
+				camera.SetY(camera.GetY() + 8);
 			}
-			else if (camera.gety() + 660 < player.gety())
+			else if (camera.GetY() + 660 < player.gety())
 			{
-				camera.sety(camera.gety() + 6);
+				camera.SetY(camera.GetY() + 6);
 			}
-			else if (camera.gety() + 640 < player.gety())
+			else if (camera.GetY() + 640 < player.gety())
 			{
-				camera.sety(camera.gety() + 4);
+				camera.SetY(camera.GetY() + 4);
 			}
-			else if (camera.gety() + 620 < player.gety())
+			else if (camera.GetY() + 620 < player.gety())
 			{
-				camera.sety(camera.gety() + 2);
+				camera.SetY(camera.GetY() + 2);
 			}
-			else if (camera.gety() + 600 < player.gety())
+			else if (camera.GetY() + 600 < player.gety())
 			{
-				camera.sety(camera.gety() + 1);
+				camera.SetY(camera.GetY() + 1);
 			}
 		}
 	}

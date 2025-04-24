@@ -1,8 +1,8 @@
 #include "Global.h"
-#include "player.h"
+#include "object/character/player.h"
 #pragma comment (lib, "Msimg32.lib")
 
-#include "Load.h"
+#include "system/Load.h"
 
 int ROWSPEED = 3; 	//가로 이동속도
 int COLSPEED = 10;	//세로 이동속도

@@ -1,6 +1,6 @@
 #pragma once
-#include "Camera.h"
-#include "player.h"
+#include "object/view/Camera.h"
+#include "object/character/player.h"
 
 #define MAPWIDTH 1024
 #define MAPHEIGHT 4098

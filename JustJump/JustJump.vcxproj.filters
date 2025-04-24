@@ -19,29 +19,29 @@
     <Filter Include="소스 파일\src\core">
       <UniqueIdentifier>{a31378ab-d61e-49d3-8bb3-4f616a1427db}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\src\object">
+      <UniqueIdentifier>{85b0cf01-e113-45af-aa62-24f7d7fddfc7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\src\object\character">
+      <UniqueIdentifier>{ba3e620f-b17b-41cf-a238-5871c9e8901f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\src\system">
+      <UniqueIdentifier>{341b5e72-0f68-46e0-bb3e-93090331a696}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\src\world">
+      <UniqueIdentifier>{211ef663-8b01-49c8-81fc-c63cbf4d9c90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\src\world\obstacle">
+      <UniqueIdentifier>{961c0add-d56f-4f52-aad5-7ada74f75728}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\src\world\obstacle\core">
+      <UniqueIdentifier>{33ce5574-4734-48c4-bc2d-3939694b1a61}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\src\object\view">
+      <UniqueIdentifier>{2893820b-0381-4f2f-8739-e6e04ff93777}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Camera.cpp">
-      <Filter>소스 파일\src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Load.cpp">
-      <Filter>소스 파일\src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Map.cpp">
-      <Filter>소스 파일\src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\object.cpp">
-      <Filter>소스 파일\src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ObjectManager.cpp">
-      <Filter>소스 파일\src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\player.cpp">
-      <Filter>소스 파일\src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Sound.cpp">
-      <Filter>소스 파일\src</Filter>
-    </ClCompile>
     <ClCompile Include="src\core\App.cpp">
       <Filter>소스 파일\src\core</Filter>
     </ClCompile>
@@ -57,30 +57,30 @@
     <ClCompile Include="src\core\Timer.cpp">
       <Filter>소스 파일\src\core</Filter>
     </ClCompile>
+    <ClCompile Include="src\object\character\player.cpp">
+      <Filter>소스 파일\src\object\character</Filter>
+    </ClCompile>
+    <ClCompile Include="src\system\Sound.cpp">
+      <Filter>소스 파일\src\system</Filter>
+    </ClCompile>
+    <ClCompile Include="src\system\Load.cpp">
+      <Filter>소스 파일\src\system</Filter>
+    </ClCompile>
+    <ClCompile Include="src\world\Map.cpp">
+      <Filter>소스 파일\src\world</Filter>
+    </ClCompile>
+    <ClCompile Include="src\world\obstacle\object.cpp">
+      <Filter>소스 파일\src\world\obstacle</Filter>
+    </ClCompile>
+    <ClCompile Include="src\world\obstacle\core\ObjectManager.cpp">
+      <Filter>소스 파일\src\world\obstacle\core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\object\view\Camera.cpp">
+      <Filter>소스 파일\src\object\view</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Camera.h">
-      <Filter>소스 파일\src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Load.h">
-      <Filter>소스 파일\src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Map.h">
-      <Filter>소스 파일\src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\object.h">
-      <Filter>소스 파일\src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ObjectManager.h">
-      <Filter>소스 파일\src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\player.h">
-      <Filter>소스 파일\src</Filter>
-    </ClInclude>
     <ClInclude Include="src\resource.h">
-      <Filter>소스 파일\src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Sound.h">
       <Filter>소스 파일\src</Filter>
     </ClInclude>
     <ClInclude Include="src\core\App.h">
@@ -100,6 +100,27 @@
     </ClInclude>
     <ClInclude Include="src\core\Timer.h">
       <Filter>소스 파일\src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\system\Sound.h">
+      <Filter>소스 파일\src\system</Filter>
+    </ClInclude>
+    <ClInclude Include="src\system\Load.h">
+      <Filter>소스 파일\src\system</Filter>
+    </ClInclude>
+    <ClInclude Include="src\world\Map.h">
+      <Filter>소스 파일\src\world</Filter>
+    </ClInclude>
+    <ClInclude Include="src\world\obstacle\object.h">
+      <Filter>소스 파일\src\world\obstacle</Filter>
+    </ClInclude>
+    <ClInclude Include="src\world\obstacle\core\ObjectManager.h">
+      <Filter>소스 파일\src\world\obstacle\core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\object\view\Camera.h">
+      <Filter>소스 파일\src\object\view</Filter>
+    </ClInclude>
+    <ClInclude Include="src\object\character\player.h">
+      <Filter>소스 파일\src\object\character</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

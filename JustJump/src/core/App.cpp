@@ -3,11 +3,11 @@
 #include "core/window.h"
 #include "core/Timer.h"
 
-#include "Load.h"
-#include "Map.h"
-#include "ObjectManager.h"
-#include "Camera.h"
-#include "Sound.h"
+#include "system/Load.h"
+#include "world/Map.h"
+#include "world/obstacle/core/ObjectManager.h"
+#include "object/view/Camera.h"
+#include "system/Sound.h"
 
 #ifdef _DEBUG
 #pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
@@ -208,12 +208,12 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 
 		if (map.getmapnum() == 9)
 		{
-			camera.setx(0);
-			camera.sety(0);
+			camera.SetX(0);
+			camera.SetY(0);
 		}
 
 
-		cout << camera.getx() << endl;
+		cout << camera.GetX() << endl;
 		sound.Sound_Setup();
 		loadbf.AlphaFormat = 0;
 		loadbf.BlendFlags = 0;
@@ -286,7 +286,7 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 		if (map.getblack_t() > 0) map.DrawLoadBK(mem1dc, mem2dc, loadbf);
 
 
-		BitBlt(hdc, 0, 0, 1024, 768, mem1dc, camera.getx(), camera.gety(), SRCCOPY);
+		BitBlt(hdc, 0, 0, 1024, 768, mem1dc, camera.GetX(), camera.GetY(), SRCCOPY);
 
 
 
@@ -541,7 +541,7 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 
 		}
 		cout << LOWORD(lParam) << endl;
-		cout << HIWORD(lParam) + camera.gety() << endl;
+		cout << HIWORD(lParam) + camera.GetY() << endl;
 		break;
 	case WM_LBUTTONUP:
 		if (player.getCMD_die() == 1)
@@ -597,8 +597,8 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 						&sound.Channel[0]
 					);
 					player.sethp(100);
-					camera.setx(0);
-					camera.sety(3232);
+					camera.SetX(0);
+					camera.SetY(3232);
 					InvalidateRgn(hwnd, nullptr, FALSE);
 					break;
 				}

@@ -1,5 +1,5 @@
 #include "Global.h"
-#include "Sound.h"
+#include "system/Sound.h"
 
 
 int Sound::getindex()
