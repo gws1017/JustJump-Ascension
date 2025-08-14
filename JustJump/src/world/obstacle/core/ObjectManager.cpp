@@ -9,63 +9,63 @@ bool collp2w(PLAYER player, OBJECT object)
 {
 	int adjust = 10;
 	//왜 101이 먼저오냐면 발판보다는 장애물이 우선순위기때문임
-	if (101 <= object.getType() && object.getType() < 301) { //장애물일때는 플레이어 네모빡스가 히트박스가된다
-		if (object.getType() == 106 || object.getType() == 107)
+	if (101 <= object.GetType() && object.GetType() < 301) { //장애물일때는 플레이어 네모빡스가 히트박스가된다
+		if (object.GetType() == 106 || object.GetType() == 107)
 		{
-			if (player.GetPositionX() + player.GetHalfWidth() < object.getX() + object.getmx() || player.GetPositionX() - player.GetHalfWidth() > object.getX() + object.getmx() + object.getW()) return 0;
-			if (player.GetPositionY() + player.GetHalfHeight() < object.getY() + object.getmy() || player.GetPositionY() - player.GetHalfHeight() > object.getY() + object.getmy() + object.getH()) return 0;
+			if (player.GetPositionX() + player.GetHalfWidth() < object.GetX() + object.GetMX() || player.GetPositionX() - player.GetHalfWidth() > object.GetX() + object.GetMX() + object.GetWidth()) return 0;
+			if (player.GetPositionY() + player.GetHalfHeight() < object.GetY() + object.GetMY() || player.GetPositionY() - player.GetHalfHeight() > object.GetY() + object.GetMY() + object.GetHeight()) return 0;
 		}
 		else
 		{
-			if (player.GetPositionX() + player.GetHalfWidth() < object.getX() || player.GetPositionX() - player.GetHalfWidth() > object.getX() + object.getW()) return 0;
-			if (player.GetPositionY() + player.GetHalfHeight() < object.getY() || player.GetPositionY() - player.GetHalfHeight() > object.getY() + object.getH()) return 0;
+			if (player.GetPositionX() + player.GetHalfWidth() < object.GetX() || player.GetPositionX() - player.GetHalfWidth() > object.GetX() + object.GetWidth()) return 0;
+			if (player.GetPositionY() + player.GetHalfHeight() < object.GetY() || player.GetPositionY() - player.GetHalfHeight() > object.GetY() + object.GetHeight()) return 0;
 		}
 
 
 		return 1;
 	}
-	else if (301 <= object.getType() && object.getType() < 401)	//로프,밧줄같은 딱코 맞춰야하는 오브젝 위로는 플레이어 발까지 닿아야하고 아래로는 플레이어 중점에서 끝난다 하지만 내려갈수도 있어야하므로 조금 후하게 준다
+	else if (301 <= object.GetType() && object.GetType() < 401)	//로프,밧줄같은 딱코 맞춰야하는 오브젝 위로는 플레이어 발까지 닿아야하고 아래로는 플레이어 중점에서 끝난다 하지만 내려갈수도 있어야하므로 조금 후하게 준다
 	{
 
-		if (player.GetPositionY() + player.GetHalfHeight() < object.getY() || player.GetPositionY() - player.GetHalfHeight() > object.getY() + object.getH()) return 0;	//일단먼저 닿았으면 들어와
+		if (player.GetPositionY() + player.GetHalfHeight() < object.GetY() || player.GetPositionY() - player.GetHalfHeight() > object.GetY() + object.GetHeight()) return 0;	//일단먼저 닿았으면 들어와
 
-		if (object.getX() < player.GetPositionX() && player.GetPositionX() < object.getX() + object.getW())	//파이프가 그래도 좀 두꺼우니 이안에들어오면 cehck
+		if (object.GetX() < player.GetPositionX() && player.GetPositionX() < object.GetX() + object.GetWidth())	//파이프가 그래도 좀 두꺼우니 이안에들어오면 cehck
 		{
 			if (UPkey == true)//여기는 특이하게 올라가면 올라가는쪽 체크는 끝이나야한다.
 			{
 
-				if (player.GetPositionY() + player.GetHalfHeight() <= object.getY())	//올라갔을때 아랫키를 만족하면 충돌체크 x 안그러면 반응해서 계속 줄에매달리는 오류
+				if (player.GetPositionY() + player.GetHalfHeight() <= object.GetY())	//올라갔을때 아랫키를 만족하면 충돌체크 x 안그러면 반응해서 계속 줄에매달리는 오류
 					return 0;
-				if (player.GetPositionY() < object.getY() + object.getH())
+				if (player.GetPositionY() < object.GetY() + object.GetHeight())
 					return 1;
 			}
 			else if (DOWNkey == true)
 			{
 
-				if (player.GetPositionY() + player.GetHalfHeight() <= object.getY())
+				if (player.GetPositionY() + player.GetHalfHeight() <= object.GetY())
 					return 1;
 			}
 
-			if (player.GetPositionY() + player.GetHalfHeight() <= object.getY() || player.GetPositionY() < object.getY() + object.getH())
+			if (player.GetPositionY() + player.GetHalfHeight() <= object.GetY() || player.GetPositionY() < object.GetY() + object.GetHeight())
 				return 1;
 		}
 
 		return 0;
 	}
-	else if (object.getType() == 1)	//땅바닥일때
+	else if (object.GetType() == 1)	//땅바닥일때
 	{
-		if (object.getX() <= player.GetPositionX() && player.GetPositionX() <= object.getX() + object.getW())
+		if (object.GetX() <= player.GetPositionX() && player.GetPositionX() <= object.GetX() + object.GetWidth())
 		{
-			if (object.getY() <= player.GetPositionY() + player.GetHalfHeight())
+			if (object.GetY() <= player.GetPositionY() + player.GetHalfHeight())
 			{
 				return 1;
 			}
 		}
 	}
-	else if (object.getType() <= 100) {	//플랫폼일때는 플레이어 중점이 히트박스가된다
-		if (object.getX() <= player.GetPositionX() && player.GetPositionX() <= object.getX() + object.getW())
+	else if (object.GetType() <= 100) {	//플랫폼일때는 플레이어 중점이 히트박스가된다
+		if (object.GetX() <= player.GetPositionX() && player.GetPositionX() <= object.GetX() + object.GetWidth())
 		{
-			if (object.getY() <= player.GetPositionY() + player.GetHalfHeight() && player.GetPositionY() + player.GetHalfHeight() <= object.getY() + adjust)
+			if (object.GetY() <= player.GetPositionY() + player.GetHalfHeight() && player.GetPositionY() + player.GetHalfHeight() <= object.GetY() + adjust)
 			{
 				return 1;
 				//ㅇㅇ
@@ -100,7 +100,7 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_
 		if (collp2w(player, obj[i]))
 		{
 			check_coll++;	//하나라도 부딪혔으면 coll이 올라감
-			if (obj[i].getType() < 101 && obj[i].getType() > 0)			//근데 그게 땅바닥이였다?
+			if (obj[i].GetType() < 101 && obj[i].GetType() > 0)			//근데 그게 땅바닥이였다?
 			{
 
 				if (player.GetState() == EPlayerState::Airborne) //떨어지는 중일때 부딪혔다 ?
@@ -115,7 +115,7 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_
 							return;
 						}
 					}
-					player.SetPositionY(obj[i].getY() - player.GetHalfHeight());//발판위로 y좌표 세팅해주고
+					player.SetPositionY(obj[i].GetY() - player.GetHalfHeight());//발판위로 y좌표 세팅해주고
 
 					if (LEFTkey == 0 && RIGHTkey == 0)	//근데 그와중에도 아무키도 안누르고있었다 ? 
 						player.SetMoveCommand(EMoveCommand::None);	//그럼 진행방향으로 가는걸 멈추도록해준다.
@@ -140,19 +140,19 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_
 						ROWSPEED = 3;
 				}
 
-				if (obj[i].getType() == 4)
+				if (obj[i].GetType() == 4)
 				{
 					player.SetPositionX(player.GetPositionX() + beltspeed);
 				}
-				if (obj[i].getType() == 6)
+				if (obj[i].GetType() == 6)
 				{
 					player.SetPositionX(player.GetPositionX() - beltspeed);
 				}
 			}
-			else if (obj[i].getType() >= 101 && obj[i].getType() <= 200)	//장애물에 부딪히면
+			else if (obj[i].GetType() >= 101 && obj[i].GetType() <= 200)	//장애물에 부딪히면
 			{
 
-				if (obj[i].getType() == 101)	//까시라면
+				if (obj[i].GetType() == 101)	//까시라면
 				{
 					if (player.GetInvincibleTime() == 0)	//무적이 아니라면
 					{
@@ -184,12 +184,12 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_
 						player.TakeDamage(sound);
 					}
 				}
-				else if (obj[i].getType() == 102) //Break Pipe Left
+				else if (obj[i].GetType() == 102) //Break Pipe Left
 				{
 					//Copy and Paste is very good (Y Collapse)
 					if (player.GetState() == EPlayerState::Airborne) //떨어지는 중일때 부딪혔다 ?
 					{
-						player.SetPositionY(obj[i].getY() - player.GetHalfHeight());//발판위로 y좌표 세팅해주고
+						player.SetPositionY(obj[i].GetY() - player.GetHalfHeight());//발판위로 y좌표 세팅해주고
 
 						if (LEFTkey == 0 && RIGHTkey == 0)	//근데 그와중에도 아무키도 안누르고있었다 ? 
 							player.SetMoveCommand(EMoveCommand::None);	//그럼 진행방향으로 가는걸 멈추도록해준다.
@@ -211,19 +211,19 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_
 					//X Collapse
 					if (player.GetState() == EPlayerState::Idle || player.GetState() == EPlayerState::Move) //Walking Collpse
 					{
-						if (obj[i].getY() < player.GetPositionY() - player.GetHalfHeight())
+						if (obj[i].GetY() < player.GetPositionY() - player.GetHalfHeight())
 						{
-							if (obj[i].getX() < player.GetPositionX() + player.GetHalfWidth()) //Left Collpse
+							if (obj[i].GetX() < player.GetPositionX() + player.GetHalfWidth()) //Left Collpse
 							{
-								player.SetPositionX(obj[i].getX() - player.GetHalfWidth());// x좌표 세팅해주고
+								player.SetPositionX(obj[i].GetX() - player.GetHalfWidth());// x좌표 세팅해주고
 								player.SetMoveCommand(EMoveCommand::None);
 							}
 						}
 					}
 				}
-				else if (obj[i].getType() == 103) //왼쪽 증기, 가시와 비슷함 대신 증기가 완전히 뿜어져  나왔을때 피격판정이 있다.
+				else if (obj[i].GetType() == 103) //왼쪽 증기, 가시와 비슷함 대신 증기가 완전히 뿜어져  나왔을때 피격판정이 있다.
 				{
-					if (obj[i].getindex() == 2) //증기가 완전히 뿜어졌을때만 피격이 발생한다
+					if (obj[i].GetSpriteIndex() == 2) //증기가 완전히 뿜어졌을때만 피격이 발생한다
 					{
 						if (player.GetInvincibleTime() == 0)
 						{
@@ -253,15 +253,15 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_
 						}
 					}
 				}
-				else if (obj[i].getType() == 104) //Break Pipe Right
+				else if (obj[i].GetType() == 104) //Break Pipe Right
 				{
 					//Update Cooming Soon
 				}
-				else if (obj[i].getType() == 105) //Gas Right
+				else if (obj[i].GetType() == 105) //Gas Right
 				{
 					//Update Cooming Soon
 				}
-				else if (obj[i].getType() == 106)
+				else if (obj[i].GetType() == 106)
 				{
 					if (player.GetInvincibleTime() == 0)	//무적이 아니라면
 					{
@@ -294,7 +294,7 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_
 						player.TakeDamage(sound);
 					}
 				}
-				else if (obj[i].getType() == 107)
+				else if (obj[i].GetType() == 107)
 				{
 					if (player.GetInvincibleTime() == 0)	//무적이 아니라면
 					{
@@ -328,9 +328,9 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_
 					}
 				}
 			}
-			else if (obj[i].getType() >= 201 && obj[i].getType() <= 300) //플레이어와 상호작용하는 오브젝트 ex)포탈
+			else if (obj[i].GetType() >= 201 && obj[i].GetType() <= 300) //플레이어와 상호작용하는 오브젝트 ex)포탈
 			{
-				if (obj[i].getType() == 201) //Portal
+				if (obj[i].GetType() == 201) //Portal
 				{
 					if (UPkey == true)
 					{
@@ -365,7 +365,7 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_
 					}
 				}
 			}
-			else if (obj[i].getType() == 301) //Rope
+			else if (obj[i].GetType() == 301) //Rope
 			{
 				if (player.GetJumpCooldown() <= 0)
 				{
@@ -383,7 +383,7 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_
 									player.SetMoveCommand(EMoveCommand::Up);
 								if (DOWNkey == true)
 									player.SetMoveCommand(EMoveCommand::Down);
-								player.SetPositionX(obj[i].getX() + (obj[i].getW() / 2));
+								player.SetPositionX(obj[i].GetX() + (obj[i].GetWidth() / 2));
 								if (DOWNkey == true)	//이때는 수그리기아니라 밧줄 아래로 내려가는것이므로 수그리기로 깍인거 돌려준다
 								{
 									player.SetPositionY(player.GetPositionY() - 12);
@@ -396,7 +396,7 @@ void adjustPlayer(PLAYER& player, OBJECT* obj, MAP& m, int& ocount, HINSTANCE g_
 					}
 				}
 			}
-			else if (obj[i].getType() == 0)
+			else if (obj[i].GetType() == 0)
 			{
 
 			}
@@ -463,8 +463,8 @@ int initObject(OBJECT* obj, int mapnum, HINSTANCE g_hinst)
 				break;
 			}
 			in >> x >> y >> w >> h >> type;
-			obj[i].create(x, y, w, h, type);
-			obj[i].setHbit(g_hinst);
+			obj[i].Create(x, y, w, h, type);
+			obj[i].SetHbit(g_hinst);
 
 		}
 	}

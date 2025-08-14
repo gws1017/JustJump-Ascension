@@ -325,7 +325,7 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 			// 이거를 따로 넣는게 낳을듯 오브젝트 멤버함수로다가
 			for (int i = 0; i <= ocount; i++)
 			{
-				if (obj[i].getType() == 0)
+				if (obj[i].GetType() == 0)
 				{
 					if (obj_t % 10 == 0)
 					{
@@ -334,7 +334,7 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 					}
 
 				}
-				if (obj[i].getType() == 4)
+				if (obj[i].GetType() == 4)
 				{
 					if (obj_t % 8 == 0)
 					{
@@ -343,7 +343,7 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 					}
 
 				}
-				if (obj[i].getType() == 6)
+				if (obj[i].GetType() == 6)
 				{
 					if (obj_t % 8 == 0)
 					{
@@ -352,7 +352,7 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 					}
 
 				}
-				if (obj[i].getType() == 103)
+				if (obj[i].GetType() == 103)
 				{
 					if (obj_t % 30 == 0)
 					{
@@ -361,16 +361,16 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 					}
 
 				}
-				if (obj[i].getType() == 106 || obj[i].getType() == 107)
+				if (obj[i].GetType() == 106 || obj[i].GetType() == 107)
 				{
 					if (obj_t % 5 == 0)
 					{
 						obj[i].IndexChange();
 
 					}
-					obj[i].move();
+					obj[i].Move();
 				}
-				else if (obj[i].getType() == 201)
+				else if (obj[i].GetType() == 201)
 				{
 					if (obj_t % 20 == 0)
 					{
@@ -609,8 +609,8 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 	case WM_CHAR:
 		if (wParam == 'r')
 		{
-			player.SetPositionX(obj[ocount - 1].getX() + 10);
-			player.SetPositionY(obj[ocount - 1].getY() - 25);
+			player.SetPositionX(obj[ocount - 1].GetX() + 10);
+			player.SetPositionY(obj[ocount - 1].GetY() - 25);
 			break;
 		}
 		if (wParam == 'c')

@@ -4,39 +4,7 @@
 #include "object.h"
 #include "system/Load.h"
 
-int OBJECT::getX()
-{
-	return x;
-}
-int OBJECT::getY()
-{
-	return y;
-}
-int OBJECT::getW()
-{
-	return w;
-}
-int OBJECT::getH() {
-	return h;
-}
-
-int OBJECT::getType()
-{
-	return type;
-}
-int OBJECT::getindex()
-{
-	return index;
-}
-int OBJECT::getmx()
-{
-	return mx;
-}
-int OBJECT::getmy()
-{
-	return my;
-}
-void OBJECT::create(int _x, int _y, int _w, int _h, int _type)
+void OBJECT::Create(int _x, int _y, int _w, int _h, int _type)
 {
 	x = _x;
 	y = _y;
@@ -61,30 +29,11 @@ void OBJECT::create(int _x, int _y, int _w, int _h, int _type)
 		dir = 1;
 	}
 }
-void OBJECT::setX(int _x)
-{
-	x = _x;
-}
-void OBJECT::setY(int _y)
-{
-	y = _y;
-}
-void OBJECT::setW(int _w)
-{
-	w = _w;
-}
-void OBJECT::setH(int _h)
-{
-	h = _h;
-}
-void OBJECT::setType(int _type)
-{
-	type = _type;
-}
-void OBJECT::setHbit(HINSTANCE g_hinst)
+
+
+void OBJECT::SetHbit(HINSTANCE g_hinst)
 {
 	hbit = LoadObj(hbit, g_hinst, type);
-
 }
 
 // All objects reset
@@ -149,9 +98,6 @@ void OBJECT::DrawObj(HDC& mem1dc, HDC& odc)
 			TransparentBlt(mem1dc, x + 14 + 50 * i, y ,50, h+17, odc, 27, 15, 50, 18, RGB(255, 255, 255));//body
 		}
 			
-
-	
-
 		TransparentBlt(mem1dc, x + 14 + 300, y , 13, h+17, odc, 78, 15, 13, 18, RGB(255, 255, 255));//tail
 	}
 	else if (type == 5) TransparentBlt(mem1dc, x, y, w, h , odc, 0, 9, 0, 0, RGB(255, 255, 255));
@@ -193,7 +139,7 @@ void OBJECT::DrawObj(HDC& mem1dc, HDC& odc)
 	DeleteObject(odc);
 }
 
-void OBJECT::move()
+void OBJECT::Move()
 {
 	
 	if (dir == 0) //Left or Down
