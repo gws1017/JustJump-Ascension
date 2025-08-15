@@ -2,7 +2,8 @@
 #include "Global.h"
 
 #include "object.h"
-#include "system/Load.h"
+#include "object/character/player.h"
+
 
 void OBJECT::Create(int _x, int _y, int _w, int _h, int _type)
 {

@@ -7,3 +7,5 @@
 #include <fmod_errors.h>
 
 #include "core/util/ptr_template.h"
+#include "system/Sound.h"
+#include "system/Load.h"

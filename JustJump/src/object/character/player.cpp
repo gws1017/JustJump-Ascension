@@ -2,8 +2,6 @@
 #include "object/character/player.h"
 #pragma comment (lib, "Msimg32.lib")
 
-#include "system/Load.h"
-
 int ROWSPEED = 3; 	//가로 이동속도
 int COLSPEED = 10;	//세로 이동속도
 int ROPESPEED = 2;

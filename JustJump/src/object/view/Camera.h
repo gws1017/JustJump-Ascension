@@ -1,5 +1,5 @@
 #pragma once
-#include "Windows.h"
+
 class CAMERA{
 
 public:
@@ -11,6 +11,8 @@ public:
 
     int GetX() const { return x_; }
     int GetY() const { return y_; }
+
+public:
 
     void CameraSetting(WPARAM key);
 

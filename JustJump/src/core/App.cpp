@@ -3,11 +3,11 @@
 #include "core/window.h"
 #include "core/Timer.h"
 
-#include "system/Load.h"
 #include "world/Map.h"
 #include "world/obstacle/core/ObjectManager.h"
 #include "object/view/Camera.h"
-#include "system/Sound.h"
+#include "object/character/player.h"
+#include "world/obstacle/object.h"
 
 #ifdef _DEBUG
 #pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
@@ -206,7 +206,7 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 		player.SetBitMap(app->m_window->hInstance);
 		player.InitializeAnimPosition();
 
-		if (map.getmapnum() == 9)
+		if (map.GetMapNumber() == 9)
 		{
 			camera.SetX(0);
 			camera.SetY(0);
@@ -224,8 +224,8 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 		sound.Channel[0]->stop();
 		sound.System->playSound(sound.bgmSound[0], nullptr, false, &sound.Channel[0]);
 
-		if (map.getmapnum() == 9) hbit1 = (HBITMAP)LoadImage(app->m_window->hInstance, TEXT("img/start_rayer1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-		else if (map.getmapnum() == 13) hbit1 = (HBITMAP)LoadImage(app->m_window->hInstance, TEXT("img/clear.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+		if (map.GetMapNumber() == 9) hbit1 = (HBITMAP)LoadImage(app->m_window->hInstance, TEXT("img/start_rayer1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+		else if (map.GetMapNumber() == 13) hbit1 = (HBITMAP)LoadImage(app->m_window->hInstance, TEXT("img/clear.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 
 		Helpbit = (HBITMAP)LoadImage(app->m_window->hInstance, TEXT("img/help1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 		Startbit = (HBITMAP)LoadImage(app->m_window->hInstance, TEXT("img/start1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
@@ -233,7 +233,7 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 		HPbit = (HBITMAP)LoadImage(app->m_window->hInstance, TEXT("img/Ui_HP.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 		Diebit = (HBITMAP)LoadImage(app->m_window->hInstance, TEXT("img/Notice3.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 
-		ocount = initObject(obj, 9, app->m_window->hInstance);
+		ocount = InitObject(obj, 9, app->m_window->hInstance);
 
 
 		SetTimer(hwnd, 1, 1, nullptr);
@@ -257,7 +257,7 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 
 
 
-		if (0 >= map.getblack_t())
+		if (0 >= map.GetBlackTime())
 		{
 			map.DrawBK(mem1dc, mem2dc, rectview);
 
@@ -266,14 +266,14 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 		for (int i = 0; i <= ocount; i++)
 			obj[i].DrawObj(mem1dc, odc);
 
-		if (map.getmapnum() == 9)
+		if (map.GetMapNumber() == 9)
 		{
 			map.DrawStart(mem1dc, start_dc, start_button);
 			map.DrawHelp(mem1dc, help_dc, help_button);
 
 		}
 		player.Render(mem1dc, pdc);
-		if (map.getmapnum() >= 10)
+		if (map.GetMapNumber() >= 10)
 		{
 			map.DrawUi(mem1dc, ui_dc, camera);
 			map.DrawHP(mem1dc, hp_dc, camera, player);
@@ -283,7 +283,7 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 
 
 
-		if (map.getblack_t() > 0) map.DrawLoadBK(mem1dc, mem2dc, loadbf);
+		if (map.GetBlackTime() > 0) map.DrawLoadBK(mem1dc, mem2dc, loadbf);
 
 
 		BitBlt(hdc, 0, 0, 1024, 768, mem1dc, camera.GetX(), camera.GetY(), SRCCOPY);
@@ -300,7 +300,7 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 			obj_t += 1;
 
 			player.UpdateMovement(obj_t);
-			adjustPlayer(player, obj, map, ocount, app->m_window->hInstance, sound);
+			AdjustPlayer(player, obj, map, ocount, app->m_window->hInstance, sound);
 
 			map.movemap();
 
@@ -315,7 +315,7 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 			else {
 				//캐릭터가 로딩중일땐 카메라 이동 금지 , 일반모드일때만 카메라 움직임
 				if (player.GetGameMode() == 0)
-					adjustCamera(camera, player);
+					AdjustCamera(camera, player);
 			}
 
 			player.SelectBitmap();
@@ -431,7 +431,7 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 			map.ChangeDieNotice(app->m_window->hInstance, 0);
 			occur_button = 0;
 		}
-		if (map.getmapnum() == 9)
+		if (map.GetMapNumber() == 9)
 		{
 			if (290 < LOWORD(lParam) && LOWORD(lParam) < 430)
 			{
@@ -511,7 +511,7 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 				}
 			}
 		}
-		if (map.getmapnum() == 9)
+		if (map.GetMapNumber() == 9)
 		{
 			if (290 < LOWORD(lParam) && LOWORD(lParam) < 430)
 			{
@@ -557,23 +557,23 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 				}
 			}
 		}
-		if (map.getmapnum() == 9)
+		if (map.GetMapNumber() == 9)
 		{
 			if (290 < LOWORD(lParam) && LOWORD(lParam) < 430)
 			{
 				if (490 < HIWORD(lParam) && HIWORD(lParam) < 572)
 				{
 					occur_button = 0;
-					map.setblack_t(50);
-					map.setmapnum(map.getmapnum() + 1);
+					map.SetBlackTime(50);
+					map.SetMapNumber(map.GetMapNumber() + 1);
 					player.Initialzie();
 					for (int j = 0; j < ocount; j++)
 						obj[j].ResetObject();
-					ocount = initObject(obj, map.getmapnum(), app->m_window->hInstance);
+					ocount = InitObject(obj, map.GetMapNumber(), app->m_window->hInstance);
 
 					map.CreateMap(app->m_window->hInstance);
 					hbit1 = (HBITMAP)LoadImage(app->m_window->hInstance, TEXT("img/bk.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-					sound.setindex(sound.getindex() + 1);
+					sound.SetIndex(sound.GetIndex() + 1);
 
 					if (sound.Channel[1]) {
 						sound.Channel[1]->stop();

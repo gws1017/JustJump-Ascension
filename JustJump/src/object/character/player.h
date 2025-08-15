@@ -1,6 +1,4 @@
 #pragma once
-#include <Windows.h>
-#include"system/Sound.h"
 
 class Sound;
 
@@ -39,8 +37,29 @@ public:
 	PLAYER();
 
 public:
-	// 캐릭터위치 초기화 함수
-	void Initialzie();
+
+	int GetPositionX() { return PositionX; }
+	int GetPositionY() { return PositionY; }
+	int GetSaveY() { return SavedY; }
+	int GetHalfWidth() { return HalfWidth; }
+	int GetHalfHeight() { return HalfHeight; }
+	int GetSpriteWidth() { return SpriteWidth; }
+	int GetSpriteHeight() { return SpriteHeight; }
+
+	int GetCurrentHP() { return CurrentHP; }
+	int GetFallSpeed() { return FallAdjustSpeed; }
+	int GetInvincibleTime() { return InvincibleTime; }
+	int GetJumpCooldown() { return RopeJumpCooldown; }
+	int GetSpikeKnockback() { return SpikeKnockback; }
+
+	bool GetGameMode() { return IsGameMode; }
+	bool IsHurt() { return bIsHurt; }
+	bool IsRopeHurt() { return bIsRopHurt; }
+	bool IsDead() { return bIsDead; }
+
+	EPlayerState GetState() { return PlayerState; }
+	EPlayerDirection GetDirection() { return PlayerDirection; }
+	EMoveCommand GetMoveCommand() { return MoveCommand; }
 
 
 	void SetPositionX(int x) { PositionX = x; }
@@ -54,7 +73,7 @@ public:
 	void SetCurrentHP(int hp) { CurrentHP = hp; }
 	void SetFallSpeed(int speed) { FallAdjustSpeed = speed; }
 	void SetState(EPlayerState state) { PlayerState = state; }
-	
+
 	//bool변수 너무많지않나
 	void SetDirection(EPlayerDirection dir) { PlayerDirection = dir; }
 	void SetMoveCommand(EMoveCommand command) { MoveCommand = command; }
@@ -67,30 +86,13 @@ public:
 	void SetSpikeHurt(int value) { SpikeKnockback = value; }
 
 	void SetBitMap(HINSTANCE hInstance);
+
+
+public:
+	// 캐릭터위치 초기화 함수
+	void Initialzie();
+
 	void InitializeAnimPosition();
-
-	int GetPositionX() { return PositionX; }
-	int GetPositionY() { return PositionY; }
-	int GetSaveY() { return SavedY; }
-	int GetHalfWidth() { return HalfWidth; }
-	int GetHalfHeight() { return HalfHeight; }
-	int GetSpriteWidth() { return SpriteWidth; }
-	int GetSpriteHeight() { return SpriteHeight; }
-
-	int GetCurrentHP() { return CurrentHP; }
-	int GetFallSpeed() { return FallAdjustSpeed; }
-	EPlayerState GetState() { return PlayerState; }
-
-	EPlayerDirection GetDirection() { return PlayerDirection; }
-	EMoveCommand GetMoveCommand() { return MoveCommand; }
-	bool IsHurt() { return bIsHurt; }
-	bool IsRopeHurt() { return bIsRopHurt; }
-	bool IsDead() { return bIsDead; }
-	bool GetGameMode() { return IsGameMode; }
-
-	int GetInvincibleTime() { return InvincibleTime; }
-	int GetJumpCooldown() { return RopeJumpCooldown; }
-	int GetSpikeKnockback() { return SpikeKnockback; }
 
 	//방향키 눌렀을때 플레이어 세팅
 	void OnKeyPressed(WPARAM key, Sound& sound);

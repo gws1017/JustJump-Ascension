@@ -1,15 +1,9 @@
+#include "Global.h"
 #include "world/Map.h"
-#include "system/Load.h"
+
 #include "object/view/Camera.h"
 #include "object/character/player.h"
 
-int MAP::getmapnum() { return mapnum; }
-
-int MAP::getblack_t() { return black_t; }
-
-void MAP::setmapnum(int i) { mapnum = i; }
-
-void MAP::setblack_t(int i) { black_t = i; }
 
 //void MAP::CreateBlack(HINSTANCE g_hinst)
 //{
@@ -55,7 +49,6 @@ void MAP::ChangeDieNotice(HINSTANCE g_hinst,int i)
 {
 	hbitdie = LoadDieNoticeChange(g_hinst, i);
 }
-
 
 
 bool MAP::BlackTime()
@@ -120,14 +113,11 @@ void MAP::DrawLoadBK(HDC& mem1dc, HDC& mem2dc, BLENDFUNCTION bf)
 	//여기서 0,0 ~62,50 까지의 비트맵을 캐릭터기준으로 바꿔준다 (플레이어가 있는 위치의 비트맵을 복사함)
 	BitBlt(gdidc, 0, 0, MAPWIDTH, MAPHEIGHT, mem2dc, 0, 0, BLACKNESS);
 
-
-
 	if (black_t > 0)	//맵 이동할때
 	{
 		GdiAlphaBlend(mem1dc, 0, 0, MAPWIDTH, MAPHEIGHT, gdidc, 0, 0, MAPWIDTH, MAPHEIGHT, bf);
 		//BitBlt(mem1dc, 0, 0, MAPWIDTH, MAPHEIGHT, mem2dc, 0, 0, BLACKNESS);
 	}
-
 
 	SelectObject(gdidc, oldtmpdc);
 	DeleteObject(tmpdc);
@@ -199,11 +189,7 @@ void MAP::DrawDie(HDC& mem1dc, HDC& mem2dc, CAMERA camera, Sound& sound)
 	TextOut(mem1dc, camera.GetX() + 460, camera.GetY() + 285, L"아쉽지만 확인을 누르시면 맵의 맨 처음", lstrlenW(L"아쉽지만 확인을 누르시면 맵의 맨 처음."));
 	TextOut(mem1dc, camera.GetX() + 460, camera.GetY() + 297, L"위치로 돌아가게 됩니다. 포기하지 마세요!", lstrlenW(L"위치로 돌아가게 됩니다. 포기하지 마세요!"));
 
-
-
 	DeleteObject(mem2dc);
-
-
 
 }
 
@@ -215,9 +201,6 @@ void MAP::DrawStart(HDC& mem1dc, HDC& mem2dc,int i)
 	
 
 	DeleteObject(mem2dc);
-
-
-
 }
 void MAP::DrawHelp(HDC& mem1dc, HDC& mem2dc, int i)
 {

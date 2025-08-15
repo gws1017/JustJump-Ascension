@@ -1,17 +1,6 @@
 #include "Global.h"
 #include "system/Sound.h"
 
-
-int Sound::getindex()
-{
-	return index;
-}
-
-void Sound::setindex(int i)
-{
-	index = i;
-}
-
 void Sound::Sound_Setup()
 {
 	index = 0;
