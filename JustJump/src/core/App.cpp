@@ -21,6 +21,7 @@ App::App(std::wstring_view app_name)
 	s_instance = this;
 	m_timer = CreateUPtr<Timer>();
 	m_window = CreateSPtr<Window>(APP_WIDTH, APP_HEIGHT);
+	m_object_manager = CreateUPtr<ObjectManager>();
 }
 
 App::~App()
@@ -188,6 +189,7 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 	static bool occur_button = 0;	//사망했을때의 button이 활성화되었는지 
 	static bool gamemode = 0;	//0이면 기본 1이면 자유모드
 	const auto& app = App::GetApp();
+	const auto& object_manager = app->m_object_manager;
 	switch (iMessage)
 	{
 	case WM_CREATE:
@@ -233,7 +235,7 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 		HPbit = (HBITMAP)LoadImage(app->m_window->hInstance, TEXT("img/Ui_HP.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 		Diebit = (HBITMAP)LoadImage(app->m_window->hInstance, TEXT("img/Notice3.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 
-		ocount = InitObject(obj, 9, app->m_window->hInstance);
+		ocount = object_manager->InitObject(obj, 9, app->m_window->hInstance);
 
 
 		SetTimer(hwnd, 1, 1, nullptr);
@@ -300,7 +302,7 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 			obj_t += 1;
 
 			player.UpdateMovement(obj_t);
-			AdjustPlayer(player, obj, map, ocount, app->m_window->hInstance, sound);
+			object_manager->AdjustPlayer(player, obj, map, ocount, app->m_window->hInstance, sound);
 
 			map.movemap();
 
@@ -315,7 +317,7 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 			else {
 				//캐릭터가 로딩중일땐 카메라 이동 금지 , 일반모드일때만 카메라 움직임
 				if (player.GetGameMode() == 0)
-					AdjustCamera(camera, player);
+					object_manager->AdjustCamera(camera, player);
 			}
 
 			player.SelectBitmap();
@@ -569,7 +571,7 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 					player.Initialzie();
 					for (int j = 0; j < ocount; j++)
 						obj[j].ResetObject();
-					ocount = InitObject(obj, map.GetMapNumber(), app->m_window->hInstance);
+					ocount = object_manager->InitObject(obj, map.GetMapNumber(), app->m_window->hInstance);
 
 					map.CreateMap(app->m_window->hInstance);
 					hbit1 = (HBITMAP)LoadImage(app->m_window->hInstance, TEXT("img/bk.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);

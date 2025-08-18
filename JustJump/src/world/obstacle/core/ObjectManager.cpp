@@ -9,7 +9,7 @@
 
 
 //오브젝트와 플레이어 충돌체크 1이면 부닥침
-bool CollP2W(PLAYER player, OBJECT object)
+bool ObjectManager::CollP2W(PLAYER player, OBJECT object)
 //----------------------------------------
 {
 	int adjust = 10;
@@ -83,7 +83,7 @@ bool CollP2W(PLAYER player, OBJECT object)
 
 
 //플레이어와 오브젝트간 상호작용 판단하고 그에맞게 바꿔줌
-void AdjustPlayer(PLAYER& player, OBJECT* object, MAP& m, int& ocount, HINSTANCE g_hinst, Sound& sound)
+void ObjectManager::AdjustPlayer(PLAYER& player, OBJECT* object, MAP& m, int& ocount, HINSTANCE g_hinst, Sound& sound)
 {
 	int check_coll = 0;	//하나라도 부딪혔는지 판별하기위함
 	if (player.GetPositionX() - player.GetHalfWidth() < 0)
@@ -425,7 +425,7 @@ void AdjustPlayer(PLAYER& player, OBJECT* object, MAP& m, int& ocount, HINSTANCE
 
 
 //int(맵 번호) 에 따라 장애물 위치값 넣어주고 몇개의 오브젝트가 들어갔는지 알려주는 함수
-int InitObject(OBJECT* obj, int mapnum, HINSTANCE g_hinst)
+int ObjectManager::InitObject(OBJECT* obj, int mapnum, HINSTANCE g_hinst)
 {
 	int x, y, w, h, type;
 	int objcount = 0;
@@ -477,7 +477,7 @@ int InitObject(OBJECT* obj, int mapnum, HINSTANCE g_hinst)
 }
 
 //카메라 무빙워크
-void AdjustCamera(CAMERA& camera, PLAYER player)
+void ObjectManager::AdjustCamera(CAMERA& camera, PLAYER player)
 {
 	//플레이어의 머리부분이 카메라의 꼭대기점을 넘어가면 바로 따라붙게한다
 	if (player.GetPositionY() - player.GetHalfHeight() < camera.GetY())

@@ -7,6 +7,7 @@ namespace
 }
 
 class Timer;
+class ObjectManager;
 struct Window;
 
 class App
@@ -41,6 +42,7 @@ protected:
 
 private:
 	UPtr<Timer> m_timer;
+	UPtr<ObjectManager> m_object_manager;
 
 public:
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
