@@ -1,5 +1,5 @@
 #pragma once
-
+#include "object/core/Object.h"
 class Sound;
 
 // 너무 많지않나
@@ -31,18 +31,16 @@ enum class EMoveCommand {
 	Down = 4
 };
 
-class PLAYER {
+class PLAYER : public Object
+{
 
 public:
 	PLAYER();
 
 public:
 
-	int GetPositionX() { return PositionX; }
-	int GetPositionY() { return PositionY; }
+
 	int GetSaveY() { return SavedY; }
-	int GetHalfWidth() { return HalfWidth; }
-	int GetHalfHeight() { return HalfHeight; }
 	int GetSpriteWidth() { return SpriteWidth; }
 	int GetSpriteHeight() { return SpriteHeight; }
 
@@ -61,11 +59,6 @@ public:
 	EPlayerDirection GetDirection() { return PlayerDirection; }
 	EMoveCommand GetMoveCommand() { return MoveCommand; }
 
-
-	void SetPositionX(int x) { PositionX = x; }
-	void SetPositionY(int y) { PositionY = y; }
-	void SetHalfWidth(int w) { HalfWidth = w; }
-	void SetHalfHeight(int h) { HalfHeight = h; }
 	void SetSpriteWidth(int w) { SpriteWidth = w; }
 	void SetSpriteHeight(int h) { SpriteHeight = h; }
 
@@ -98,8 +91,8 @@ public:
 	void OnKeyPressed(WPARAM key, Sound& sound);
 	//방향키 땠을때 플레이어 세팅풀기
 	void OnKeyReleased(WPARAM key);
-	//떨어지는 시점의 y좌표 기억
-	void SavePositionX() {	SavedX = PositionX;	}
+	
+	void SavePositionX() {	SavedX = x;	}
 	//플레이어 무브
 	void UpdateMovement(int delta_time);
 	//플레이어 스프라이트선택
@@ -131,7 +124,6 @@ private:
 	void HandleDownReleased();
 
 private:
-	int PositionX, PositionY, HalfWidth, HalfHeight;		// x y 는 캐릭터의 중심좌표이고 w,h 는 xy에서 좌우로 반틈씩만 간 좌표이다.
 	int SpriteWidth, SpriteHeight;	//캐릭터 전체 사이즈이다. 
 	int SavedX, SavedY;	//savey 는 점프뛸때 그 순간의 y좌표를 기억하기 위함이고 x는 혹시몰라서 넣어둠
 

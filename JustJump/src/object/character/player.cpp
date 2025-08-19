@@ -15,8 +15,7 @@ int jumpcount = 0;
 int diecount = 0;
 
 PLAYER::PLAYER()
-	: PositionX(80), PositionY(655), SavedY(3700),
-	HalfWidth(14), HalfHeight(25),
+	: Object(80,655,14,25), SavedY(3700),
 	SpriteWidth(31), SpriteHeight(25),
 	CurrentHP(100), PlayerState(EPlayerState::Idle), PlayerDirection(EPlayerDirection::Right),
 	FallAdjustSpeed(0), MoveCommand(EMoveCommand::Left),
@@ -30,11 +29,11 @@ PLAYER::PLAYER()
 
 void PLAYER::Initialzie()
 {
-	PositionX = 80;
-	PositionY = 3700;
+	x = 80;
+	y = 3700;
 	SavedY = 3700;
-	HalfWidth = 14;
-	HalfHeight = 25;
+	width = 14;
+	height = 25;
 	PlayerState = EPlayerState::Airborne;
 	PlayerDirection = EPlayerDirection::Right;
 	FallAdjustSpeed = 0;
@@ -84,8 +83,8 @@ void PLAYER::HandleLeftPressed()
 			ROWSPEED = 1;	//점프했을때 방향을 바꾸려하면 드라마틱하게 다시 오는경우는 없지만 그래도 원했던것보단 조금 나감
 		break;
 	case EPlayerState::Crouch:
-		HalfHeight += 12;
-		PositionY -= 12;
+		height += 12;
+		y -= 12;
 		PlayerState = EPlayerState::Move;
 		break;
 	default:
@@ -117,8 +116,8 @@ void PLAYER::HandleRightPressed()
 			ROWSPEED = 1;	//점프했을때 방향을 바꾸려하면 드라마틱하게 다시 오는경우는 없지만 그래도 원했던것보단 조금 나감
 		break;
 	case EPlayerState::Crouch:
-		HalfHeight += 12;
-		PositionY -= 12;
+		height += 12;
+		y -= 12;
 		PlayerState = EPlayerState::Move;
 		break;
 	}
@@ -164,8 +163,8 @@ void PLAYER::HandleDownPressed()
 	else if (PlayerState == EPlayerState::Idle) {
 
 		PlayerState = EPlayerState::Crouch;	//숙이는거는 가만히 있을때만 가능하다
-		HalfHeight -= 12;		//숙이면 키도 줄어들어야한다.
-		PositionY += 12;
+		height -= 12;		//숙이면 키도 줄어들어야한다.
+		y += 12;
 	}
 }
 
@@ -202,7 +201,7 @@ void PLAYER::HandleSpacePressed(Sound& sound)
 		);
 		jumpcount++;
 		PlayerState = EPlayerState::Jump;
-		SavedY = PositionY;
+		SavedY = y;
 	}
 }
 
@@ -230,8 +229,8 @@ void PLAYER::HandleLeftReleased()
 			if (PlayerState == EPlayerState::Idle)	//수그리기의 원래 알고리즘인 state==1 일때만 수그리도록 한다
 			{
 				PlayerState = EPlayerState::Crouch;
-				HalfHeight -= 12;
-				PositionY += 12;//원래대로 돌려놔주자
+				height -= 12;
+				y += 12;//원래대로 돌려놔주자
 			}
 		}
 	}
@@ -264,8 +263,8 @@ void PLAYER::HandleRightReleased()
 			if (PlayerState == EPlayerState::Idle)	//수그리기의 원래 알고리즘인 state==1 일때만 수그리도록 한다
 			{
 				PlayerState = EPlayerState::Crouch;
-				HalfHeight -= 12;
-				PositionY += 12;//원래대로 돌려놔주자
+				height -= 12;
+				y += 12;//원래대로 돌려놔주자
 			}
 		}
 	}
@@ -317,8 +316,8 @@ void PLAYER::HandleDownReleased()
 	{
 		if (PlayerState == EPlayerState::Crouch)
 		{
-			HalfHeight += 12;
-			PositionY -= 12;	//다시 키 늘려줌
+			height += 12;
+			y -= 12;	//다시 키 늘려줌
 			PlayerState = EPlayerState::Idle;
 		}
 	}
@@ -394,39 +393,39 @@ void PLAYER::UpdateMovement(int delta_time)
 
 		if (MoveCommand == EMoveCommand::Left)
 		{
-			PositionX -= ROWSPEED;
+			x -= ROWSPEED;
 		}
 		else if (MoveCommand == EMoveCommand::Right)
 		{
-			PositionX += ROWSPEED;
+			x += ROWSPEED;
 		}
 
 		if (bIsHurt == true)	//피격당한경우
 		{
-			if (abs(PositionY - SavedY) > 40) {
-				PositionY -= 3;
+			if (abs(y - SavedY) > 40) {
+				y -= 3;
 			}
 			else {
-				PositionY -= COLSPEED / 2;
+				y -= COLSPEED / 2;
 			}
-			if (abs((PositionY - SavedY)) >= 40)	//40픽셀만큼 피격당해서 위로 살짝뜸
+			if (abs((y - SavedY)) >= 40)	//40픽셀만큼 피격당해서 위로 살짝뜸
 			{
 				PlayerState = EPlayerState::Airborne;			//다시 땅으로 떨어지게함
-				SavedX = PositionX;			//이순간의 x좌표를 기억함(가속도를 받다가 멈춘것처럼 해줄예정)
+				SavedX = x;			//이순간의 x좌표를 기억함(가속도를 받다가 멈춘것처럼 해줄예정)
 			}
 		}
 		else if (bIsHurt == false)	//일반상태
 		{
-			if (abs(PositionY - SavedY) > 80) {
-				PositionY -= 3;
+			if (abs(y - SavedY) > 80) {
+				y -= 3;
 			}
 			else {
-				PositionY -= COLSPEED;
+				y -= COLSPEED;
 			}
-			if (abs((PositionY - SavedY)) >= 100)
+			if (abs((y - SavedY)) >= 100)
 			{
 				PlayerState = EPlayerState::Airborne;
-				SavedX = PositionX;
+				SavedX = x;
 			}
 		}
 		break;
@@ -437,14 +436,14 @@ void PLAYER::UpdateMovement(int delta_time)
 			if (delta_time % 5 == 0)
 				PlayAnim();
 			if (MoveCommand == EMoveCommand::Left)
-				PositionX -= ROWSPEED;
+				x -= ROWSPEED;
 			else if (MoveCommand == EMoveCommand::Right)
-				PositionX += ROWSPEED;
+				x += ROWSPEED;
 		}
 		break;
 
 	case EPlayerState::RopeIdle:
-		SavedY = PositionY;	//줄에매달렸을때는 그자리가 저장지점이다
+		SavedY = y;	//줄에매달렸을때는 그자리가 저장지점이다
 		if (UDkey == false)
 		{
 			if (UPkey || DOWNkey)
@@ -455,77 +454,77 @@ void PLAYER::UpdateMovement(int delta_time)
 	case EPlayerState::Hurt:
 		ROWSPEED *= 3;
 		InvincibleTime = 100;		//무적시간 2초
-		SavedY = PositionY;			//피격과 동시에 y좌표저장(적당히 내려오기 위해)
+		SavedY = y;			//피격과 동시에 y좌표저장(적당히 내려오기 위해)
 		bIsHurt = true;	//피격함수 on
 		PlayerState = EPlayerState::Jump;				//피격하면 공중으로 한번 붕 뜬다
 		break;
 
 	case EPlayerState::Airborne:
-		PositionY += COLSPEED;					//아래로 떨어짐
+		y += COLSPEED;					//아래로 떨어짐
 		if (FallAdjustSpeed < 1000)			//1000까지만 왼쪽으로 움직임
 			FallAdjustSpeed++;
 		if (LEFTkey == true)			//떨어질ㄸ ㅐ 왼쪽 꾹누르고있으면
 			if (FallAdjustSpeed % 30 == 0)	//타이머가 30번 돌아갈때마다 한번씩 옴겨줌
-				PositionX -= ROWSPEED;
+				x -= ROWSPEED;
 		if (RIGHTkey == true)
 			if (FallAdjustSpeed % 30 == 0)
-				PositionX += ROWSPEED;
+				x += ROWSPEED;
 		if (MoveCommand == EMoveCommand::Left)		//왼쪽으로 움직이고있다면
 		{
 			if (FallAdjustSpeed <= 10)	//왼쪽으로 슥 갔다가
 			{
-				PositionX -= ROWSPEED;
+				x -= ROWSPEED;
 			}
 			if (FallAdjustSpeed > 10)		//10번 왼쪽 갔으면 2번에 한번씩 가줌
 			{
 				if (FallAdjustSpeed % 2 == 0)
-					PositionX -= ROWSPEED;
+					x -= ROWSPEED;
 			}
 			else if (FallAdjustSpeed > 30)	//2번씩 10번 또 갔으면 이젠 5번에 1번씩 찔끔 가줌 이건 오른쪽도 똑같이 적용
 			{
 				if (FallAdjustSpeed % 5 == 0)
-					PositionX -= ROWSPEED;
+					x -= ROWSPEED;
 			}
 
 			if (LEFTkey == 0)				//50칸까지는 맨처음방향대로 가고 , 그이후에 왼쪽키를 때고있으면 멈춤당하고 아니면 왼쪽으로 쭉 날라감
-				if (abs(PositionX - SavedX) > 50)
+				if (abs(x - SavedX) > 50)
 					MoveCommand = EMoveCommand::None;
 		}
 		else if (MoveCommand == EMoveCommand::Right)
 		{
 			if (FallAdjustSpeed <= 10)
 			{
-				PositionX += ROWSPEED;
+				x += ROWSPEED;
 			}
 			if (FallAdjustSpeed > 10)
 			{
 				if (FallAdjustSpeed % 2 == 0)
-					PositionX += ROWSPEED;
+					x += ROWSPEED;
 			}
 			else if (FallAdjustSpeed > 30)
 			{
 				if (FallAdjustSpeed % 5 == 0)
-					PositionX += ROWSPEED;
+					x += ROWSPEED;
 			}
 			if (RIGHTkey == 0)
-				if (abs(PositionX - SavedX) > 50)
+				if (abs(x - SavedX) > 50)
 					MoveCommand = EMoveCommand::None;
 		}
 		break;
 
 	case EPlayerState::RopeMove:
-		SavedY = PositionY;	//줄에매달렸을때는 그자리가 저장지점이다
+		SavedY = y;	//줄에매달렸을때는 그자리가 저장지점이다
 		if (delta_time % 10 == 0)	//10번 타이머 돌아갈때 한번 움직이게해준다
 			PlayAnim();
 		if (UDkey == false)
 		{
 			if (MoveCommand == EMoveCommand::Up)
 			{
-				PositionY -= ROPESPEED;
+				y -= ROPESPEED;
 			}
 			else if (MoveCommand == EMoveCommand::Down)
 			{
-				PositionY += ROPESPEED;
+				y += ROPESPEED;
 			}
 		}
 		break;
@@ -579,7 +578,7 @@ void PLAYER::Render(HDC& backDC, HDC& playerDC)
 	HBITMAP tmpdc = CreateCompatibleBitmap(backDC, 62, 50);
 	HBITMAP oldtmpdc = (HBITMAP)SelectObject(gdidc, tmpdc);
 	//여기서 0,0 ~62,50 까지의 비트맵을 캐릭터기준으로 바꿔준다 (플레이어가 있는 위치의 비트맵을 복사함)
-	BitBlt(gdidc, 0, 0, SpriteWidth * 2, HalfHeight * 2, backDC, PositionX - SpriteWidth, PositionY - HalfHeight, SRCCOPY);
+	BitBlt(gdidc, 0, 0, SpriteWidth * 2, height * 2, backDC, x - SpriteWidth, y - height, SRCCOPY);
 	//기본 움직임
 	SelectObject(playerDC, CurrentBitmap);
 
@@ -594,12 +593,12 @@ void PLAYER::Render(HDC& backDC, HDC& playerDC)
 			if (InvincibleTime > 0)
 			{
 				bf.SourceConstantAlpha = 155;
-				GdiAlphaBlend(backDC, PositionX - SpriteWidth, PositionY - HalfHeight, SpriteWidth * 2, HalfHeight * 2, gdidc, 0, 0, 62, 50, bf);
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, gdidc, 0, 0, 62, 50, bf);
 				bf.SourceConstantAlpha = 255;
 
 			}
 			else
-				GdiAlphaBlend(backDC, PositionX - SpriteWidth, PositionY - HalfHeight, SpriteWidth * 2, HalfHeight * 2, gdidc, 0, 0, 62, 50, bf);
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, gdidc, 0, 0, 62, 50, bf);
 		}
 		else if (PlayerDirection == EPlayerDirection::Right)//오른쪽
 		{
@@ -609,12 +608,12 @@ void PLAYER::Render(HDC& backDC, HDC& playerDC)
 
 				bf.SourceConstantAlpha = 155;//투명도
 				//이 함수는 일반 stretchblt 와 비슷하다 gdidc 는 최대가 0,0 ~62,50 이므로 뒷 인자는 0 0 62 50
-				GdiAlphaBlend(backDC, PositionX - SpriteWidth, PositionY - HalfHeight, SpriteWidth * 2, HalfHeight * 2, gdidc, 0, 0, 62, 50, bf);
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, gdidc, 0, 0, 62, 50, bf);
 				bf.SourceConstantAlpha = 255;
 
 			}
 			else
-				GdiAlphaBlend(backDC, PositionX - SpriteWidth, PositionY - HalfHeight, SpriteWidth * 2, HalfHeight * 2, gdidc, 0, 0, 62, 50, bf);
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, gdidc, 0, 0, 62, 50, bf);
 		}
 		break;
 	case EPlayerState::Move:
@@ -625,12 +624,12 @@ void PLAYER::Render(HDC& backDC, HDC& playerDC)
 			{
 
 				bf.SourceConstantAlpha = 155;//투명도
-				GdiAlphaBlend(backDC, PositionX - SpriteWidth, PositionY - HalfHeight, SpriteWidth * 2, HalfHeight * 2, gdidc, 0, 0, 62, 50, bf);
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, gdidc, 0, 0, 62, 50, bf);
 				bf.SourceConstantAlpha = 255;
 
 			}
 			else
-				GdiAlphaBlend(backDC, PositionX - SpriteWidth, PositionY - HalfHeight, SpriteWidth * 2, HalfHeight * 2, gdidc, 0, 0, 62, 50, bf);
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, gdidc, 0, 0, 62, 50, bf);
 		}
 		else if (PlayerDirection == EPlayerDirection::Right)//오른쪽
 		{
@@ -639,12 +638,12 @@ void PLAYER::Render(HDC& backDC, HDC& playerDC)
 			{
 
 				bf.SourceConstantAlpha = 155;//투명도
-				GdiAlphaBlend(backDC, PositionX - SpriteWidth, PositionY - HalfHeight, SpriteWidth * 2, HalfHeight * 2, gdidc, 0, 0, 62, 50, bf);
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, gdidc, 0, 0, 62, 50, bf);
 				bf.SourceConstantAlpha = 255;
 
 			}
 			else
-				GdiAlphaBlend(backDC, PositionX - SpriteWidth, PositionY - HalfHeight, SpriteWidth * 2, HalfHeight * 2, gdidc, 0, 0, 62, 50, bf);
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, gdidc, 0, 0, 62, 50, bf);
 		}
 		break;
 	case EPlayerState::Jump:
@@ -656,12 +655,12 @@ void PLAYER::Render(HDC& backDC, HDC& playerDC)
 			{
 
 				bf.SourceConstantAlpha = 155;//투명도
-				GdiAlphaBlend(backDC, PositionX - SpriteWidth, PositionY - HalfHeight, SpriteWidth * 2, HalfHeight * 2, gdidc, 0, 0, 62, 50, bf);
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, gdidc, 0, 0, 62, 50, bf);
 				bf.SourceConstantAlpha = 255;
 
 			}
 			else
-				GdiAlphaBlend(backDC, PositionX - SpriteWidth, PositionY - HalfHeight, SpriteWidth * 2, HalfHeight * 2, gdidc, 0, 0, 62, 50, bf);
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, gdidc, 0, 0, 62, 50, bf);
 		}
 		else if (PlayerDirection == EPlayerDirection::Right)//오른쪽
 		{
@@ -670,17 +669,17 @@ void PLAYER::Render(HDC& backDC, HDC& playerDC)
 			{
 
 				bf.SourceConstantAlpha = 155;//투명도
-				GdiAlphaBlend(backDC, PositionX - SpriteWidth, PositionY - HalfHeight, SpriteWidth * 2, HalfHeight * 2, gdidc, 0, 0, 62, 50, bf);
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, gdidc, 0, 0, 62, 50, bf);
 				bf.SourceConstantAlpha = 255;
 
 			}
 			else
-				GdiAlphaBlend(backDC, PositionX - SpriteWidth, PositionY - HalfHeight, SpriteWidth * 2, HalfHeight * 2, gdidc, 0, 0, 62, 50, bf);
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, gdidc, 0, 0, 62, 50, bf);
 		}
 		break;
 	case EPlayerState::Crouch:
 		//h는 줄고 y는 늘고 
-		BitBlt(gdidc, 0, 0, SpriteWidth * 2, 26, backDC, PositionX - SpriteWidth, PositionY - HalfHeight, SRCCOPY);
+		BitBlt(gdidc, 0, 0, SpriteWidth * 2, 26, backDC, x - SpriteWidth, y - height, SRCCOPY);
 		if (PlayerDirection == EPlayerDirection::Left)//왼쪽
 		{
 			TransparentBlt(gdidc, 0, 0, 62, 26, playerDC, 0, 161, 62, 26, RGB(255, 255, 255));
@@ -688,12 +687,12 @@ void PLAYER::Render(HDC& backDC, HDC& playerDC)
 			{
 
 				bf.SourceConstantAlpha = 155;//투명도
-				GdiAlphaBlend(backDC, PositionX - SpriteWidth, PositionY - 12 - HalfHeight + 12, SpriteWidth * 2, HalfHeight * 2, gdidc, 0, 0, 62, 26, bf);
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - 12 - height + 12, SpriteWidth * 2, height * 2, gdidc, 0, 0, 62, 26, bf);
 				bf.SourceConstantAlpha = 255;
 
 			}
 			else
-				GdiAlphaBlend(backDC, PositionX - SpriteWidth, PositionY - 12 - HalfHeight + 12, SpriteWidth * 2, HalfHeight * 2, gdidc, 0, 0, 62, 26, bf);
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - 12 - height + 12, SpriteWidth * 2, height * 2, gdidc, 0, 0, 62, 26, bf);
 		}
 		else if (PlayerDirection == EPlayerDirection::Right)//오른쪽
 		{
@@ -702,12 +701,12 @@ void PLAYER::Render(HDC& backDC, HDC& playerDC)
 			{
 
 				bf.SourceConstantAlpha = 155;//투명도
-				GdiAlphaBlend(backDC, PositionX - SpriteWidth, PositionY - HalfHeight, SpriteWidth * 2, HalfHeight * 2, gdidc, 0, 0, 62, 26, bf);
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, gdidc, 0, 0, 62, 26, bf);
 				bf.SourceConstantAlpha = 255;
 
 			}
 			else
-				GdiAlphaBlend(backDC, PositionX - SpriteWidth, PositionY - HalfHeight, SpriteWidth * 2, HalfHeight * 2, gdidc, 0, 0, 62, 26, bf);
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, gdidc, 0, 0, 62, 26, bf);
 		}
 		break;
 	case EPlayerState::RopeIdle:
@@ -718,11 +717,11 @@ void PLAYER::Render(HDC& backDC, HDC& playerDC)
 		{
 
 			bf.SourceConstantAlpha = 155;
-			GdiAlphaBlend(backDC, PositionX - SpriteWidth, PositionY - HalfHeight, SpriteWidth * 2, HalfHeight * 2, gdidc, 0, 0, 62, 50, bf);
+			GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, gdidc, 0, 0, 62, 50, bf);
 			bf.SourceConstantAlpha = 255;
 
 		}
-		else GdiAlphaBlend(backDC, PositionX - SpriteWidth, PositionY - HalfHeight, SpriteWidth * 2, HalfHeight * 2, gdidc, 0, 0, 62, 50, bf);
+		else GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, gdidc, 0, 0, 62, 50, bf);
 		break;
 	}
 
@@ -751,12 +750,12 @@ void PLAYER::UpdateSpikeKnockback()
 	if (SpikeKnockback < 0)
 	{
 		SpikeKnockback++;
-		PositionX -= 4;			//왼쪽으로감
+		x -= 4;			//왼쪽으로감
 	}
 	else if (SpikeKnockback > 0)
 	{
 		SpikeKnockback--;
-		PositionX += 4;
+		x += 4;
 	}
 }
 
@@ -776,8 +775,8 @@ void PLAYER::Die(Sound& sound)
 	bIsDead = true;
 	MoveCommand = EMoveCommand::None;
 	PlayerState = EPlayerState::Crouch;
-	PositionY += 12;
-	HalfHeight = 13;
+	y += 12;
+	height = 13;
 	InvincibleTime = 1;
 	LEFTkey = 0;
 	RIGHTkey = 0;

@@ -34,11 +34,11 @@
     <Filter Include="소스 파일\src\world\obstacle">
       <UniqueIdentifier>{961c0add-d56f-4f52-aad5-7ada74f75728}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\src\world\obstacle\core">
-      <UniqueIdentifier>{33ce5574-4734-48c4-bc2d-3939694b1a61}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\src\object\view">
       <UniqueIdentifier>{2893820b-0381-4f2f-8739-e6e04ff93777}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\src\object\core">
+      <UniqueIdentifier>{2a83bcfc-152f-4e41-b8fd-4d1a7741d364}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -69,14 +69,17 @@
     <ClCompile Include="src\world\Map.cpp">
       <Filter>소스 파일\src\world</Filter>
     </ClCompile>
-    <ClCompile Include="src\world\obstacle\object.cpp">
-      <Filter>소스 파일\src\world\obstacle</Filter>
-    </ClCompile>
-    <ClCompile Include="src\world\obstacle\core\ObjectManager.cpp">
-      <Filter>소스 파일\src\world\obstacle\core</Filter>
-    </ClCompile>
     <ClCompile Include="src\object\view\Camera.cpp">
       <Filter>소스 파일\src\object\view</Filter>
+    </ClCompile>
+    <ClCompile Include="src\world\obstacle\obstacle.cpp">
+      <Filter>소스 파일\src\world\obstacle</Filter>
+    </ClCompile>
+    <ClCompile Include="src\object\core\ObjectManager.cpp">
+      <Filter>소스 파일\src\object\core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\object\core\Object.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -95,9 +98,6 @@
     <ClInclude Include="src\core\entry_point.h">
       <Filter>소스 파일\src\core</Filter>
     </ClInclude>
-    <ClInclude Include="Timer.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="src\core\Timer.h">
       <Filter>소스 파일\src\core</Filter>
     </ClInclude>
@@ -110,12 +110,6 @@
     <ClInclude Include="src\world\Map.h">
       <Filter>소스 파일\src\world</Filter>
     </ClInclude>
-    <ClInclude Include="src\world\obstacle\object.h">
-      <Filter>소스 파일\src\world\obstacle</Filter>
-    </ClInclude>
-    <ClInclude Include="src\world\obstacle\core\ObjectManager.h">
-      <Filter>소스 파일\src\world\obstacle\core</Filter>
-    </ClInclude>
     <ClInclude Include="src\object\view\Camera.h">
       <Filter>소스 파일\src\object\view</Filter>
     </ClInclude>
@@ -124,6 +118,18 @@
     </ClInclude>
     <ClInclude Include="src\core\util\ptr_template.h">
       <Filter>소스 파일\src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\IObject.h">
+      <Filter>소스 파일\src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\world\obstacle\obstacle.h">
+      <Filter>소스 파일\src\world\obstacle</Filter>
+    </ClInclude>
+    <ClInclude Include="src\object\core\Object.h">
+      <Filter>소스 파일\src\object\core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\object\core\ObjectManager.h">
+      <Filter>소스 파일\src\object\core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

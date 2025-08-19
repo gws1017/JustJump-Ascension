@@ -1,17 +1,15 @@
 #pragma once
-
+#include "object/core/Object.h"
 
 #define beltspeed 2 //belt speed
 #define gearrowspeed 5 //row gear speed
 #define gearcolspeed 3 // col gear speed
-class OBJECT {
+class Obstacle : public Object
+{
 
 public:
 	//오브젝트의 x y 는 왼쪽상단이 기준이다.
-	int GetX() { return x; };
-	int GetY() { return y; };
-	int GetWidth() { return w; };
-	int GetHeight() { return h; };
+
 	int GetMX() { return mx; }
 	int GetMY() { return my; }
 	int GetSpriteIndex() { return index; }
@@ -22,11 +20,6 @@ public:
 	//오브젝트가 몇개들어갔는지
 	//int getocount();
 
-	//오브젝트의 x y 는 왼쪽상단이 기준이다.
-	void SetX(int _x) { x = _x; }
-	void SetY(int _y) { y = _y; }
-	void SetW(int _w) { w = _w; }
-	void SetH(int _h) { h = _h; }
 	//1~100 플랫폼 101~장애물
 	void SetType(int _type) { type = _type; }
 	void SetHbit(HINSTANCE g_hinst);
@@ -45,7 +38,6 @@ public:
 
 private:
 
-	int x, y, w, h;					//오브젝트의 x y 는 왼쪽상단이 기준이다.
 	int mx, my;					// x,y 축기준 증감량
 
 	int dir;					//오브젝트 이동방향n 0 == left , right / 1 == up , down

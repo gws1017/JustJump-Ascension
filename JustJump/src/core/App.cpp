@@ -4,10 +4,10 @@
 #include "core/Timer.h"
 
 #include "world/Map.h"
-#include "world/obstacle/core/ObjectManager.h"
+#include "object/core/ObjectManager.h"
 #include "object/view/Camera.h"
 #include "object/character/player.h"
-#include "world/obstacle/object.h"
+#include "world/obstacle/obstacle.h"
 
 #ifdef _DEBUG
 #pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
@@ -178,7 +178,7 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 	static PLAYER player;
 	static MAP map;
 	static CAMERA camera;
-	static OBJECT obj[150];
+	static Obstacle obj[150];
 	static BLENDFUNCTION loadbf;
 	static Sound sound;
 
@@ -611,8 +611,8 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 	case WM_CHAR:
 		if (wParam == 'r')
 		{
-			player.SetPositionX(obj[ocount - 1].GetX() + 10);
-			player.SetPositionY(obj[ocount - 1].GetY() - 25);
+			player.SetX(obj[ocount - 1].GetX() + 10);
+			player.SetY(obj[ocount - 1].GetY() - 25);
 			break;
 		}
 		if (wParam == 'c')

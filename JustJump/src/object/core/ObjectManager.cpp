@@ -1,15 +1,15 @@
 #include "Global.h"
 #include <fstream>
 
-#include "world/obstacle/core/ObjectManager.h"
+#include "ObjectManager.h"
 #include "object/character/player.h"
-#include "world/obstacle/object.h"
+#include "world/obstacle/obstacle.h"
 #include "object/view/Camera.h"
 #include "world/Map.h"
 
 
 //오브젝트와 플레이어 충돌체크 1이면 부닥침
-bool ObjectManager::CollP2W(PLAYER player, OBJECT object)
+bool ObjectManager::CollP2W(PLAYER player, Obstacle object)
 //----------------------------------------
 {
 	int adjust = 10;
@@ -17,13 +17,13 @@ bool ObjectManager::CollP2W(PLAYER player, OBJECT object)
 	if (101 <= object.GetType() && object.GetType() < 301) { //장애물일때는 플레이어 네모빡스가 히트박스가된다
 		if (object.GetType() == 106 || object.GetType() == 107)
 		{
-			if (player.GetPositionX() + player.GetHalfWidth() < object.GetX() + object.GetMX() || player.GetPositionX() - player.GetHalfWidth() > object.GetX() + object.GetMX() + object.GetWidth()) return 0;
-			if (player.GetPositionY() + player.GetHalfHeight() < object.GetY() + object.GetMY() || player.GetPositionY() - player.GetHalfHeight() > object.GetY() + object.GetMY() + object.GetHeight()) return 0;
+			if (player.GetX() + player.GetWidth() < object.GetX() + object.GetMX() || player.GetX() - player.GetWidth() > object.GetX() + object.GetMX() + object.GetWidth()) return 0;
+			if (player.GetY() + player.GetHeight() < object.GetY() + object.GetMY() || player.GetY() - player.GetHeight() > object.GetY() + object.GetMY() + object.GetHeight()) return 0;
 		}
 		else
 		{
-			if (player.GetPositionX() + player.GetHalfWidth() < object.GetX() || player.GetPositionX() - player.GetHalfWidth() > object.GetX() + object.GetWidth()) return 0;
-			if (player.GetPositionY() + player.GetHalfHeight() < object.GetY() || player.GetPositionY() - player.GetHalfHeight() > object.GetY() + object.GetHeight()) return 0;
+			if (player.GetX() + player.GetWidth() < object.GetX() || player.GetX() - player.GetWidth() > object.GetX() + object.GetWidth()) return 0;
+			if (player.GetY() + player.GetHeight() < object.GetY() || player.GetY() - player.GetHeight() > object.GetY() + object.GetHeight()) return 0;
 		}
 
 
@@ -32,26 +32,26 @@ bool ObjectManager::CollP2W(PLAYER player, OBJECT object)
 	else if (301 <= object.GetType() && object.GetType() < 401)	//로프,밧줄같은 딱코 맞춰야하는 오브젝 위로는 플레이어 발까지 닿아야하고 아래로는 플레이어 중점에서 끝난다 하지만 내려갈수도 있어야하므로 조금 후하게 준다
 	{
 
-		if (player.GetPositionY() + player.GetHalfHeight() < object.GetY() || player.GetPositionY() - player.GetHalfHeight() > object.GetY() + object.GetHeight()) return 0;	//일단먼저 닿았으면 들어와
+		if (player.GetY() + player.GetHeight() < object.GetY() || player.GetY() - player.GetHeight() > object.GetY() + object.GetHeight()) return 0;	//일단먼저 닿았으면 들어와
 
-		if (object.GetX() < player.GetPositionX() && player.GetPositionX() < object.GetX() + object.GetWidth())	//파이프가 그래도 좀 두꺼우니 이안에들어오면 cehck
+		if (object.GetX() < player.GetX() && player.GetX() < object.GetX() + object.GetWidth())	//파이프가 그래도 좀 두꺼우니 이안에들어오면 cehck
 		{
 			if (UPkey == true)//여기는 특이하게 올라가면 올라가는쪽 체크는 끝이나야한다.
 			{
 
-				if (player.GetPositionY() + player.GetHalfHeight() <= object.GetY())	//올라갔을때 아랫키를 만족하면 충돌체크 x 안그러면 반응해서 계속 줄에매달리는 오류
+				if (player.GetY() + player.GetHeight() <= object.GetY())	//올라갔을때 아랫키를 만족하면 충돌체크 x 안그러면 반응해서 계속 줄에매달리는 오류
 					return 0;
-				if (player.GetPositionY() < object.GetY() + object.GetHeight())
+				if (player.GetY() < object.GetY() + object.GetHeight())
 					return 1;
 			}
 			else if (DOWNkey == true)
 			{
 
-				if (player.GetPositionY() + player.GetHalfHeight() <= object.GetY())
+				if (player.GetY() + player.GetHeight() <= object.GetY())
 					return 1;
 			}
 
-			if (player.GetPositionY() + player.GetHalfHeight() <= object.GetY() || player.GetPositionY() < object.GetY() + object.GetHeight())
+			if (player.GetY() + player.GetHeight() <= object.GetY() || player.GetY() < object.GetY() + object.GetHeight())
 				return 1;
 		}
 
@@ -59,18 +59,18 @@ bool ObjectManager::CollP2W(PLAYER player, OBJECT object)
 	}
 	else if (object.GetType() == 1)	//땅바닥일때
 	{
-		if (object.GetX() <= player.GetPositionX() && player.GetPositionX() <= object.GetX() + object.GetWidth())
+		if (object.GetX() <= player.GetX() && player.GetX() <= object.GetX() + object.GetWidth())
 		{
-			if (object.GetY() <= player.GetPositionY() + player.GetHalfHeight())
+			if (object.GetY() <= player.GetY() + player.GetHeight())
 			{
 				return 1;
 			}
 		}
 	}
 	else if (object.GetType() <= 100) {	//플랫폼일때는 플레이어 중점이 히트박스가된다
-		if (object.GetX() <= player.GetPositionX() && player.GetPositionX() <= object.GetX() + object.GetWidth())
+		if (object.GetX() <= player.GetX() && player.GetX() <= object.GetX() + object.GetWidth())
 		{
-			if (object.GetY() <= player.GetPositionY() + player.GetHalfHeight() && player.GetPositionY() + player.GetHalfHeight() <= object.GetY() + adjust)
+			if (object.GetY() <= player.GetY() + player.GetHeight() && player.GetY() + player.GetHeight() <= object.GetY() + adjust)
 			{
 				return 1;
 				//ㅇㅇ
@@ -83,17 +83,17 @@ bool ObjectManager::CollP2W(PLAYER player, OBJECT object)
 
 
 //플레이어와 오브젝트간 상호작용 판단하고 그에맞게 바꿔줌
-void ObjectManager::AdjustPlayer(PLAYER& player, OBJECT* object, MAP& m, int& ocount, HINSTANCE g_hinst, Sound& sound)
+void ObjectManager::AdjustPlayer(PLAYER& player, Obstacle* object, MAP& m, int& ocount, HINSTANCE g_hinst, Sound& sound)
 {
 	int check_coll = 0;	//하나라도 부딪혔는지 판별하기위함
-	if (player.GetPositionX() - player.GetHalfWidth() < 0)
+	if (player.GetX() - player.GetWidth() < 0)
 	{
-		player.SetPositionX(player.GetHalfWidth());
+		player.SetX(player.GetWidth());
 		player.SetMoveCommand(EMoveCommand::None);
 	}
-	else if (player.GetPositionX() + player.GetHalfWidth() > 1023)
+	else if (player.GetX() + player.GetWidth() > 1023)
 	{
-		player.SetPositionX(1023 - player.GetHalfWidth());
+		player.SetX(1023 - player.GetWidth());
 		player.SetMoveCommand(EMoveCommand::None);
 	}
 	for (int i = 0; i < ocount; ++i)
@@ -110,7 +110,7 @@ void ObjectManager::AdjustPlayer(PLAYER& player, OBJECT* object, MAP& m, int& oc
 
 				if (player.GetState() == EPlayerState::Airborne) //떨어지는 중일때 부딪혔다 ?
 				{
-					if (abs(player.GetSaveY() - player.GetPositionY()) > 200)	//낙뎀을받아야한다면
+					if (abs(player.GetSaveY() - player.GetY()) > 200)	//낙뎀을받아야한다면
 					{
 						if (player.GetInvincibleTime() == 0)	//무적이 아니라면
 						{
@@ -120,7 +120,7 @@ void ObjectManager::AdjustPlayer(PLAYER& player, OBJECT* object, MAP& m, int& oc
 							return;
 						}
 					}
-					player.SetPositionY(object[i].GetY() - player.GetHalfHeight());//발판위로 y좌표 세팅해주고
+					player.SetY(object[i].GetY() - player.GetHeight());//발판위로 y좌표 세팅해주고
 
 					if (LEFTkey == 0 && RIGHTkey == 0)	//근데 그와중에도 아무키도 안누르고있었다 ? 
 						player.SetMoveCommand(EMoveCommand::None);	//그럼 진행방향으로 가는걸 멈추도록해준다.
@@ -133,8 +133,8 @@ void ObjectManager::AdjustPlayer(PLAYER& player, OBJECT* object, MAP& m, int& oc
 
 					if (DOWNkey == true) {
 						player.SetState(EPlayerState::Crouch);	//숙이고있던 상태였다면 계속 숙이고있어줌
-						player.SetPositionY(player.GetPositionY() + 12);
-						player.SetHalfHeight(player.GetHalfHeight() - 12);	//계산이 끝났다면 다시 숙이기상태로 돌려줌
+						player.SetY(player.GetY() + 12);
+						player.SetHeight(player.GetHeight() - 12);	//계산이 끝났다면 다시 숙이기상태로 돌려줌
 					}
 					else player.SetState(EPlayerState::Idle);				//숙이던게 아니였으면 땅에부딪혔으니 정지상태해줌
 					player.SetFallSpeed(0);			//떨어질때가속도를 위한거니 이것도 정지해줌
@@ -147,11 +147,11 @@ void ObjectManager::AdjustPlayer(PLAYER& player, OBJECT* object, MAP& m, int& oc
 
 				if (object[i].GetType() == 4)
 				{
-					player.SetPositionX(player.GetPositionX() + beltspeed);
+					player.SetX(player.GetX() + beltspeed);
 				}
 				if (object[i].GetType() == 6)
 				{
-					player.SetPositionX(player.GetPositionX() - beltspeed);
+					player.SetX(player.GetX() - beltspeed);
 				}
 			}
 			else if (object[i].GetType() >= 101 && object[i].GetType() <= 200)	//장애물에 부딪히면
@@ -167,8 +167,8 @@ void ObjectManager::AdjustPlayer(PLAYER& player, OBJECT* object, MAP& m, int& oc
 						}
 						if (player.GetState() == EPlayerState::Crouch) //숙이고있었다면
 						{
-							player.SetPositionY(player.GetPositionY() - 12);
-							player.SetHalfHeight(player.GetHalfHeight() + 12);	//계산전에 돌려놓고 시작한다. 이건 땅에 닿을시점에 다시돌려준다
+							player.SetY(player.GetY() - 12);
+							player.SetHeight(player.GetHeight() + 12);	//계산전에 돌려놓고 시작한다. 이건 땅에 닿을시점에 다시돌려준다
 						}
 						if (player.GetState() == EPlayerState::Airborne)//일반일때는 살짝 점프 뛰듯이 가는데 떨어지는중이면 살짝만 이동한다
 						{
@@ -194,7 +194,7 @@ void ObjectManager::AdjustPlayer(PLAYER& player, OBJECT* object, MAP& m, int& oc
 					//Copy and Paste is very good (Y Collapse)
 					if (player.GetState() == EPlayerState::Airborne) //떨어지는 중일때 부딪혔다 ?
 					{
-						player.SetPositionY(object[i].GetY() - player.GetHalfHeight());//발판위로 y좌표 세팅해주고
+						player.SetY(object[i].GetY() - player.GetHeight());//발판위로 y좌표 세팅해주고
 
 						if (LEFTkey == 0 && RIGHTkey == 0)	//근데 그와중에도 아무키도 안누르고있었다 ? 
 							player.SetMoveCommand(EMoveCommand::None);	//그럼 진행방향으로 가는걸 멈추도록해준다.
@@ -216,11 +216,11 @@ void ObjectManager::AdjustPlayer(PLAYER& player, OBJECT* object, MAP& m, int& oc
 					//X Collapse
 					if (player.GetState() == EPlayerState::Idle || player.GetState() == EPlayerState::Move) //Walking Collpse
 					{
-						if (object[i].GetY() < player.GetPositionY() - player.GetHalfHeight())
+						if (object[i].GetY() < player.GetY() - player.GetHeight())
 						{
-							if (object[i].GetX() < player.GetPositionX() + player.GetHalfWidth()) //Left Collpse
+							if (object[i].GetX() < player.GetX() + player.GetWidth()) //Left Collpse
 							{
-								player.SetPositionX(object[i].GetX() - player.GetHalfWidth());// x좌표 세팅해주고
+								player.SetX(object[i].GetX() - player.GetWidth());// x좌표 세팅해주고
 								player.SetMoveCommand(EMoveCommand::None);
 							}
 						}
@@ -238,8 +238,8 @@ void ObjectManager::AdjustPlayer(PLAYER& player, OBJECT* object, MAP& m, int& oc
 							}
 							if (player.GetState() == EPlayerState::Crouch) //숙이고있었다면
 							{
-								player.SetPositionY(player.GetPositionY() - 12);
-								player.SetHalfHeight(player.GetHalfHeight() + 12);	//계산전에 돌려놓고 시작한다. 이건 땅에 닿을시점에 다시돌려준다
+								player.SetY(player.GetY() - 12);
+								player.SetHeight(player.GetHeight() + 12);	//계산전에 돌려놓고 시작한다. 이건 땅에 닿을시점에 다시돌려준다
 							}
 							if (player.GetState() == EPlayerState::Airborne)
 							{
@@ -276,8 +276,8 @@ void ObjectManager::AdjustPlayer(PLAYER& player, OBJECT* object, MAP& m, int& oc
 						}
 						if (player.GetState() == EPlayerState::Crouch) //숙이고있었다면
 						{
-							player.SetPositionY(player.GetPositionY() - 12);
-							player.SetHalfHeight(player.GetHalfHeight() + 12);	//계산전에 돌려놓고 시작한다. 이건 땅에 닿을시점에 다시돌려준다
+							player.SetY(player.GetY() - 12);
+							player.SetHeight(player.GetHeight() + 12);	//계산전에 돌려놓고 시작한다. 이건 땅에 닿을시점에 다시돌려준다
 						}
 						if (player.GetState() == EPlayerState::Airborne)//일반일때는 살짝 점프 뛰듯이 가는데 떨어지는중이면 살짝만 이동한다
 						{
@@ -309,8 +309,8 @@ void ObjectManager::AdjustPlayer(PLAYER& player, OBJECT* object, MAP& m, int& oc
 						}
 						if (player.GetState() == EPlayerState::Crouch) //숙이고있었다면
 						{
-							player.SetPositionY(player.GetPositionY() - 12);
-							player.SetHalfHeight(player.GetHalfHeight() + 12);	//계산전에 돌려놓고 시작한다. 이건 땅에 닿을시점에 다시돌려준다
+							player.SetY(player.GetY() - 12);
+							player.SetHeight(player.GetHeight() + 12);	//계산전에 돌려놓고 시작한다. 이건 땅에 닿을시점에 다시돌려준다
 						}
 						if (player.GetState() == EPlayerState::Airborne)//일반일때는 살짝 점프 뛰듯이 가는데 떨어지는중이면 살짝만 이동한다
 						{
@@ -388,11 +388,11 @@ void ObjectManager::AdjustPlayer(PLAYER& player, OBJECT* object, MAP& m, int& oc
 									player.SetMoveCommand(EMoveCommand::Up);
 								if (DOWNkey == true)
 									player.SetMoveCommand(EMoveCommand::Down);
-								player.SetPositionX(object[i].GetX() + (object[i].GetWidth() / 2));
+								player.SetX(object[i].GetX() + (object[i].GetWidth() / 2));
 								if (DOWNkey == true)	//이때는 수그리기아니라 밧줄 아래로 내려가는것이므로 수그리기로 깍인거 돌려준다
 								{
-									player.SetPositionY(player.GetPositionY() - 12);
-									player.SetHalfHeight(25);
+									player.SetY(player.GetY() - 12);
+									player.SetHeight(25);
 								}
 							}
 							player.PlayAnim();
@@ -425,7 +425,7 @@ void ObjectManager::AdjustPlayer(PLAYER& player, OBJECT* object, MAP& m, int& oc
 
 
 //int(맵 번호) 에 따라 장애물 위치값 넣어주고 몇개의 오브젝트가 들어갔는지 알려주는 함수
-int ObjectManager::InitObject(OBJECT* obj, int mapnum, HINSTANCE g_hinst)
+int ObjectManager::InitObject(Obstacle* obj, int mapnum, HINSTANCE g_hinst)
 {
 	int x, y, w, h, type;
 	int objcount = 0;
@@ -480,27 +480,27 @@ int ObjectManager::InitObject(OBJECT* obj, int mapnum, HINSTANCE g_hinst)
 void ObjectManager::AdjustCamera(CAMERA& camera, PLAYER player)
 {
 	//플레이어의 머리부분이 카메라의 꼭대기점을 넘어가면 바로 따라붙게한다
-	if (player.GetPositionY() - player.GetHalfHeight() < camera.GetY())
+	if (player.GetY() - player.GetHeight() < camera.GetY())
 	{
 		if (camera.GetY() <= 0)	//최상점일땐 이동해주지않음
 		{
 
 		}
 		else {
-			camera.SetY(player.GetPositionY() - player.GetHalfHeight());		//384는 맵 크기 768의 절반
+			camera.SetY(player.GetY() - player.GetHeight());		//384는 맵 크기 768의 절반
 		}
 	}
-	else if (player.GetPositionY() + player.GetHalfHeight() > camera.GetY() + 768)	//캐릭터의 발바닥이 카메라밖을 넘어서면
+	else if (player.GetY() + player.GetHeight() > camera.GetY() + 768)	//캐릭터의 발바닥이 카메라밖을 넘어서면
 	{
 		if (camera.GetY() >= 3232)	//최하점일땐 이동해주지않음
 		{
 
 		}
 		else {
-			camera.SetY(player.GetPositionY() + player.GetHalfHeight() - 768);	//따라가준다
+			camera.SetY(player.GetY() + player.GetHeight() - 768);	//따라가준다
 		}
 	}
-	else if (camera.GetY() + 600 != player.GetPositionY())		//카메라가 정해진 위치에 있지않다면
+	else if (camera.GetY() + 600 != player.GetY())		//카메라가 정해진 위치에 있지않다면
 	{
 		if (player.GetState() != EPlayerState::Airborne)							//그리고 떨어질때까지 카메라를 바꿔주면 너무 흔들려서 이때는 무시함
 		{
@@ -508,39 +508,39 @@ void ObjectManager::AdjustCamera(CAMERA& camera, PLAYER player)
 			{
 				camera.SetY(0);
 			}
-			else if (camera.GetY() + 540 > player.GetPositionY())		//얼마나 멀리있느냐에 따라 속도비를 다르게해서 카메라를 따라오게한다
+			else if (camera.GetY() + 540 > player.GetY())		//얼마나 멀리있느냐에 따라 속도비를 다르게해서 카메라를 따라오게한다
 			{
 				camera.SetY(camera.GetY() - 4);
 			}
-			else if (camera.GetY() + 580 > player.GetPositionY())
+			else if (camera.GetY() + 580 > player.GetY())
 			{
 				camera.SetY(camera.GetY() - 2);
 			}
-			else if (camera.GetY() + 600 > player.GetPositionY())
+			else if (camera.GetY() + 600 > player.GetY())
 			{
 				camera.SetY(camera.GetY() - 1);
 			}
-			else if (camera.GetY() + 700 < player.GetPositionY())
+			else if (camera.GetY() + 700 < player.GetY())
 			{
 				camera.SetY(camera.GetY() + 10);
 			}
-			else if (camera.GetY() + 680 < player.GetPositionY())
+			else if (camera.GetY() + 680 < player.GetY())
 			{
 				camera.SetY(camera.GetY() + 8);
 			}
-			else if (camera.GetY() + 660 < player.GetPositionY())
+			else if (camera.GetY() + 660 < player.GetY())
 			{
 				camera.SetY(camera.GetY() + 6);
 			}
-			else if (camera.GetY() + 640 < player.GetPositionY())
+			else if (camera.GetY() + 640 < player.GetY())
 			{
 				camera.SetY(camera.GetY() + 4);
 			}
-			else if (camera.GetY() + 620 < player.GetPositionY())
+			else if (camera.GetY() + 620 < player.GetY())
 			{
 				camera.SetY(camera.GetY() + 2);
 			}
-			else if (camera.GetY() + 600 < player.GetPositionY())
+			else if (camera.GetY() + 600 < player.GetY())
 			{
 				camera.SetY(camera.GetY() + 1);
 			}

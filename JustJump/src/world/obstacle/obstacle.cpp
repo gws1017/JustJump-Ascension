@@ -1,16 +1,16 @@
 #pragma comment (lib, "Msimg32.lib")
 #include "Global.h"
 
-#include "object.h"
+#include "obstacle.h"
 #include "object/character/player.h"
 
 
-void OBJECT::Create(int _x, int _y, int _w, int _h, int _type)
+void Obstacle::Create(int _x, int _y, int _w, int _h, int _type)
 {
 	x = _x;
 	y = _y;
-	w = _w;
-	h = _h;
+	width = _w;
+	height = _h;
 	type = _type;
 	index = 0;
 
@@ -32,24 +32,24 @@ void OBJECT::Create(int _x, int _y, int _w, int _h, int _type)
 }
 
 
-void OBJECT::SetHbit(HINSTANCE g_hinst)
+void Obstacle::SetHbit(HINSTANCE g_hinst)
 {
 	hbit = LoadObj(hbit, g_hinst, type);
 }
 
 // All objects reset
-void OBJECT::ResetObject()
+void Obstacle::ResetObject()
 {
 	x = 0;
 	y = 0;
-	w = 0;
-	h = 0;
+	width = 0;
+	height = 0;
 	type = 0;
 	index = 0;
 	hbit = NULL;
 }
 //인덱스를 바꿔주는함수
-void OBJECT::IndexChange()
+void Obstacle::IndexChange()
 {
 	index += 1;
 	if (type == 0)
@@ -75,35 +75,35 @@ void OBJECT::IndexChange()
 	
 }
 
-void OBJECT::DrawObj(HDC& mem1dc, HDC& odc)
+void Obstacle::DrawObj(HDC& mem1dc, HDC& odc)
 {
 	odc = CreateCompatibleDC(mem1dc);
 	SelectObject(odc, hbit);
 	if (type == 1)
 	{
-	  TransparentBlt(mem1dc, x, y, w , h, odc, 0, 0, 1023, 62, RGB(255, 255, 255));
+	  TransparentBlt(mem1dc, x, y, width, height, odc, 0, 0, 1023, 62, RGB(255, 255, 255));
 	}
-	else if(type == 0)TransparentBlt(mem1dc, x, y, w, h, odc, 0, 0 + index * 768, 1024, 768, RGB(142, 203, 162));
-	else if (type == 2) TransparentBlt(mem1dc, x, y, w, h + 17, odc, 11, 15, 77, 18, RGB(255, 255, 255));	// 원본그림에서 x 11~88 y 15 33 만큼 잘라내서 투명처리후 출력
-	else if (type == 3) TransparentBlt(mem1dc, x, y, w, h + 18, odc, 0, 0, 19, 19, RGB(255, 255, 255));
-	else if (type == 4) TransparentBlt(mem1dc, x, y, w, h + 42, odc, 16 + index * 272, 9, 250, 43, RGB(0, 0, 0));
-	else if (type == 6) TransparentBlt(mem1dc, x, y, w, h + 42, odc, 16 + index * 272, 9, 250, 43, RGB(0, 0, 0));
+	else if(type == 0)TransparentBlt(mem1dc, x, y, width, height, odc, 0, 0 + index * 768, 1024, 768, RGB(142, 203, 162));
+	else if (type == 2) TransparentBlt(mem1dc, x, y, width, height + 17, odc, 11, 15, 77, 18, RGB(255, 255, 255));	// 원본그림에서 x 11~88 y 15 33 만큼 잘라내서 투명처리후 출력
+	else if (type == 3) TransparentBlt(mem1dc, x, y, width, height + 18, odc, 0, 0, 19, 19, RGB(255, 255, 255));
+	else if (type == 4) TransparentBlt(mem1dc, x, y, width, height + 42, odc, 16 + index * 272, 9, 250, 43, RGB(0, 0, 0));
+	else if (type == 6) TransparentBlt(mem1dc, x, y, width, height + 42, odc, 16 + index * 272, 9, 250, 43, RGB(0, 0, 0));
 	else if (type == 7)
 	{
 		//23 50 // 1.73 / 2.123  /3.173 4.223 5.273 6.323 7. 373 350 
-		TransparentBlt(mem1dc, x, y, 14, h+17, odc, 11, 15, 14, 18, RGB(255, 255, 255));//head
+		TransparentBlt(mem1dc, x, y, 14, height+17, odc, 11, 15, 14, 18, RGB(255, 255, 255));//heightead
 
 		
 		for (int i = 0; i < 6; i++)
 		{
-			TransparentBlt(mem1dc, x + 14 + 50 * i, y ,50, h+17, odc, 27, 15, 50, 18, RGB(255, 255, 255));//body
+			TransparentBlt(mem1dc, x + 14 + 50 * i, y ,50, height+17, odc, 27, 15, 50, 18, RGB(255, 255, 255));//body
 		}
 			
-		TransparentBlt(mem1dc, x + 14 + 300, y , 13, h+17, odc, 78, 15, 13, 18, RGB(255, 255, 255));//tail
+		TransparentBlt(mem1dc, x + 14 + 300, y , 13, height+17, odc, 78, 15, 13, 18, RGB(255, 255, 255));//tail
 	}
-	else if (type == 5) TransparentBlt(mem1dc, x, y, w, h , odc, 0, 9, 0, 0, RGB(255, 255, 255));
-	else if (type == 101) TransparentBlt(mem1dc, x, y, w+11, h, odc, 1, 0, 26, 15, RGB(255, 255, 255));
-	else if (type == 102) TransparentBlt(mem1dc, x, y, w, h, odc, 0, 1, 17, 75, RGB(255, 255, 255));
+	else if (type == 5) TransparentBlt(mem1dc, x, y, width, height , odc, 0, 9, 0, 0, RGB(255, 255, 255));
+	else if (type == 101) TransparentBlt(mem1dc, x, y, width+11, height, odc, 1, 0, 26, 15, RGB(255, 255, 255));
+	else if (type == 102) TransparentBlt(mem1dc, x, y, width, height, odc, 0, 1, 17, 75, RGB(255, 255, 255));
 	else if (type == 103) // 103번의 경우 102번의 y값에서 51을 뺀 위치가 파이프 깨진부분이다.
 	{
 		//그림의 크기가 각각 다르기때문에 임시변수를 만들어  값을 저장하고 인덱스에따라 바꿔주는 형식이다.
@@ -117,30 +117,30 @@ void OBJECT::DrawObj(HDC& mem1dc, HDC& odc)
 	}
 	else if (type == 106 || type == 107) //gear
 	{
-		TransparentBlt(mem1dc, x+mx , y+my, w, h, odc, index * 23, 4, 18, 18, RGB(255, 255, 255)); // 인덱스로 only x change
+		TransparentBlt(mem1dc, x+mx , y+my, width, height, odc, index * 23, 4, 18, 18, RGB(255, 255, 255)); // 인덱스로 only x change
 	}
 	else if (type == 201) //portal
 	{
-		TransparentBlt(mem1dc, x, y, w, h, odc, index*79, 55, 63, 135, RGB(0, 0, 0)); // 인덱스로 only x change
+		TransparentBlt(mem1dc, x, y, width, height, odc, index*79, 55, 63, 135, RGB(0, 0, 0)); // 인덱스로 only x change
 	}
 	else if (type == 301)//Rope
 	{
 		//머리+ 꼬리 53 몸통 41 전체 94 기본 길이 94 더긴거는 135 176 217 258 299 340 381 422 463
-		int body = (h - 53) / 41;
-		TransparentBlt(mem1dc, x, y, w, 32, odc, 0, 0, 24,32, RGB(255, 255, 255));//head
+		int body = (height - 53) / 41;
+		TransparentBlt(mem1dc, x, y, width, 32, odc, 0, 0, 24,32, RGB(255, 255, 255));//head
 		
 		for (int i = 0; i < body; i++)
 		{
-			TransparentBlt(mem1dc, x, y + 32 + i * 41, w, 41, odc, 0, 33, 24, 41, RGB(255, 255, 255));//body
+			TransparentBlt(mem1dc, x, y + 32 + i * 41, width, 41, odc, 0, 33, 24, 41, RGB(255, 255, 255));//body
 			
 		}
 		
-		TransparentBlt(mem1dc, x, y + 32 + body * 41, w, 21, odc, 0, 148, 24, 21, RGB(255, 255, 255));//tail
+		TransparentBlt(mem1dc, x, y + 32 + body * 41, width, 21, odc, 0, 148, 24, 21, RGB(255, 255, 255));//tail
 	}
 	DeleteObject(odc);
 }
 
-void OBJECT::Move()
+void Obstacle::Move()
 {
 	
 	if (dir == 0) //Left or Down
