@@ -178,7 +178,6 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 	static PLAYER player;
 	static MAP map;
 	static CAMERA camera;
-	static Obstacle obj[150];
 	static BLENDFUNCTION loadbf;
 	static Sound sound;
 
@@ -190,6 +189,8 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 	static bool gamemode = 0;	//0이면 기본 1이면 자유모드
 	const auto& app = App::GetApp();
 	const auto& object_manager = app->m_object_manager;
+	object_manager->SetMem1DC(&mem1dc);
+
 	switch (iMessage)
 	{
 	case WM_CREATE:
@@ -235,7 +236,7 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 		HPbit = (HBITMAP)LoadImage(app->m_window->hInstance, TEXT("img/Ui_HP.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 		Diebit = (HBITMAP)LoadImage(app->m_window->hInstance, TEXT("img/Notice3.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 
-		ocount = object_manager->InitObject(obj, 9, app->m_window->hInstance);
+		ocount = object_manager->InitObject(9, app->m_window->hInstance);
 
 
 		SetTimer(hwnd, 1, 1, nullptr);
@@ -265,8 +266,7 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 
 		}
 
-		for (int i = 0; i <= ocount; i++)
-			obj[i].DrawObj(mem1dc, odc);
+		object_manager->DrawObjects();
 
 		if (map.GetMapNumber() == 9)
 		{
@@ -302,7 +302,7 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 			obj_t += 1;
 
 			player.UpdateMovement(obj_t);
-			object_manager->AdjustPlayer(player, obj, map, ocount, app->m_window->hInstance, sound);
+			object_manager->AdjustPlayer(player, map, ocount, app->m_window->hInstance, sound);
 
 			map.movemap();
 
@@ -325,62 +325,7 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 			player.UpdateSpikeKnockback();
 
 			// 이거를 따로 넣는게 낳을듯 오브젝트 멤버함수로다가
-			for (int i = 0; i <= ocount; i++)
-			{
-				if (obj[i].GetType() == 0)
-				{
-					if (obj_t % 10 == 0)
-					{
-						obj[i].IndexChange();
-
-					}
-
-				}
-				if (obj[i].GetType() == 4)
-				{
-					if (obj_t % 8 == 0)
-					{
-						obj[i].IndexChange();
-
-					}
-
-				}
-				if (obj[i].GetType() == 6)
-				{
-					if (obj_t % 8 == 0)
-					{
-						obj[i].IndexChange();
-
-					}
-
-				}
-				if (obj[i].GetType() == 103)
-				{
-					if (obj_t % 30 == 0)
-					{
-						obj[i].IndexChange();
-
-					}
-
-				}
-				if (obj[i].GetType() == 106 || obj[i].GetType() == 107)
-				{
-					if (obj_t % 5 == 0)
-					{
-						obj[i].IndexChange();
-
-					}
-					obj[i].Move();
-				}
-				else if (obj[i].GetType() == 201)
-				{
-					if (obj_t % 20 == 0)
-					{
-						obj[i].IndexChange();
-
-					}
-				}
-			}
+			object_manager->IndexChange(obj_t);
 			if (obj_t >= 27000) obj_t = 0;
 			InvalidateRgn(hwnd, nullptr, FALSE);
 			break;
@@ -569,9 +514,8 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 					map.SetBlackTime(50);
 					map.SetMapNumber(map.GetMapNumber() + 1);
 					player.Initialzie();
-					for (int j = 0; j < ocount; j++)
-						obj[j].ResetObject();
-					ocount = object_manager->InitObject(obj, map.GetMapNumber(), app->m_window->hInstance);
+					object_manager->ResetObstacle();
+					ocount = object_manager->InitObject( map.GetMapNumber(), app->m_window->hInstance);
 
 					map.CreateMap(app->m_window->hInstance);
 					hbit1 = (HBITMAP)LoadImage(app->m_window->hInstance, TEXT("img/bk.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
@@ -611,8 +555,8 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 	case WM_CHAR:
 		if (wParam == 'r')
 		{
-			player.SetX(obj[ocount - 1].GetX() + 10);
-			player.SetY(obj[ocount - 1].GetY() - 25);
+			//player.SetX(obj[ocount - 1].GetX() + 10);
+			//player.SetY(obj[ocount - 1].GetY() - 25);
 			break;
 		}
 		if (wParam == 'c')

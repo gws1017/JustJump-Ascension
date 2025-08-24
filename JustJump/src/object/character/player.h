@@ -110,6 +110,8 @@ public:
 	//뒤지면 초기화
 	void Die(Sound& sound);
 
+	virtual void Draw() override {}
+
 private:
 
 	void HandleLeftPressed();

@@ -75,7 +75,7 @@ void Obstacle::IndexChange()
 	
 }
 
-void Obstacle::DrawObj(HDC& mem1dc, HDC& odc)
+void Obstacle::DrawObj(HDC& mem1dc)
 {
 	odc = CreateCompatibleDC(mem1dc);
 	SelectObject(odc, hbit);

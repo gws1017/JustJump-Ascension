@@ -34,7 +34,7 @@ public:
 	//오브젝트 애니메이션 쓸때 사용하는함수
 	void IndexChange();
 	//오브젝트를 그려줌
-	void DrawObj(HDC& mem1dc, HDC& odc);
+	void DrawObj(HDC& mem1dc);
 
 private:
 
@@ -47,7 +47,7 @@ private:
 	int index;					//애니메이션 돌릴때 배열의 인덱스를 바꿔주어 이미지를 바꾼다
 
 	HBITMAP hbit;
-
+	HDC odc;
 };
 
 //bool collp2w(PLAYER, OBJECT);

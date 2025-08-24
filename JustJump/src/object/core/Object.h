@@ -21,6 +21,10 @@ public:
 	void SetWidth(int _w) { width = _w; }
 	void SetHeight(int _h) { height = _h; }
 
+public:
+
+	virtual void Draw() {};
+	
 protected :
 
 	int x, y, width, height;					//오브젝트의 x y 는 왼쪽상단이 기준이다.
