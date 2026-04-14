@@ -81,6 +81,9 @@
     <ClCompile Include="src\object\core\Object.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="src\core\GameWorld.cpp">
+      <Filter>소스 파일\src\core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\resource.h">
@@ -130,6 +133,9 @@
     </ClInclude>
     <ClInclude Include="src\object\core\ObjectManager.h">
       <Filter>소스 파일\src\object\core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\GameWorld.h">
+      <Filter>소스 파일\src\core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

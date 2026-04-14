@@ -8,6 +8,7 @@ namespace
 
 class Timer;
 class ObjectManager;
+class GameWorld;
 struct Window;
 
 class App
@@ -41,8 +42,8 @@ protected:
 	SPtr<Window> m_window;
 
 private:
+    UPtr<GameWorld> m_game_world;
 	UPtr<Timer> m_timer;
-	UPtr<ObjectManager> m_object_manager;
 
 public:
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);

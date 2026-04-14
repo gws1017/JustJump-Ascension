@@ -2,6 +2,7 @@
 #include "core/App.h"
 #include "core/window.h"
 #include "core/Timer.h"
+#include "core/GameWorld.h"
 
 #include "world/Map.h"
 #include "object/core/ObjectManager.h"
@@ -21,7 +22,7 @@ App::App(std::wstring_view app_name)
 	s_instance = this;
 	m_timer = CreateUPtr<Timer>();
 	m_window = CreateSPtr<Window>(APP_WIDTH, APP_HEIGHT);
-	m_object_manager = CreateUPtr<ObjectManager>();
+	m_game_world = CreateUPtr<GameWorld>();
 }
 
 App::~App()
@@ -43,6 +44,14 @@ bool App::Initialize()
 		std::cout << "Fail Timer Initialize" << std::endl;
 		return false;
 	}
+
+	result = m_game_world->Initialize(m_window->hInstance);
+	if (result == false)
+	{
+		std::cout << "Fail GameWorld Initialize" << std::endl;
+		return false;
+	}
+
 	return true;
 }
 
@@ -56,10 +65,10 @@ void App::Run()
 
 	bool bDone = false;
 
-	/*PeekMessage¸¸À¸·Î´Â ÇÑ ¹ø¿¡ ÇÏ³ªÀÇ ¸Þ½ÃÁö¸¸ Ã³¸®ÇÏ°í, 
-	¸Þ½ÃÁö°¡ ´õ ¾øÀ¸¸é Áï½Ã ¹ÝÈ¯µÇ¹Ç·Î
-    ±× ¡°ÇÑ ÇÁ·¹ÀÓ¡± µ¿¾È ½×¿© ÀÖ´Â ¸ðµç ¸Þ½ÃÁö¸¦ ºñ¿ö Áà¾ß, 
-	´ÙÀ½ ÇÁ·¹ÀÓ¿¡ ´Ù½Ã ¸Þ½ÃÁö°¡ ¹Ð¸®Áö ¾Ê´Â´Ù.*/
+	/*PeekMessageë§Œìœ¼ë¡œëŠ” í•œ ë²ˆì— í•˜ë‚˜ì˜ ë©”ì‹œì§€ë§Œ ì²˜ë¦¬í•˜ê³ , 
+	ë©”ì‹œì§€ê°€ ë” ì—†ìœ¼ë©´ ì¦‰ì‹œ ë°˜í™˜ë˜ë¯€ë¡œ
+    ê·¸ â€œí•œ í”„ë ˆìž„â€ ë™ì•ˆ ìŒ“ì—¬ ìžˆëŠ” ëª¨ë“  ë©”ì‹œì§€ë¥¼ ë¹„ì›Œ ì¤˜ì•¼, 
+	ë‹¤ìŒ í”„ë ˆìž„ì— ë‹¤ì‹œ ë©”ì‹œì§€ê°€ ë°€ë¦¬ì§€ ì•ŠëŠ”ë‹¤.*/
 
 	while (!bDone)
 	{
@@ -172,7 +181,7 @@ void App::DestroyWindow()
 LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
 	static PAINTSTRUCT ps;
-	static HDC hdc, mem1dc, mem2dc, loaddc, playerdc, odc, pdc, ui_dc, hp_dc, die_dc, start_dc, help_dc; // odc = ¿ÀºêÁ§Æ® dc, pdc = player dc,ui_Dc : ¾Æ·¡ ÀüÃ¼ÀûÀÎ ui hp_Dc: hpÅë¸¸ ³ª¿À´Â°Å dic_dc : »ç¸Á ui 
+	static HDC hdc, mem1dc, mem2dc, loaddc, playerdc, odc, pdc, ui_dc, hp_dc, die_dc, start_dc, help_dc; // odc = ì˜¤ë¸Œì íŠ¸ dc, pdc = player dc,ui_Dc : ì•„ëž˜ ì „ì²´ì ì¸ ui hp_Dc: hpí†µë§Œ ë‚˜ì˜¤ëŠ”ê±° dic_dc : ì‚¬ë§ ui 
 	static RECT rectview;
 	static HBITMAP hbit1, loadbit, oldload, oldbit1, hbitobj[100], Uibit, HPbit, Diebit, Startbit, Helpbit;
 	static PLAYER player;
@@ -182,175 +191,51 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 	static Sound sound;
 
 
-	static int obj_t = 0; //¿ÀºêÁ§Æ® ¾Ö´Ï¸ÞÀÌ¼ÇÀ» 1¹øÅ¸ÀÌ¸Ó¿¡ ³Ö±âÀ§ÇØ Ãß°¡ÇÑ º¯¼ö
-	static int ocount;		//obj °³¼ö¸¦ ¼¼ÁÖ´Â º¯¼ö
-	static int help_button = 0, start_button = 0; //Á¶ÀÛ¹ý ¿Â¿ÀÇÁ
-	static bool occur_button = 0;	//»ç¸ÁÇßÀ»¶§ÀÇ buttonÀÌ È°¼ºÈ­µÇ¾ú´ÂÁö 
-	static bool gamemode = 0;	//0ÀÌ¸é ±âº» 1ÀÌ¸é ÀÚÀ¯¸ðµå
+	static int obj_t = 0; //ì˜¤ë¸Œì íŠ¸ ì• ë‹ˆë©”ì´ì…˜ì„ 1ë²ˆíƒ€ì´ë¨¸ì— ë„£ê¸°ìœ„í•´ ì¶”ê°€í•œ ë³€ìˆ˜
+	static int ocount;		//obj ê°œìˆ˜ë¥¼ ì„¸ì£¼ëŠ” ë³€ìˆ˜
+	static int help_button = 0, start_button = 0; //ì¡°ìž‘ë²• ì˜¨ì˜¤í”„
+	static bool occur_button = 0;	//ì‚¬ë§í–ˆì„ë•Œì˜ buttonì´ í™œì„±í™”ë˜ì—ˆëŠ”ì§€ 
+	static bool gamemode = 0;	//0ì´ë©´ ê¸°ë³¸ 1ì´ë©´ ìžìœ ëª¨ë“œ
 	const auto& app = App::GetApp();
-	const auto& object_manager = app->m_object_manager;
-	object_manager->SetMem1DC(&mem1dc);
+	const auto& gameWorld = app->m_game_world;
 
 	switch (iMessage)
 	{
 	case WM_CREATE:
-
-
-
-		AddFontResourceA("font/Maplestory Bold.ttf");
-		AddFontResourceA("font/Maplestory Light.ttf");
-		GetClientRect(hwnd, &rectview);
-		map.CreateMap(app->m_window->hInstance);
-		map.CreateUi(app->m_window->hInstance);
-		map.CreateHP(app->m_window->hInstance);
-		map.CreateDie(app->m_window->hInstance);
-		map.CreateStart(app->m_window->hInstance);
-		map.CreateHelp(app->m_window->hInstance);
-		player.SetBitMap(app->m_window->hInstance);
-		player.InitializeAnimPosition();
-
-		if (map.GetMapNumber() == 9)
-		{
-			camera.SetX(0);
-			camera.SetY(0);
-		}
-
-
-		cout << camera.GetX() << endl;
-		sound.Sound_Setup();
-		loadbf.AlphaFormat = 0;
-		loadbf.BlendFlags = 0;
-		loadbf.BlendOp = AC_SRC_OVER;
-		loadbf.SourceConstantAlpha = 0;
-
-
-		sound.Channel[0]->stop();
-		sound.System->playSound(sound.bgmSound[0], nullptr, false, &sound.Channel[0]);
-
-		if (map.GetMapNumber() == 9) hbit1 = (HBITMAP)LoadImage(app->m_window->hInstance, TEXT("img/start_rayer1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-		else if (map.GetMapNumber() == 13) hbit1 = (HBITMAP)LoadImage(app->m_window->hInstance, TEXT("img/clear.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-
-		Helpbit = (HBITMAP)LoadImage(app->m_window->hInstance, TEXT("img/help1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-		Startbit = (HBITMAP)LoadImage(app->m_window->hInstance, TEXT("img/start1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-		Uibit = (HBITMAP)LoadImage(app->m_window->hInstance, TEXT("img/Ui.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-		HPbit = (HBITMAP)LoadImage(app->m_window->hInstance, TEXT("img/Ui_HP.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-		Diebit = (HBITMAP)LoadImage(app->m_window->hInstance, TEXT("img/Notice3.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-
-		ocount = object_manager->InitObject(9, app->m_window->hInstance);
-
-
 		SetTimer(hwnd, 1, 1, nullptr);
 		break;
 	case WM_PAINT:
+	{
 		hdc = BeginPaint(hwnd, &ps);
+		RECT view{};
 
-		mem1dc = CreateCompatibleDC(hdc);
-		if (hbit1 == nullptr)
-		{
-			hbit1 = CreateCompatibleBitmap(hdc, rectview.right, rectview.bottom);
-		}
+		gameWorld->Render(hdc, view);
 
-
-		SelectObject(mem1dc, hbit1);
-		SelectObject(ui_dc, Uibit);
-		SelectObject(hp_dc, HPbit);
-		SelectObject(die_dc, Diebit);
-		SelectObject(start_dc, Startbit);
-		SelectObject(help_dc, Helpbit);
-
-
-
-		if (0 >= map.GetBlackTime())
-		{
-			map.DrawBK(mem1dc, mem2dc, rectview);
-
-		}
-
-		object_manager->DrawObjects();
-
-		if (map.GetMapNumber() == 9)
-		{
-			map.DrawStart(mem1dc, start_dc, start_button);
-			map.DrawHelp(mem1dc, help_dc, help_button);
-
-		}
-		player.Render(mem1dc, pdc);
-		if (map.GetMapNumber() >= 10)
-		{
-			map.DrawUi(mem1dc, ui_dc, camera);
-			map.DrawHP(mem1dc, hp_dc, camera, player);
-			if (player.IsDead() == 1)
-				map.DrawDie(mem1dc, die_dc, camera, sound);
-		}
-
-
-
-		if (map.GetBlackTime() > 0) map.DrawLoadBK(mem1dc, mem2dc, loadbf);
-
-
-		BitBlt(hdc, 0, 0, 1024, 768, mem1dc, camera.GetX(), camera.GetY(), SRCCOPY);
-
-
-
-		DeleteObject(mem1dc);
 		EndPaint(hwnd, &ps);
 		break;
+	}
+
 	case WM_TIMER:
-		switch (wParam)
-		{
-		case 1:
-			obj_t += 1;
 
-			player.UpdateMovement(obj_t);
-			object_manager->AdjustPlayer(player, map, ocount, app->m_window->hInstance, sound);
-
-			map.movemap();
-
-			if (map.BlackTime())
-			{
-				if (loadbf.SourceConstantAlpha + 40 > 255)
-					loadbf.SourceConstantAlpha = 255;
-				else {
-					loadbf.SourceConstantAlpha += 40;
-				}
-			}
-			else {
-				//Ä³¸¯ÅÍ°¡ ·ÎµùÁßÀÏ¶© Ä«¸Þ¶ó ÀÌµ¿ ±ÝÁö , ÀÏ¹Ý¸ðµåÀÏ¶§¸¸ Ä«¸Þ¶ó ¿òÁ÷ÀÓ
-				if (player.GetGameMode() == 0)
-					object_manager->AdjustCamera(camera, player);
-			}
-
-			player.SelectBitmap();
-			player.UpdateInvincibilityTimer();
-			player.UpdateSpikeKnockback();
-
-			// ÀÌ°Å¸¦ µû·Î ³Ö´Â°Ô ³ºÀ»µí ¿ÀºêÁ§Æ® ¸â¹öÇÔ¼ö·Î´Ù°¡
-			object_manager->IndexChange(obj_t);
-			if (obj_t >= 27000) obj_t = 0;
-			InvalidateRgn(hwnd, nullptr, FALSE);
-			break;
-
-		}
+		gameWorld->Update(0.f);
+		InvalidateRgn(hwnd, nullptr, FALSE);
 		break;
+
 	case WM_KEYDOWN:
-		if (player.IsDead() == 1)
-			break;
-		if (player.GetGameMode() == 0)
-			player.OnKeyPressed(wParam, sound);
-		else if (player.GetGameMode() == 1)
-			camera.CameraSetting(wParam);
+
+		gameWorld->OnKeyDown(wParam);
 		InvalidateRgn(hwnd, nullptr, FALSE);
 		break;
+
 	case WM_KEYUP:
-		if (player.IsDead() == 1)
-			break;
-		if (player.GetGameMode() == 0)
-			player.OnKeyReleased(wParam);
-		else if (player.GetGameMode() == 1)
-			camera.CameraSetting(wParam);
+
+		gameWorld->OnKeyUp(wParam);
 		InvalidateRgn(hwnd, nullptr, FALSE);
 		break;
+
 	case WM_MOUSEMOVE:
+		gameWorld->OnMouseMove(lParam);
+
 		if (player.IsDead() == 1)
 		{
 			if (584 < LOWORD(lParam) && LOWORD(lParam) < 620)
@@ -435,6 +320,8 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 		}
 		break;
 	case WM_LBUTTONDOWN:
+		gameWorld->OnMouseDown(lParam);
+
 		SetCursor(LoadCursorFromFile(TEXT("cursor/cursor4.cur")));
 
 		if (player.IsDead() == 1)
@@ -491,66 +378,9 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 		cout << HIWORD(lParam) + camera.GetY() << endl;
 		break;
 	case WM_LBUTTONUP:
-		if (player.IsDead() == 1)
-		{
-			if (584 < LOWORD(lParam) && LOWORD(lParam) < 620)
-			{
-				if (338 < HIWORD(lParam) && HIWORD(lParam) < 352)
-				{
-					map.ChangeDieNotice(app->m_window->hInstance, 0);
-					player.Initialzie();
-					player.SetCurrentHP(100);
-					break;
-				}
-			}
-		}
-		if (map.GetMapNumber() == 9)
-		{
-			if (290 < LOWORD(lParam) && LOWORD(lParam) < 430)
-			{
-				if (490 < HIWORD(lParam) && HIWORD(lParam) < 572)
-				{
-					occur_button = 0;
-					map.SetBlackTime(50);
-					map.SetMapNumber(map.GetMapNumber() + 1);
-					player.Initialzie();
-					object_manager->ResetObstacle();
-					ocount = object_manager->InitObject( map.GetMapNumber(), app->m_window->hInstance);
 
-					map.CreateMap(app->m_window->hInstance);
-					hbit1 = (HBITMAP)LoadImage(app->m_window->hInstance, TEXT("img/bk.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-					sound.SetIndex(sound.GetIndex() + 1);
-
-					if (sound.Channel[1]) {
-						sound.Channel[1]->stop();
-					}
-
-					FMOD_RESULT result = sound.System->playSound(
-						sound.effectSound[1],
-						nullptr,
-						false,
-						&sound.Channel[1]
-					);
-
-					if (sound.Channel[0]) {
-						sound.Channel[0]->stop();
-					}
-
-					result = sound.System->playSound(
-						sound.bgmSound[1],
-						nullptr,
-						false,
-						&sound.Channel[0]
-					);
-					player.SetCurrentHP(100);
-					camera.SetX(0);
-					camera.SetY(3232);
-					InvalidateRgn(hwnd, nullptr, FALSE);
-					break;
-				}
-			}
-			//obj[0].getType()
-		}
+		gameWorld->OnMouseUp(lParam);
+		InvalidateRgn(hwnd, nullptr, FALSE);
 		break;
 	case WM_CHAR:
 		if (wParam == 'r')
