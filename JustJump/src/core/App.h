@@ -29,7 +29,7 @@ public:
 
 private:
 	void Update(float delta_time);
-	void Render();
+	void Render(HDC hdc, const RECT& client_rect);
 
 private:
 	virtual bool InitializeWindow();

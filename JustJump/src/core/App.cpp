@@ -84,7 +84,7 @@ void App::Run()
 		{
 			m_timer->Update();
 			Update(m_timer->GetDeltaTime());
-			Render();
+			InvalidateRect(m_window->hWnd, nullptr, FALSE);
 		}
 		if (bDone) break;
 	}
@@ -92,10 +92,14 @@ void App::Run()
 
 void App::Update(float delta_time)
 {
+	if(m_game_world)
+		m_game_world->Update(delta_time);
 }
 
-void App::Render()
+void App::Render(HDC hdc, const RECT& client_rect)
 {
+	if(m_game_world)
+        m_game_world->Render(hdc, client_rect);
 }
 
 bool App::InitializeWindow()
@@ -180,21 +184,6 @@ void App::DestroyWindow()
 
 LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
-	static PAINTSTRUCT ps;
-	static HDC hdc, mem1dc, mem2dc, loaddc, playerdc, odc, pdc, ui_dc, hp_dc, die_dc, start_dc, help_dc; // odc = 오브젝트 dc, pdc = player dc,ui_Dc : 아래 전체적인 ui hp_Dc: hp통만 나오는거 dic_dc : 사망 ui 
-	static RECT rectview;
-	static HBITMAP hbit1, loadbit, oldload, oldbit1, hbitobj[100], Uibit, HPbit, Diebit, Startbit, Helpbit;
-	static PLAYER player;
-	static MAP map;
-	static CAMERA camera;
-	static BLENDFUNCTION loadbf;
-	static Sound sound;
-
-
-	static int obj_t = 0; //오브젝트 애니메이션을 1번타이머에 넣기위해 추가한 변수
-	static int ocount;		//obj 개수를 세주는 변수
-	static int help_button = 0, start_button = 0; //조작법 온오프
-	static bool occur_button = 0;	//사망했을때의 button이 활성화되었는지 
 	static bool gamemode = 0;	//0이면 기본 1이면 자유모드
 	const auto& app = App::GetApp();
 	const auto& gameWorld = app->m_game_world;
@@ -202,232 +191,53 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 	switch (iMessage)
 	{
 	case WM_CREATE:
-		SetTimer(hwnd, 1, 1, nullptr);
 		break;
+
 	case WM_PAINT:
 	{
-		hdc = BeginPaint(hwnd, &ps);
+		PAINTSTRUCT ps{};
+		HDC hdc = BeginPaint(hwnd, &ps);
 		RECT view{};
 
-		gameWorld->Render(hdc, view);
+		GetClientRect(hwnd, &view);
+
+		App::GetApp()->Render(hdc,view);
 
 		EndPaint(hwnd, &ps);
 		break;
 	}
 
-	case WM_TIMER:
-
-		gameWorld->Update(0.f);
-		InvalidateRgn(hwnd, nullptr, FALSE);
-		break;
-
 	case WM_KEYDOWN:
 
 		gameWorld->OnKeyDown(wParam);
-		InvalidateRgn(hwnd, nullptr, FALSE);
 		break;
 
 	case WM_KEYUP:
 
 		gameWorld->OnKeyUp(wParam);
-		InvalidateRgn(hwnd, nullptr, FALSE);
 		break;
 
 	case WM_MOUSEMOVE:
 		gameWorld->OnMouseMove(lParam);
-
-		if (player.IsDead() == 1)
-		{
-			if (584 < LOWORD(lParam) && LOWORD(lParam) < 620)
-			{
-				if (338 < HIWORD(lParam) && HIWORD(lParam) < 352)
-				{
-					map.ChangeDieNotice(app->m_window->hInstance, 1);
-					if (occur_button == 0)
-					{
-						if (sound.Channel[1]) {
-							sound.Channel[1]->stop();
-						}
-
-						FMOD_RESULT result = sound.System->playSound(
-							sound.effectSound[4],
-							nullptr,
-							false,
-							&sound.Channel[1]
-						);
-						occur_button = 1;
-					}
-					break;
-				}
-			}
-			map.ChangeDieNotice(app->m_window->hInstance, 0);
-			occur_button = 0;
-		}
-		if (map.GetMapNumber() == 9)
-		{
-			if (290 < LOWORD(lParam) && LOWORD(lParam) < 430)
-			{
-				if (490 < HIWORD(lParam) && HIWORD(lParam) < 572)
-				{
-					//map.ChangeStartButton(app->m_window->hInstance, 1);
-					if (start_button == 0)
-					{
-						if (sound.Channel[1]) {
-							sound.Channel[1]->stop();
-						}
-
-						FMOD_RESULT result = sound.System->playSound(
-							sound.effectSound[4],
-							nullptr,
-							false,
-							&sound.Channel[1]
-						);
-						start_button = 1;
-					}
-					break;
-				}
-			}
-
-			if (290 < LOWORD(lParam) && LOWORD(lParam) < 428)
-			{
-				if (345 < HIWORD(lParam) && HIWORD(lParam) < 427)
-				{
-
-					//map.ChangeHelp(app->m_window->hInstance, help_button);
-					if (help_button == 0)
-					{
-
-						if (sound.Channel[1]) {
-							sound.Channel[1]->stop();
-						}
-
-						FMOD_RESULT result = sound.System->playSound(
-							sound.effectSound[4],
-							nullptr,
-							false,
-							&sound.Channel[1]
-						);
-						help_button = 1;
-					}
-					break;
-				}
-			}
-			//map.ChangeStartButton(app->m_window->hInstance, 0);
-			//map.ChangeHelp(app->m_window->hInstance, 0);
-			start_button = 0;
-			help_button = 0;
-			occur_button = 0;
-		}
 		break;
+
 	case WM_LBUTTONDOWN:
 		gameWorld->OnMouseDown(lParam);
-
-		SetCursor(LoadCursorFromFile(TEXT("cursor/cursor4.cur")));
-
-		if (player.IsDead() == 1)
-		{
-			if (584 < LOWORD(lParam) && LOWORD(lParam) < 620)
-			{
-				if (338 < HIWORD(lParam) && HIWORD(lParam) < 352)
-				{
-					map.ChangeDieNotice(app->m_window->hInstance, 2);
-					if (sound.Channel[1]) {
-						sound.Channel[1]->stop();
-					}
-
-					FMOD_RESULT result = sound.System->playSound(
-						sound.effectSound[3],
-						nullptr,
-						false,
-						&sound.Channel[1]
-					);
-					break;
-				}
-			}
-		}
-		if (map.GetMapNumber() == 9)
-		{
-			if (290 < LOWORD(lParam) && LOWORD(lParam) < 430)
-			{
-				if (490 < HIWORD(lParam) && HIWORD(lParam) < 572)
-				{
-					if (start_button == 1)
-					{
-
-						//map.ChangeStartButton(app->m_window->hInstance, 2);
-						if (sound.Channel[1]) {
-							sound.Channel[1]->stop();
-						}
-
-						FMOD_RESULT result = sound.System->playSound(
-							sound.effectSound[3],
-							nullptr,
-							false,
-							&sound.Channel[1]
-						);
-						start_button = 2;
-
-						break;
-					}
-
-				}
-			}
-
-		}
-		cout << LOWORD(lParam) << endl;
-		cout << HIWORD(lParam) + camera.GetY() << endl;
 		break;
+
 	case WM_LBUTTONUP:
 
 		gameWorld->OnMouseUp(lParam);
-		InvalidateRgn(hwnd, nullptr, FALSE);
 		break;
+
 	case WM_CHAR:
-		if (wParam == 'r')
-		{
-			//player.SetX(obj[ocount - 1].GetX() + 10);
-			//player.SetY(obj[ocount - 1].GetY() - 25);
-			break;
-		}
-		if (wParam == 'c')
-		{
-			player.SetMoveCommand(EMoveCommand::None);
-			if (player.GetGameMode() == 0)
-				player.SetGameMode(1);
-			else
-				player.SetGameMode(0);
-			break;
-		}
-		InvalidateRect(hwnd, nullptr, FALSE);
+
+		gameWorld->OnChar(wParam);
 		break;
+
 	case WM_DESTROY:
-		for (int i = 0; i < 5; ++i)
-		{
-			if (sound.effectSound[i]) {
-				sound.effectSound[i]->release();
-				sound.effectSound[i] = nullptr;
-			}
-		}
-		for (int i = 0; i < 2; ++i)
-		{
-			if (sound.Channel[i]) {
-				sound.Channel[i]->stop();
-				sound.Channel[i] = nullptr;
-			}
-		}
-		sound.System->release();
-		KillTimer(hwnd, 1);
-		hbit1, loadbit, hbitobj[100], Uibit, HPbit, Diebit, Startbit, Helpbit;
-		if (hbit1) DeleteObject(hbit1);
-		if (loadbit) DeleteObject(loadbit);
-		if (Uibit) DeleteObject(Uibit);
-		if (Diebit) DeleteObject(Diebit);
-		if (Startbit) DeleteObject(Startbit);
-		if (Helpbit) DeleteObject(Helpbit);
-		for (int i = 0; i < 100; ++i)
-			if (hbitobj[i]) DeleteObject(hbitobj[i]);
-
-
+		
+		gameWorld->Shutdown();
 		PostQuitMessage(0);
 		return 0;
 	}

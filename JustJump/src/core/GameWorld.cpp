@@ -151,7 +151,59 @@ void GameWorld::Render(HDC hdc, const RECT& view)
 }
 void GameWorld::Shutdown()
 {
-    //Shutdown 로직 구현
+    // FMOD
+	for (int i = 0; i < 5; ++i)
+	{
+		if (m_sound.effectSound[i])
+		{
+			m_sound.effectSound[i]->release();
+			m_sound.effectSound[i] = nullptr;
+		}
+	}
+	for (int i = 0; i < 2; ++i)
+	{
+		if (m_sound.Channel[i])
+		{
+			m_sound.Channel[i]->stop();
+			m_sound.Channel[i] = nullptr;
+		}
+	}
+	if (m_sound.System)
+	{
+		m_sound.System->release();
+		m_sound.System = nullptr;
+	}
+	// GDI 비트맵 (GameWorld가 LoadImage로 들고 있는 것들)
+	auto del_bitmap = [](HBITMAP& b) {
+		if (b) { DeleteObject(b); b = nullptr; }
+	};
+	del_bitmap(m_hbit1);
+	del_bitmap(m_help_bit);
+	del_bitmap(m_start_bit);
+	del_bitmap(m_ui_bit);
+	del_bitmap(m_hp_bit);
+	del_bitmap(m_die_bit);
+	// AddFontResourceA 제거
+	RemoveFontResourceA("font/Maplestory Bold.ttf");
+	RemoveFontResourceA("font/Maplestory Light.ttf");
+}
+
+void GameWorld::OnChar(WPARAM ch)
+{
+	if (ch == 'r')
+	{
+		// 포탈 위치(다음맵 이동) 조정하는 치트키 코드 추가
+		return;
+	}
+	if (ch == 'c')
+	{
+		m_player.SetMoveCommand(EMoveCommand::None);
+		if (m_player.GetGameMode() == 0)
+			m_player.SetGameMode(1);
+		else
+			m_player.SetGameMode(0);
+		return;
+	}
 }
 
 void GameWorld::OnKeyDown(WPARAM key)
@@ -166,8 +218,118 @@ void GameWorld::OnKeyUp(WPARAM key)
     if (m_player.GetGameMode() == 0) m_player.OnKeyReleased(key);
     else if (m_player.GetGameMode() == 1) m_camera.CameraSetting(key);
 }
-void GameWorld::OnMouseMove(LPARAM /*mouse*/) {}
-void GameWorld::OnMouseDown(LPARAM /*mouse*/) {}
+void GameWorld::OnMouseMove(LPARAM mouse) 
+{
+    if (m_player.IsDead() == 1)
+	{
+		if (584 < LOWORD(mouse) && LOWORD(mouse) < 620)
+		{
+			if (338 < HIWORD(mouse) && HIWORD(mouse) < 352)
+			{
+				m_map.ChangeDieNotice(m_hinstance, 1);
+				if (m_occur_button == 0)
+				{
+					if (m_sound.Channel[1])
+						m_sound.Channel[1]->stop();
+					m_sound.System->playSound(
+						m_sound.effectSound[4],
+						nullptr,
+						false,
+						&m_sound.Channel[1]);
+					m_occur_button = true;
+				}
+				return;
+			}
+		}
+		m_map.ChangeDieNotice(m_hinstance, 0);
+		m_occur_button = false;
+	}
+	if (m_map.GetMapNumber() == 9)
+	{
+		if (290 < LOWORD(mouse) && LOWORD(mouse) < 430)
+		{
+			if (490 < HIWORD(mouse) && HIWORD(mouse) < 572)
+			{
+				if (m_start_button == 0)
+				{
+					if (m_sound.Channel[1])
+						m_sound.Channel[1]->stop();
+					m_sound.System->playSound(
+						m_sound.effectSound[4],
+						nullptr,
+						false,
+						&m_sound.Channel[1]);
+					m_start_button = 1;
+				}
+				return;
+			}
+		}
+		if (290 < LOWORD(mouse) && LOWORD(mouse) < 428)
+		{
+			if (345 < HIWORD(mouse) && HIWORD(mouse) < 427)
+			{
+				if (m_help_button == 0)
+				{
+					if (m_sound.Channel[1])
+						m_sound.Channel[1]->stop();
+					m_sound.System->playSound(
+						m_sound.effectSound[4],
+						nullptr,
+						false,
+						&m_sound.Channel[1]);
+					m_help_button = 1;
+				}
+				return;
+			}
+		}
+		m_start_button = 0;
+		m_help_button = 0;
+		m_occur_button = false;
+	}
+}
+void GameWorld::OnMouseDown(LPARAM mouse) 
+{
+    SetCursor(LoadCursorFromFile(TEXT("cursor/cursor4.cur")));
+	if (m_player.IsDead() == 1)
+	{
+		if (584 < LOWORD(mouse) && LOWORD(mouse) < 620)
+		{
+			if (338 < HIWORD(mouse) && HIWORD(mouse) < 352)
+			{
+				m_map.ChangeDieNotice(m_hinstance, 2);
+				if (m_sound.Channel[1])
+					m_sound.Channel[1]->stop();
+				m_sound.System->playSound(
+					m_sound.effectSound[3],
+					nullptr,
+					false,
+					&m_sound.Channel[1]);
+				return;
+			}
+		}
+	}
+	if (m_map.GetMapNumber() == 9)
+	{
+		if (290 < LOWORD(mouse) && LOWORD(mouse) < 430)
+		{
+			if (490 < HIWORD(mouse) && HIWORD(mouse) < 572)
+			{
+				if (m_start_button == 1)
+				{
+					if (m_sound.Channel[1])
+						m_sound.Channel[1]->stop();
+					m_sound.System->playSound(
+						m_sound.effectSound[3],
+						nullptr,
+						false,
+						&m_sound.Channel[1]);
+					m_start_button = 2;
+				}
+				return;
+			}
+		}
+    }
+}
 void GameWorld::OnMouseUp(LPARAM mouse) 
 {
     if (m_player.IsDead() == 1)

@@ -31,6 +31,7 @@ public:
 	void Render(HDC hdc, const RECT& view);
 	void Shutdown();
 
+	void OnChar(WPARAM key);
 	void OnKeyDown(WPARAM key);
 	void OnKeyUp(WPARAM key);
 	void OnMouseMove(LPARAM mouse);
