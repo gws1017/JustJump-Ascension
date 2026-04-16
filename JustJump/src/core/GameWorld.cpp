@@ -53,7 +53,6 @@ bool GameWorld::Initialize(HINSTANCE hinstance)
         m_sound.Channel[0]->stop();
     }
     m_sound.System->playSound(m_sound.bgmSound[0], nullptr, false, &m_sound.Channel[0]);
-    m_ocount = m_object_manager.InitObject(9, m_hinstance);
 
     if (m_map.GetMapNumber() == 9)
     m_hbit1 = (HBITMAP)LoadImage(m_hinstance, TEXT("img/start_rayer1.bmp"), 
@@ -75,7 +74,15 @@ IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 
 void GameWorld::Update(float dt)
 {
-    ++m_obj_t;
+    dt = std::min(dt,0.05f);
+    m_anim_accum += dt;
+
+    while(m_anim_accum >= m_anim_tick)
+    {
+        m_anim_accum -= m_anim_tick;
+        ++m_obj_t; 
+        if (m_obj_t >= 27000) m_obj_t = 0;
+    }
 
     m_player.UpdateMovement(m_obj_t);
     m_object_manager.AdjustPlayer(m_player, m_map, m_ocount, m_hinstance, m_sound);
@@ -100,14 +107,35 @@ void GameWorld::Update(float dt)
     m_player.UpdateSpikeKnockback();
 
     m_object_manager.IndexChange(m_obj_t);
-    if (m_obj_t >= 27000) m_obj_t = 0;
 }
 
 void GameWorld::Render(HDC hdc, const RECT& view)
 {
     m_rectview = view;
     
-    m_mem1dc = CreateCompatibleDC(hdc);
+    HDC mem1dc = CreateCompatibleDC(hdc);
+    HDC mem2dc = CreateCompatibleDC(hdc);
+    HDC ui_dc = CreateCompatibleDC(hdc);
+    HDC hp_dc = CreateCompatibleDC(hdc);
+    HDC die_dc = CreateCompatibleDC(hdc);
+    HDC start_dc = CreateCompatibleDC(hdc);
+    HDC help_dc = CreateCompatibleDC(hdc);
+    HDC player_dc = CreateCompatibleDC(hdc);
+
+    if (!mem1dc || !mem2dc || !ui_dc || !hp_dc || !die_dc || !start_dc || !help_dc || !player_dc)
+    {
+        // 생성 실패 시 정리 후 리턴
+        if (mem1dc) DeleteDC(mem1dc);
+        if (mem2dc) DeleteDC(mem2dc);
+        if (ui_dc) DeleteDC(ui_dc);
+        if (hp_dc) DeleteDC(hp_dc);
+        if (die_dc) DeleteDC(die_dc);
+        if (start_dc) DeleteDC(start_dc);
+        if (help_dc) DeleteDC(help_dc);
+        if (player_dc) DeleteDC(player_dc);
+        return;
+    }
+
     if (m_hbit1 == nullptr)
     {
         m_hbit1 = CreateCompatibleBitmap(hdc, m_rectview.right, m_rectview.bottom);
@@ -147,7 +175,15 @@ void GameWorld::Render(HDC hdc, const RECT& view)
     if (m_map.GetBlackTime() > 0) m_map.DrawLoadBK(m_mem1dc, m_mem2dc, m_blendfunction);
 
     BitBlt(hdc, 0, 0, 1024, 768, m_mem1dc, m_camera.GetX(), m_camera.GetY(), SRCCOPY);
-    DeleteDC(m_mem1dc);
+    
+    if (mem1dc) DeleteDC(mem1dc);
+    if (mem2dc) DeleteDC(mem2dc);
+    if (ui_dc) DeleteDC(ui_dc);
+    if (hp_dc) DeleteDC(hp_dc);
+    if (die_dc) DeleteDC(die_dc);
+    if (start_dc) DeleteDC(start_dc);
+    if (help_dc) DeleteDC(help_dc);
+    if (player_dc) DeleteDC(player_dc);
 }
 void GameWorld::Shutdown()
 {

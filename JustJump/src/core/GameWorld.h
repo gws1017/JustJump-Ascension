@@ -52,6 +52,9 @@ private:
 	BLENDFUNCTION m_blendfunction{};
 
 	// animation / ui state
+	float m_anim_accum = 0.0f;
+    float m_anim_tick = 1.0f / 60.0f;
+	
 	int m_obj_t = 0;
 	int m_ocount = 0;
 	int m_help_button = 0;

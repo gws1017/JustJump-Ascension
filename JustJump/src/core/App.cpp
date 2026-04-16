@@ -57,6 +57,8 @@ bool App::Initialize()
 
 void App::Shutdown()
 {
+	if(m_game_world)
+		m_game_world->Shutdown();
 }
 
 void App::Run()
@@ -184,9 +186,12 @@ void App::DestroyWindow()
 
 LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
-	static bool gamemode = 0;	//0이면 기본 1이면 자유모드
 	const auto& app = App::GetApp();
 	const auto& gameWorld = app->m_game_world;
+
+	//Null Check
+	if(!app || !gameWorld)
+		return DefWindowProc(hwnd, iMessage, wParam, lParam);
 
 	switch (iMessage)
 	{
@@ -236,8 +241,6 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 		break;
 
 	case WM_DESTROY:
-		
-		gameWorld->Shutdown();
 		PostQuitMessage(0);
 		return 0;
 	}
