@@ -4,12 +4,6 @@
 #include "core/Timer.h"
 #include "core/GameWorld.h"
 
-#include "world/Map.h"
-#include "object/core/ObjectManager.h"
-#include "object/view/Camera.h"
-#include "object/character/player.h"
-#include "world/obstacle/obstacle.h"
-
 #ifdef _DEBUG
 #pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
 #endif
@@ -159,30 +153,6 @@ void App::DestroyWindow()
 	::DestroyWindow(m_window->hWnd);
 	UnregisterClassW(m_app_name.c_str(), m_window->hInstance);
 }
-
-//LRESULT CALLBACK App::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-//{
-//	LRESULT result = NULL;
-//	const auto& app = App::GetApp();
-//
-//	switch (message)
-//	{
-//	case WM_SIZE:
-//		break;
-//	case WM_ACTIVATE:
-//		break;
-//	case WM_MOVE:
-//		break;
-//	case WM_DESTROY:
-//	case WM_CLOSE:
-//		PostQuitMessage(0);
-//		break;
-//	default:
-//		result = DefWindowProc(hWnd, message, wParam, lParam);
-//		break;
-//	}
-//	return result;
-//}
 
 LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {

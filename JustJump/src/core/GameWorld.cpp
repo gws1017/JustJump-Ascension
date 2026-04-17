@@ -31,6 +31,7 @@ bool GameWorld::Initialize(HINSTANCE hinstance)
     //플레이어 초기화화
     m_player.SetBitMap(m_hinstance);
     m_player.InitializeAnimPosition();
+    m_player.SelectBitmap();
 
     //카메라 초기화
     if (m_map.GetMapNumber() == 9)
@@ -120,9 +121,8 @@ void GameWorld::Render(HDC hdc, const RECT& view)
     HDC die_dc = CreateCompatibleDC(hdc);
     HDC start_dc = CreateCompatibleDC(hdc);
     HDC help_dc = CreateCompatibleDC(hdc);
-    HDC player_dc = CreateCompatibleDC(hdc);
 
-    if (!mem1dc || !mem2dc || !ui_dc || !hp_dc || !die_dc || !start_dc || !help_dc || !player_dc)
+    if (!mem1dc || !mem2dc || !ui_dc || !hp_dc || !die_dc || !start_dc || !help_dc )
     {
         // 생성 실패 시 정리 후 리턴
         if (mem1dc) DeleteDC(mem1dc);
@@ -132,7 +132,6 @@ void GameWorld::Render(HDC hdc, const RECT& view)
         if (die_dc) DeleteDC(die_dc);
         if (start_dc) DeleteDC(start_dc);
         if (help_dc) DeleteDC(help_dc);
-        if (player_dc) DeleteDC(player_dc);
         return;
     }
 
@@ -141,40 +140,40 @@ void GameWorld::Render(HDC hdc, const RECT& view)
         m_hbit1 = CreateCompatibleBitmap(hdc, m_rectview.right, m_rectview.bottom);
     }
 
-    SelectObject(m_mem1dc, m_hbit1);
-    SelectObject(m_ui_dc, m_ui_bit);
-    SelectObject(m_hp_dc, m_hp_bit);
-    SelectObject(m_die_dc, m_die_bit);
-    SelectObject(m_start_dc, m_start_bit);
-    SelectObject(m_help_dc, m_help_bit);
+    SelectObject(mem1dc, m_hbit1);
+    SelectObject(ui_dc, m_ui_bit);
+    SelectObject(hp_dc, m_hp_bit);
+    SelectObject(die_dc, m_die_bit);
+    SelectObject(start_dc, m_start_bit);
+    SelectObject(help_dc, m_help_bit);
 
     if (0 >= m_map.GetBlackTime())
     {
-        m_map.DrawBK(m_mem1dc, m_mem2dc, m_rectview);
+        m_map.DrawBK(mem1dc, mem2dc, m_rectview);
     }
 
-    m_object_manager.SetMem1DC(&m_mem1dc);
+    m_object_manager.SetMem1DC(&mem1dc);
     m_object_manager.DrawObjects();
 
     if (m_map.GetMapNumber() == 9)
     {
-        m_map.DrawStart(m_mem1dc, m_start_dc, m_start_button);
-        m_map.DrawHelp(m_mem1dc, m_help_dc, m_help_button);
+        m_map.DrawStart(mem1dc, start_dc, m_start_button);
+        m_map.DrawHelp(mem1dc, help_dc, m_help_button);
     }
 
-    m_player.Render(m_mem1dc, m_player_dc);
+    m_player.Render(mem1dc);
 
     if (m_map.GetMapNumber() >= 10)
     {
-        m_map.DrawUi(m_mem1dc, m_ui_dc, m_camera);
-        m_map.DrawHP(m_mem1dc, m_hp_dc, m_camera, m_player);
+        m_map.DrawUi(mem1dc, ui_dc, m_camera);
+        m_map.DrawHP(mem1dc, hp_dc, m_camera, m_player);
         if (m_player.IsDead() == 1)
-            m_map.DrawDie(m_mem1dc, m_die_dc, m_camera, m_sound);
+            m_map.DrawDie(mem1dc, die_dc, m_camera, m_sound);
     }
 
-    if (m_map.GetBlackTime() > 0) m_map.DrawLoadBK(m_mem1dc, m_mem2dc, m_blendfunction);
+    if (m_map.GetBlackTime() > 0) m_map.DrawLoadBK(mem1dc, mem2dc, m_blendfunction);
 
-    BitBlt(hdc, 0, 0, 1024, 768, m_mem1dc, m_camera.GetX(), m_camera.GetY(), SRCCOPY);
+    BitBlt(hdc, 0, 0, 1024, 768, mem1dc, m_camera.GetX(), m_camera.GetY(), SRCCOPY);
     
     if (mem1dc) DeleteDC(mem1dc);
     if (mem2dc) DeleteDC(mem2dc);
@@ -183,7 +182,6 @@ void GameWorld::Render(HDC hdc, const RECT& view)
     if (die_dc) DeleteDC(die_dc);
     if (start_dc) DeleteDC(start_dc);
     if (help_dc) DeleteDC(help_dc);
-    if (player_dc) DeleteDC(player_dc);
 }
 void GameWorld::Shutdown()
 {
@@ -222,6 +220,8 @@ void GameWorld::Shutdown()
 	// AddFontResourceA 제거
 	RemoveFontResourceA("font/Maplestory Bold.ttf");
 	RemoveFontResourceA("font/Maplestory Light.ttf");
+
+    m_object_manager.ResetObstacle();
 }
 
 void GameWorld::OnChar(WPARAM ch)

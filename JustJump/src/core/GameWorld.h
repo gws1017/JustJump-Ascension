@@ -71,7 +71,6 @@ private:
 	HDC m_die_dc = nullptr;
 	HDC m_start_dc = nullptr;
 	HDC m_help_dc = nullptr;
-	HDC m_player_dc = nullptr;
 	HBITMAP m_hbit1 = nullptr;
 	HBITMAP m_ui_bit = nullptr;
 	HBITMAP m_hp_bit = nullptr;

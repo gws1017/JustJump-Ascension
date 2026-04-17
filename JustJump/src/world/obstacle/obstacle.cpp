@@ -40,6 +40,11 @@ void Obstacle::SetHbit(HINSTANCE g_hinst)
 // All objects reset
 void Obstacle::ResetObject()
 {
+	if(hbit)
+	{
+		DeleteObject(hbit);
+		hbit = NULL;
+	}
 	x = 0;
 	y = 0;
 	width = 0;
@@ -48,7 +53,7 @@ void Obstacle::ResetObject()
 	index = 0;
 	hbit = NULL;
 }
-//ÀÎµ¦½º¸¦ ¹Ù²ãÁÖ´ÂÇÔ¼ö
+//ì¸ë±ìŠ¤ë¥¼ ë°”ê¿”ì£¼ëŠ”í•¨ìˆ˜
 void Obstacle::IndexChange()
 {
 	index += 1;
@@ -60,15 +65,15 @@ void Obstacle::IndexChange()
 	{
 		if (index >= 4) index = 0;
 	}
-	else if (type == 103) //°¡½º °ø¹éÆ÷ÇÔ ÀÌ¹ÌÁö 4°³
+	else if (type == 103) //ê°€ìŠ¤ ê³µë°±í¬í•¨ ì´ë¯¸ì§€ 4ê°œ
 	{
 		if (index >= 4) index = 0;
 	}
-	else if (type == 106 || type == 107) //Åé´Ï¹ÙÄû È¸ÀüÇÏ´Â ÀÌ¹ÌÁö 2°³
+	else if (type == 106 || type == 107) //í†±ë‹ˆë°”í€´ íšŒì „í•˜ëŠ” ì´ë¯¸ì§€ 2ê°œ
 	{
 		if (index >= 2) index = 0;
 	}
-	else if (type == 201)//Æ÷Å» ÀÌ¹ÌÁö 7°³
+	else if (type == 201)//í¬íƒˆ ì´ë¯¸ì§€ 7ê°œ
 	{
 		if (index >= 7) index = 0;
 	}
@@ -84,7 +89,7 @@ void Obstacle::DrawObj(HDC& mem1dc)
 	  TransparentBlt(mem1dc, x, y, width, height, odc, 0, 0, 1023, 62, RGB(255, 255, 255));
 	}
 	else if(type == 0)TransparentBlt(mem1dc, x, y, width, height, odc, 0, 0 + index * 768, 1024, 768, RGB(142, 203, 162));
-	else if (type == 2) TransparentBlt(mem1dc, x, y, width, height + 17, odc, 11, 15, 77, 18, RGB(255, 255, 255));	// ¿øº»±×¸²¿¡¼­ x 11~88 y 15 33 ¸¸Å­ Àß¶ó³»¼­ Åõ¸íÃ³¸®ÈÄ Ãâ·Â
+	else if (type == 2) TransparentBlt(mem1dc, x, y, width, height + 17, odc, 11, 15, 77, 18, RGB(255, 255, 255));	// ì›ë³¸ê·¸ë¦¼ì—ì„œ x 11~88 y 15 33 ë§Œí¼ ì˜ë¼ë‚´ì„œ íˆ¬ëª…ì²˜ë¦¬í›„ ì¶œë ¥
 	else if (type == 3) TransparentBlt(mem1dc, x, y, width, height + 18, odc, 0, 0, 19, 19, RGB(255, 255, 255));
 	else if (type == 4) TransparentBlt(mem1dc, x, y, width, height + 42, odc, 16 + index * 272, 9, 250, 43, RGB(0, 0, 0));
 	else if (type == 6) TransparentBlt(mem1dc, x, y, width, height + 42, odc, 16 + index * 272, 9, 250, 43, RGB(0, 0, 0));
@@ -104,10 +109,10 @@ void Obstacle::DrawObj(HDC& mem1dc)
 	else if (type == 5) TransparentBlt(mem1dc, x, y, width, height , odc, 0, 9, 0, 0, RGB(255, 255, 255));
 	else if (type == 101) TransparentBlt(mem1dc, x, y, width+11, height, odc, 1, 0, 26, 15, RGB(255, 255, 255));
 	else if (type == 102) TransparentBlt(mem1dc, x, y, width, height, odc, 0, 1, 17, 75, RGB(255, 255, 255));
-	else if (type == 103) // 103¹øÀÇ °æ¿ì 102¹øÀÇ y°ª¿¡¼­ 51À» »« À§Ä¡°¡ ÆÄÀÌÇÁ ±úÁøºÎºĞÀÌ´Ù.
+	else if (type == 103) // 103ë²ˆì˜ ê²½ìš° 102ë²ˆì˜ yê°’ì—ì„œ 51ì„ ëº€ ìœ„ì¹˜ê°€ íŒŒì´í”„ ê¹¨ì§„ë¶€ë¶„ì´ë‹¤.
 	{
-		//±×¸²ÀÇ Å©±â°¡ °¢°¢ ´Ù¸£±â¶§¹®¿¡ ÀÓ½Ãº¯¼ö¸¦ ¸¸µé¾î  °ªÀ» ÀúÀåÇÏ°í ÀÎµ¦½º¿¡µû¶ó ¹Ù²ãÁÖ´Â Çü½ÄÀÌ´Ù.
-		RECT gas[4] = { {0,2,7,7},{10,2,18,7},{31,0,33,9},{0,0,0,0} }; //1¹øÂ°ÀÎÀÚ´Â ¾Æ¹«°Íµµ ¾È±×¸®´Â°Í
+		//ê·¸ë¦¼ì˜ í¬ê¸°ê°€ ê°ê° ë‹¤ë¥´ê¸°ë•Œë¬¸ì— ì„ì‹œë³€ìˆ˜ë¥¼ ë§Œë“¤ì–´  ê°’ì„ ì €ì¥í•˜ê³  ì¸ë±ìŠ¤ì—ë”°ë¼ ë°”ê¿”ì£¼ëŠ” í˜•ì‹ì´ë‹¤.
+		RECT gas[4] = { {0,2,7,7},{10,2,18,7},{31,0,33,9},{0,0,0,0} }; //1ë²ˆì§¸ì¸ìëŠ” ì•„ë¬´ê²ƒë„ ì•ˆê·¸ë¦¬ëŠ”ê²ƒ
 		int tx;
 		if (index == 0) tx = x + 26;
 		else if (index == 1) tx = x + 15;
@@ -117,15 +122,15 @@ void Obstacle::DrawObj(HDC& mem1dc)
 	}
 	else if (type == 106 || type == 107) //gear
 	{
-		TransparentBlt(mem1dc, x+mx , y+my, width, height, odc, index * 23, 4, 18, 18, RGB(255, 255, 255)); // ÀÎµ¦½º·Î only x change
+		TransparentBlt(mem1dc, x+mx , y+my, width, height, odc, index * 23, 4, 18, 18, RGB(255, 255, 255)); // ì¸ë±ìŠ¤ë¡œ only x change
 	}
 	else if (type == 201) //portal
 	{
-		TransparentBlt(mem1dc, x, y, width, height, odc, index*79, 55, 63, 135, RGB(0, 0, 0)); // ÀÎµ¦½º·Î only x change
+		TransparentBlt(mem1dc, x, y, width, height, odc, index*79, 55, 63, 135, RGB(0, 0, 0)); // ì¸ë±ìŠ¤ë¡œ only x change
 	}
 	else if (type == 301)//Rope
 	{
-		//¸Ó¸®+ ²¿¸® 53 ¸öÅë 41 ÀüÃ¼ 94 ±âº» ±æÀÌ 94 ´õ±ä°Å´Â 135 176 217 258 299 340 381 422 463
+		//ë¨¸ë¦¬+ ê¼¬ë¦¬ 53 ëª¸í†µ 41 ì „ì²´ 94 ê¸°ë³¸ ê¸¸ì´ 94 ë”ê¸´ê±°ëŠ” 135 176 217 258 299 340 381 422 463
 		int body = (height - 53) / 41;
 		TransparentBlt(mem1dc, x, y, width, 32, odc, 0, 0, 24,32, RGB(255, 255, 255));//head
 		
@@ -137,7 +142,7 @@ void Obstacle::DrawObj(HDC& mem1dc)
 		
 		TransparentBlt(mem1dc, x, y + 32 + body * 41, width, 21, odc, 0, 148, 24, 21, RGB(255, 255, 255));//tail
 	}
-	DeleteObject(odc);
+	DeleteDC(odc);
 }
 
 void Obstacle::Move()
@@ -159,7 +164,7 @@ void Obstacle::Move()
 	}
 	
 }
-//¶¥¹Ù´Ú°ú ÇÃ·¹ÀÌ¾î Ãæµ¹Ã¼Å© 1ÀÌ¸é ºÎ´ÚÄ§
+//ë•…ë°”ë‹¥ê³¼ í”Œë ˆì´ì–´ ì¶©ëŒì²´í¬ 1ì´ë©´ ë¶€ë‹¥ì¹¨
 //
 //bool collp2w(PLAYER player, OBJECT obj)
 //{

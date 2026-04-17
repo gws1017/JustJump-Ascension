@@ -2,14 +2,14 @@
 #include "object/character/player.h"
 #pragma comment (lib, "Msimg32.lib")
 
-int ROWSPEED = 3; 	//°¡·Î ÀÌµ¿¼Óµµ
-int COLSPEED = 10;	//¼¼·Î ÀÌµ¿¼Óµµ
+int ROWSPEED = 3; 	//ê°€ë¡œ ì´ë™ì†ë„
+int COLSPEED = 10;	//ì„¸ë¡œ ì´ë™ì†ë„
 int ROPESPEED = 2;
-bool LEFTkey = 0;//¿ŞÂÊÅ° ´­·¶´ÂÁö 1ÀÌ¸é ´©¸§ 0ÀÌ¸é ¾È´©¸§
-bool RIGHTkey = 0;//¿À¸¥ÂÊÅ° ´­·¶´ÂÁö 1ÀÌ¸é ´©¸§ 0ÀÌ¸é ¾È´©¸§
-bool UPkey = 0;	//À§ÂÊÅ° ´­·¶´ÂÁö 1ÀÌ¸é ´©¸§ 0ÀÌ¸é ¾È´©¸§
-bool DOWNkey = 0;//¾Æ·¡ÂÊÅ° ´­·¶´ÂÁö 1ÀÌ¸é ´©¸§ 0ÀÌ¸é ¾È´©¸§
-bool LRkey = 0;//¿ŞÂÊ¿À¸¥ÂÊÅ° µ¿½Ã¿¡ ´­·¶´ÂÁö 1ÀÌ¸é´­¸² 0ÀÌ¸é ¾È´­¸²
+bool LEFTkey = 0;//ì™¼ìª½í‚¤ ëˆŒë €ëŠ”ì§€ 1ì´ë©´ ëˆ„ë¦„ 0ì´ë©´ ì•ˆëˆ„ë¦„
+bool RIGHTkey = 0;//ì˜¤ë¥¸ìª½í‚¤ ëˆŒë €ëŠ”ì§€ 1ì´ë©´ ëˆ„ë¦„ 0ì´ë©´ ì•ˆëˆ„ë¦„
+bool UPkey = 0;	//ìœ„ìª½í‚¤ ëˆŒë €ëŠ”ì§€ 1ì´ë©´ ëˆ„ë¦„ 0ì´ë©´ ì•ˆëˆ„ë¦„
+bool DOWNkey = 0;//ì•„ë˜ìª½í‚¤ ëˆŒë €ëŠ”ì§€ 1ì´ë©´ ëˆ„ë¦„ 0ì´ë©´ ì•ˆëˆ„ë¦„
+bool LRkey = 0;//ì™¼ìª½ì˜¤ë¥¸ìª½í‚¤ ë™ì‹œì— ëˆŒë €ëŠ”ì§€ 1ì´ë©´ëˆŒë¦¼ 0ì´ë©´ ì•ˆëˆŒë¦¼
 bool UDkey = 0;
 int jumpcount = 0;
 int diecount = 0;
@@ -23,6 +23,11 @@ PLAYER::PLAYER()
 	IsGameMode(false), InvincibleTime(0), RopeJumpCooldown(0), SpikeKnockback(0),
 	CurrentBitmap(nullptr), WalkBitmap(nullptr), ActionBitmap(nullptr),
 	AnimX(0), AnimY(0), AnimWidth(0), AnimHeight(0)
+{
+
+}
+
+PLAYER::~PLAYER()
 {
 
 }
@@ -42,9 +47,202 @@ void PLAYER::Initialzie()
 	MoveCommand = EMoveCommand::None;
 	bIsHurt = false;
 	bIsDead = false;
-
-
 }
+
+//í”Œë ˆì´ì–´ë¥¼ ê·¸ë ¤ì¤Œ
+void PLAYER::Render(HDC& backDC)
+{
+	SelectBitmap();
+	if (!CurrentBitmap)
+		return;
+
+	HDC playerDC = CreateCompatibleDC(backDC);
+	if (!playerDC)
+		return;
+
+	const HBITMAP oldSpriteObj = (HBITMAP)SelectObject(playerDC, CurrentBitmap);
+
+	//í”¼ê²©ë‹¹í–ˆì„ì‹œì— íˆ¬ëª…ì²˜ë¦¬ í•´ì¤„ dcë¥¼ mem1dcì™€ ì—°ê²°
+	HDC compositeDC = CreateCompatibleDC(backDC);
+	if (!compositeDC)
+	{
+		SelectObject(playerDC, oldSpriteObj);
+		DeleteDC(playerDC);
+		return;
+	}
+
+	//mem1dcì˜ ìºë¦­í„°ê·¸ë¦´ê³µê°„ë§Œí¼ë§Œ ì–»ì–´ì˜¨ë‹¤(ì‹¤ì œ mem1dcì—ëŠ” ë°°ê²½ì´ìˆìœ¼ë¯€ë¡œ 0,0 ë¶€í„° 62,50 ê¹Œì§€ì˜ ë¹„íŠ¸ë§µì´ ë“¤ì–´ê°)
+	HBITMAP compositeBitmap = CreateCompatibleBitmap(backDC, 62, 50);
+	if (!compositeBitmap)
+	{
+		DeleteDC(compositeDC);
+		SelectObject(playerDC, oldSpriteObj);
+		DeleteDC(playerDC);
+		return;
+	}
+    HBITMAP oldcompositeBitmap = (HBITMAP)SelectObject(compositeDC, compositeBitmap);
+
+	BLENDFUNCTION bf;
+	bf.AlphaFormat = 0;
+	bf.BlendFlags = 0;
+	bf.BlendOp = AC_SRC_OVER;
+	bf.SourceConstantAlpha = 255;
+	
+	//ì—¬ê¸°ì„œ 0,0 ~62,50 ê¹Œì§€ì˜ ë¹„íŠ¸ë§µì„ ìºë¦­í„°ê¸°ì¤€ìœ¼ë¡œ ë°”ê¿”ì¤€ë‹¤ (í”Œë ˆì´ì–´ê°€ ìˆëŠ” ìœ„ì¹˜ì˜ ë¹„íŠ¸ë§µì„ ë³µì‚¬í•¨)
+	BitBlt(compositeDC, 0, 0, SpriteWidth * 2, height * 2, backDC, x - SpriteWidth, y - height, SRCCOPY);
+	//ê¸°ë³¸ ì›€ì§ì„
+
+	switch (PlayerState)
+	{
+	case EPlayerState::Idle:
+		if (PlayerDirection == EPlayerDirection::Left)//ì™¼ìª½
+		{
+			//compositeDCëŠ” 0,0~ 62,50 ì´ë‹ˆê¹Œ ì´ ìœ„ì¹˜ì— íˆ¬ëª…í•œ ìºë¦­í„°ë¥¼ ë³µì‚¬ì‹œì¼œì£¼ê³  GdialphaBlend ë¥¼ í†µí•´ íˆ¬ëª…í™”ì²˜ë¦¬ í•´ì¤€ë‹¤.
+			TransparentBlt(compositeDC, 0, 0, 62, 50, playerDC, 0, 0, 62, 50, RGB(255, 255, 255));
+
+			if (InvincibleTime > 0)
+			{
+				bf.SourceConstantAlpha = 155;
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, 62, 50, bf);
+				bf.SourceConstantAlpha = 255;
+
+			}
+			else
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, 62, 50, bf);
+		}
+		else if (PlayerDirection == EPlayerDirection::Right)//ì˜¤ë¥¸ìª½
+		{
+			TransparentBlt(compositeDC, 0, 0, 62, 50, playerDC, 0, 50, 62, 50, RGB(255, 255, 255));
+			if (InvincibleTime > 0)
+			{
+
+				bf.SourceConstantAlpha = 155;//íˆ¬ëª…ë„
+				//ì´ í•¨ìˆ˜ëŠ” ì¼ë°˜ stretchblt ì™€ ë¹„ìŠ·í•˜ë‹¤ gdidc ëŠ” ìµœëŒ€ê°€ 0,0 ~62,50 ì´ë¯€ë¡œ ë’· ì¸ìëŠ” 0 0 62 50
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, 62, 50, bf);
+				bf.SourceConstantAlpha = 255;
+
+			}
+			else
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, 62, 50, bf);
+		}
+		break;
+	case EPlayerState::Move:
+		if (PlayerDirection == EPlayerDirection::Left)//ì™¼ìª½
+		{
+			TransparentBlt(compositeDC, 0, 0, 62, 50, playerDC, AnimX * 68, AnimY, AnimWidth, AnimHeight, RGB(255, 255, 255));
+			if (InvincibleTime > 0)
+			{
+
+				bf.SourceConstantAlpha = 155;//íˆ¬ëª…ë„
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, 62, 50, bf);
+				bf.SourceConstantAlpha = 255;
+
+			}
+			else
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, 62, 50, bf);
+		}
+		else if (PlayerDirection == EPlayerDirection::Right)//ì˜¤ë¥¸ìª½
+		{
+			TransparentBlt(compositeDC, 0, 0, 62, 50, playerDC, AnimX * 68, AnimY + 50, AnimWidth, AnimHeight, RGB(255, 255, 255));
+			if (InvincibleTime > 0)
+			{
+
+				bf.SourceConstantAlpha = 155;//íˆ¬ëª…ë„
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, 62, 50, bf);
+				bf.SourceConstantAlpha = 255;
+
+			}
+			else
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, 62, 50, bf);
+		}
+		break;
+	case EPlayerState::Jump:
+	case EPlayerState::Airborne:
+		if (PlayerDirection == EPlayerDirection::Left)//ì™¼ìª½
+		{
+			TransparentBlt(compositeDC, 0, 0, 62, 50, playerDC, 0, 107, 62, 50, RGB(255, 255, 255));
+			if (InvincibleTime > 0)
+			{
+
+				bf.SourceConstantAlpha = 155;//íˆ¬ëª…ë„
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, 62, 50, bf);
+				bf.SourceConstantAlpha = 255;
+
+			}
+			else
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, 62, 50, bf);
+		}
+		else if (PlayerDirection == EPlayerDirection::Right)//ì˜¤ë¥¸ìª½
+		{
+			TransparentBlt(compositeDC, 0, 0, 62, 50, playerDC, 77, 107, 62, 48, RGB(255, 255, 255));
+			if (InvincibleTime > 0)
+			{
+
+				bf.SourceConstantAlpha = 155;//íˆ¬ëª…ë„
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, 62, 50, bf);
+				bf.SourceConstantAlpha = 255;
+
+			}
+			else
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, 62, 50, bf);
+		}
+		break;
+	case EPlayerState::Crouch:
+		//hëŠ” ì¤„ê³  yëŠ” ëŠ˜ê³  
+		BitBlt(compositeDC, 0, 0, SpriteWidth * 2, 26, backDC, x - SpriteWidth, y - height, SRCCOPY);
+		if (PlayerDirection == EPlayerDirection::Left)//ì™¼ìª½
+		{
+			TransparentBlt(compositeDC, 0, 0, 62, 26, playerDC, 0, 161, 62, 26, RGB(255, 255, 255));
+			if (InvincibleTime > 0)
+			{
+
+				bf.SourceConstantAlpha = 155;//íˆ¬ëª…ë„
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - 12 - height + 12, SpriteWidth * 2, height * 2, compositeDC, 0, 0, 62, 26, bf);
+				bf.SourceConstantAlpha = 255;
+
+			}
+			else
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - 12 - height + 12, SpriteWidth * 2, height * 2, compositeDC, 0, 0, 62, 26, bf);
+		}
+		else if (PlayerDirection == EPlayerDirection::Right)//ì˜¤ë¥¸ìª½
+		{
+			TransparentBlt(compositeDC, 0, 0, 62, 26, playerDC, 77, 161, 62, 26, RGB(255, 255, 255));
+			if (InvincibleTime > 0)
+			{
+
+				bf.SourceConstantAlpha = 155;//íˆ¬ëª…ë„
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, 62, 26, bf);
+				bf.SourceConstantAlpha = 255;
+
+			}
+			else
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, 62, 26, bf);
+		}
+		break;
+	case EPlayerState::RopeIdle:
+	case EPlayerState::RopeMove:
+		TransparentBlt(compositeDC, 0, 0, 62, 50, playerDC, AnimX * 77, 54, 62, 50, RGB(255, 255, 255));
+
+		if (InvincibleTime > 0)
+		{
+
+			bf.SourceConstantAlpha = 155;
+			GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, 62, 50, bf);
+			bf.SourceConstantAlpha = 255;
+
+		}
+		else GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, 62, 50, bf);
+		break;
+	}
+
+	SelectObject(compositeDC, oldcompositeBitmap);
+	DeleteObject(compositeBitmap);
+	DeleteDC(compositeDC);
+
+	SelectObject(playerDC, oldSpriteObj);
+	DeleteDC(playerDC);
+}
+
 
 void PLAYER::SetBitMap(HINSTANCE hInstance)
 {
@@ -61,12 +259,12 @@ void PLAYER::InitializeAnimPosition()
 }
 void PLAYER::HandleLeftPressed()
 {
-	LEFTkey = true;				//Å° ´©¸§»óÅÂ
+	LEFTkey = true;				//í‚¤ ëˆ„ë¦„ìƒíƒœ
 
-	if (RIGHTkey == true)		//ÁÂ¿ì¸¦ µ¿½Ã¿¡ ´©¸£°íÀÖ´Ù¸é ¿òÁ÷ÀÌÁö¾ÊÀ½
+	if (RIGHTkey == true)		//ì¢Œìš°ë¥¼ ë™ì‹œì— ëˆ„ë¥´ê³ ìˆë‹¤ë©´ ì›€ì§ì´ì§€ì•ŠìŒ
 	{
 		LRkey = true;
-		if (PlayerState == EPlayerState::Move)		//¿òÁ÷ÀÌ°í ÀÖÀ»¶§³ª 1·Î ÇØ¼­ ¸ØÃß°ÔÇÏ´Â°ÅÁö ´Ù¸¦¶§ 1·Î¹Ù²Ù¸é ³­¸®³²
+		if (PlayerState == EPlayerState::Move)		//ì›€ì§ì´ê³  ìˆì„ë•Œë‚˜ 1ë¡œ í•´ì„œ ë©ˆì¶”ê²Œí•˜ëŠ”ê±°ì§€ ë‹¤ë¥¼ë•Œ 1ë¡œë°”ê¾¸ë©´ ë‚œë¦¬ë‚¨
 			PlayerState = EPlayerState::Idle;
 		return;
 	}
@@ -75,12 +273,12 @@ void PLAYER::HandleLeftPressed()
 
 	switch (PlayerState)
 	{
-	case EPlayerState::Idle: //¸ØÃçÀÖ´Ù°¡ ¿òÁ÷ÀÏ¶§ ÇÑ¹ø ¹Ù·Î ¿òÁ÷¿©Áà¾ßÇÔ
+	case EPlayerState::Idle: //ë©ˆì¶°ìˆë‹¤ê°€ ì›€ì§ì¼ë•Œ í•œë²ˆ ë°”ë¡œ ì›€ì§ì—¬ì¤˜ì•¼í•¨
 		PlayerState = EPlayerState::Move;
 		break;
 	case EPlayerState::Jump:
-		if (bIsHurt != 1)	//ÃÄ¸Â°íÀÖÀ»¶§´Â ÀÌ ·ÎÁ÷ ¾ÈÅëÇØ¿ä~
-			ROWSPEED = 1;	//Á¡ÇÁÇßÀ»¶§ ¹æÇâÀ» ¹Ù²Ù·ÁÇÏ¸é µå¶ó¸¶Æ½ÇÏ°Ô ´Ù½Ã ¿À´Â°æ¿ì´Â ¾øÁö¸¸ ±×·¡µµ ¿øÇß´ø°Íº¸´Ü Á¶±İ ³ª°¨
+		if (bIsHurt != 1)	//ì³ë§ê³ ìˆì„ë•ŒëŠ” ì´ ë¡œì§ ì•ˆí†µí•´ìš”~
+			ROWSPEED = 1;	//ì í”„í–ˆì„ë•Œ ë°©í–¥ì„ ë°”ê¾¸ë ¤í•˜ë©´ ë“œë¼ë§ˆí‹±í•˜ê²Œ ë‹¤ì‹œ ì˜¤ëŠ”ê²½ìš°ëŠ” ì—†ì§€ë§Œ ê·¸ë˜ë„ ì›í–ˆë˜ê²ƒë³´ë‹¨ ì¡°ê¸ˆ ë‚˜ê°
 		break;
 	case EPlayerState::Crouch:
 		height += 12;
@@ -94,11 +292,11 @@ void PLAYER::HandleLeftPressed()
 
 void PLAYER::HandleRightPressed()
 {
-	RIGHTkey = true;	//Å° ´©¸§»óÅÂ
+	RIGHTkey = true;	//í‚¤ ëˆ„ë¦„ìƒíƒœ
 	if (LEFTkey == true)
 	{
 		LRkey = true;
-		if (PlayerState == EPlayerState::Move)		//¿òÁ÷ÀÌ°í ÀÖÀ»¶§³ª 1·Î ÇØ¼­ ¸ØÃß°ÔÇÏ´Â°ÅÁö ´Ù¸¦¶§ 1·Î¹Ù²Ù¸é ³­¸®³²
+		if (PlayerState == EPlayerState::Move)		//ì›€ì§ì´ê³  ìˆì„ë•Œë‚˜ 1ë¡œ í•´ì„œ ë©ˆì¶”ê²Œí•˜ëŠ”ê±°ì§€ ë‹¤ë¥¼ë•Œ 1ë¡œë°”ê¾¸ë©´ ë‚œë¦¬ë‚¨
 			PlayerState = EPlayerState::Idle;
 		return;
 	}
@@ -109,11 +307,11 @@ void PLAYER::HandleRightPressed()
 	{
 	case EPlayerState::Idle:
 		PlayerState = EPlayerState::Move;
-		std::cout << "RIGHT ´­¸²" << std::endl;
+		std::cout << "RIGHT ëˆŒë¦¼" << std::endl;
 		break;
 	case EPlayerState::Jump:
-		if (bIsHurt != 1)	//ÃÄ¸Â°íÀÖÀ»¶§´Â ÀÌ ·ÎÁ÷ ¾ÈÅëÇØ¿ä~
-			ROWSPEED = 1;	//Á¡ÇÁÇßÀ»¶§ ¹æÇâÀ» ¹Ù²Ù·ÁÇÏ¸é µå¶ó¸¶Æ½ÇÏ°Ô ´Ù½Ã ¿À´Â°æ¿ì´Â ¾øÁö¸¸ ±×·¡µµ ¿øÇß´ø°Íº¸´Ü Á¶±İ ³ª°¨
+		if (bIsHurt != 1)	//ì³ë§ê³ ìˆì„ë•ŒëŠ” ì´ ë¡œì§ ì•ˆí†µí•´ìš”~
+			ROWSPEED = 1;	//ì í”„í–ˆì„ë•Œ ë°©í–¥ì„ ë°”ê¾¸ë ¤í•˜ë©´ ë“œë¼ë§ˆí‹±í•˜ê²Œ ë‹¤ì‹œ ì˜¤ëŠ”ê²½ìš°ëŠ” ì—†ì§€ë§Œ ê·¸ë˜ë„ ì›í–ˆë˜ê²ƒë³´ë‹¨ ì¡°ê¸ˆ ë‚˜ê°
 		break;
 	case EPlayerState::Crouch:
 		height += 12;
@@ -162,32 +360,32 @@ void PLAYER::HandleDownPressed()
 	}
 	else if (PlayerState == EPlayerState::Idle) {
 
-		PlayerState = EPlayerState::Crouch;	//¼÷ÀÌ´Â°Å´Â °¡¸¸È÷ ÀÖÀ»¶§¸¸ °¡´ÉÇÏ´Ù
-		height -= 12;		//¼÷ÀÌ¸é Å°µµ ÁÙ¾îµé¾î¾ßÇÑ´Ù.
+		PlayerState = EPlayerState::Crouch;	//ìˆ™ì´ëŠ”ê±°ëŠ” ê°€ë§Œíˆ ìˆì„ë•Œë§Œ ê°€ëŠ¥í•˜ë‹¤
+		height -= 12;		//ìˆ™ì´ë©´ í‚¤ë„ ì¤„ì–´ë“¤ì–´ì•¼í•œë‹¤.
 		y += 12;
 	}
 }
 
 void PLAYER::HandleSpacePressed(Sound& sound)
 {
-	if (DOWNkey == true)//¼ö±×¸®°íÀÖÀ»¶© Á¡ÇÁ¸øÇÔ
+	if (DOWNkey == true)//ìˆ˜ê·¸ë¦¬ê³ ìˆì„ë• ì í”„ëª»í•¨
 	{
-		return;	//¾Æ¹«°ÍµµÇØÁÖÁö¾Ê´Â´Ù Çö»óÅÂÀ¯Áö
+		return;	//ì•„ë¬´ê²ƒë„í•´ì£¼ì§€ì•ŠëŠ”ë‹¤ í˜„ìƒíƒœìœ ì§€
 	}
-	if (PlayerState == EPlayerState::RopeIdle || PlayerState == EPlayerState::RopeMove)//ÁÙ¿¡ ¸Å´Ş·ÈÀ»¶§
+	if (PlayerState == EPlayerState::RopeIdle || PlayerState == EPlayerState::RopeMove)//ì¤„ì— ë§¤ë‹¬ë ¸ì„ë•Œ
 	{
-		if (LRkey == 0)		//µ¿½Ã¿¡ ÁÂ¿ìÅ°°¡ ´­¸®Áö ¾Ê¾ÒÀ¸¸é¼­
+		if (LRkey == 0)		//ë™ì‹œì— ì¢Œìš°í‚¤ê°€ ëˆŒë¦¬ì§€ ì•Šì•˜ìœ¼ë©´ì„œ
 		{
-			if (LEFTkey == 1 || RIGHTkey == 1)	//µÑÁß¿¡ ÇÏ³ªÀÇ Å°¶óµµ ´©¸£°íÀÖ¾ú´Ù¸é Á¡ÇÁ¶Ü ÇÏÁö¸¸ ¾Æ´Ï¸é ¸ø¶Ü
+			if (LEFTkey == 1 || RIGHTkey == 1)	//ë‘˜ì¤‘ì— í•˜ë‚˜ì˜ í‚¤ë¼ë„ ëˆ„ë¥´ê³ ìˆì—ˆë‹¤ë©´ ì í”„ëœ€ í•˜ì§€ë§Œ ì•„ë‹ˆë©´ ëª»ëœ€
 			{
-				MoveCommand = static_cast<EMoveCommand>(PlayerDirection);	//±×¸®°í ÀÌ¶§ ¾îµğ·Î¶Û°ÇÁö °­Á¦·Î Á¤ÇÔ
-				RopeJumpCooldown = 2;	//Á¡ÇÁ½Ã ´Ù½Ã¸øÀâ°Ôµµ ¹Ù²ãÁÜ
+				MoveCommand = static_cast<EMoveCommand>(PlayerDirection);	//ê·¸ë¦¬ê³  ì´ë•Œ ì–´ë””ë¡œë›¸ê±´ì§€ ê°•ì œë¡œ ì •í•¨
+				RopeJumpCooldown = 2;	//ì í”„ì‹œ ë‹¤ì‹œëª»ì¡ê²Œë„ ë°”ê¿”ì¤Œ
 			}
-			else return;//¾Æ´Ï¸é¸ø¶Ü
+			else return;//ì•„ë‹ˆë©´ëª»ëœ€
 		}
-		else return;//¾Æ´Ï¸é ¸ø¶Ü
+		else return;//ì•„ë‹ˆë©´ ëª»ëœ€
 	}
-	if (PlayerState != EPlayerState::Jump && PlayerState != EPlayerState::Airborne)	//Á¡ÇÁ³ª °øÁßÀÌ¾Æ´Ï¶ó¸é Á¡ÇÁ¶Û¼öÀÖ´Ù. ÇÏÁö¸¸ ÁÙ¿¡¸Å´Ş·ÈÀ»¶§µµ ¾ÈµÇ±ä ¸¶Âù°¡Áö
+	if (PlayerState != EPlayerState::Jump && PlayerState != EPlayerState::Airborne)	//ì í”„ë‚˜ ê³µì¤‘ì´ì•„ë‹ˆë¼ë©´ ì í”„ë›¸ìˆ˜ìˆë‹¤. í•˜ì§€ë§Œ ì¤„ì—ë§¤ë‹¬ë ¸ì„ë•Œë„ ì•ˆë˜ê¸´ ë§ˆì°¬ê°€ì§€
 	{
 		if (sound.Channel[1]) {
 			sound.Channel[1]->stop();
@@ -207,77 +405,77 @@ void PLAYER::HandleSpacePressed(Sound& sound)
 
 void PLAYER::HandleLeftReleased()
 {
-	if (RIGHTkey) //¿À¸¥ÂÊÅ°µµ ´©¸£°íÀÖ¾ú´Ù¸é ¿ŞÂÊÅ°¸¦ ¶­À»¶§ ¿À¸¥ÂÊÀ¸·Î ¸öÀ»Æ²¾î¾ßÇÑ´Ù
+	if (RIGHTkey) //ì˜¤ë¥¸ìª½í‚¤ë„ ëˆ„ë¥´ê³ ìˆì—ˆë‹¤ë©´ ì™¼ìª½í‚¤ë¥¼ ë•Ÿì„ë•Œ ì˜¤ë¥¸ìª½ìœ¼ë¡œ ëª¸ì„í‹€ì–´ì•¼í•œë‹¤
 	{
 		PlayerDirection = EPlayerDirection::Right;
-		if (PlayerState == EPlayerState::Idle)			//µÑ´Ù´­·µÀ»¶§ÀÇ ·ÎÁ÷Àº state==1ÀÏ¶§¿¡¸¸ ¹ßµ¿ÀÌ µÈ´Ù. 
+		if (PlayerState == EPlayerState::Idle)			//ë‘˜ë‹¤ëˆŒëŸ¿ì„ë•Œì˜ ë¡œì§ì€ state==1ì¼ë•Œì—ë§Œ ë°œë™ì´ ëœë‹¤. 
 			MoveCommand = EMoveCommand::Right;
 	}
-	else //¿À¸¥ÂÊÅ°¸¦ ´©¸£°íÀÖÁö ¾Ê¾Ò´Ù¸é ¿òÁ÷ÀÌ´Â»óÅÂ¿´À»¶© ¸ØÃçÁà¾ßÇÑ´Ù.
+	else //ì˜¤ë¥¸ìª½í‚¤ë¥¼ ëˆ„ë¥´ê³ ìˆì§€ ì•Šì•˜ë‹¤ë©´ ì›€ì§ì´ëŠ”ìƒíƒœì˜€ì„ë• ë©ˆì¶°ì¤˜ì•¼í•œë‹¤.
 	{
 		if (PlayerState == EPlayerState::Move)
 		{
 			PlayerState = EPlayerState::Idle;
-			MoveCommand = EMoveCommand::None;	//¿òÁ÷ÀÌ´Â ¹æÇâÀº ±×´ë·ÎÁö¸¸ ¿òÁ÷ÀÌÁö´Â ¾Ê´Â´Ù.
+			MoveCommand = EMoveCommand::None;	//ì›€ì§ì´ëŠ” ë°©í–¥ì€ ê·¸ëŒ€ë¡œì§€ë§Œ ì›€ì§ì´ì§€ëŠ” ì•ŠëŠ”ë‹¤.
 		}
-		else if (PlayerState == EPlayerState::Idle)	//Á¾Á¾¹ö±×¼º ÇÃ·¹ÀÌ·ÎÀÎÇØ¼­ (Á¡ÇÁÅ°¿Í µ¿½Ã¿¡ Å°¸¦ ´©¸¥ÈÄ ¹Ù´Ú¿¡ ´êÀ½°ú µ¿½Ã¿¡ ¶ª¶§) ÀÌ°æ¿ì°¡ÀÖ´Âµ¥, ÀÌ¶§µµ ¸ØÃçÁÖµµ·ÏÇÑ´Ù.
+		else if (PlayerState == EPlayerState::Idle)	//ì¢…ì¢…ë²„ê·¸ì„± í”Œë ˆì´ë¡œì¸í•´ì„œ (ì í”„í‚¤ì™€ ë™ì‹œì— í‚¤ë¥¼ ëˆ„ë¥¸í›„ ë°”ë‹¥ì— ë‹¿ìŒê³¼ ë™ì‹œì— ë•”ë•Œ) ì´ê²½ìš°ê°€ìˆëŠ”ë°, ì´ë•Œë„ ë©ˆì¶°ì£¼ë„ë¡í•œë‹¤.
 		{
 			MoveCommand = EMoveCommand::None;
 		}
-		if (DOWNkey == true)//¸¸¾à ¼ö±×¸®°íÀÖ¾ú´Ù¸é
+		if (DOWNkey == true)//ë§Œì•½ ìˆ˜ê·¸ë¦¬ê³ ìˆì—ˆë‹¤ë©´
 		{
-			if (PlayerState == EPlayerState::Idle)	//¼ö±×¸®±âÀÇ ¿ø·¡ ¾Ë°í¸®ÁòÀÎ state==1 ÀÏ¶§¸¸ ¼ö±×¸®µµ·Ï ÇÑ´Ù
+			if (PlayerState == EPlayerState::Idle)	//ìˆ˜ê·¸ë¦¬ê¸°ì˜ ì›ë˜ ì•Œê³ ë¦¬ì¦˜ì¸ state==1 ì¼ë•Œë§Œ ìˆ˜ê·¸ë¦¬ë„ë¡ í•œë‹¤
 			{
 				PlayerState = EPlayerState::Crouch;
 				height -= 12;
-				y += 12;//¿ø·¡´ë·Î µ¹·Á³öÁÖÀÚ
+				y += 12;//ì›ë˜ëŒ€ë¡œ ëŒë ¤ë†”ì£¼ì
 			}
 		}
 	}
 
-	LRkey = false;				//ÇÑ°³¸¦ ¶®À¸´Ï false
-	LEFTkey = false;			//LEFTkey ¶®À¸´Ï false
+	LRkey = false;				//í•œê°œë¥¼ ë• ìœ¼ë‹ˆ false
+	LEFTkey = false;			//LEFTkey ë• ìœ¼ë‹ˆ false
 }
 
 void PLAYER::HandleRightReleased()
 {
-	if (LEFTkey == true)		//¿ŞÂÊÅ°µµ ´©¸£°íÀÖ¾ú´Ù¸é ¿À¸¥ÂÊÅ°¸¦ ¶­À»¶§ ¿ŞÂÊÀ¸·Î ¸öÀ»Æ²¾î¾ßÇÑ´Ù
+	if (LEFTkey == true)		//ì™¼ìª½í‚¤ë„ ëˆ„ë¥´ê³ ìˆì—ˆë‹¤ë©´ ì˜¤ë¥¸ìª½í‚¤ë¥¼ ë•Ÿì„ë•Œ ì™¼ìª½ìœ¼ë¡œ ëª¸ì„í‹€ì–´ì•¼í•œë‹¤
 	{
 		PlayerDirection = EPlayerDirection::Left;
-		if (PlayerState == EPlayerState::Idle)			//µÑ´Ù´­·µÀ»¶§ÀÇ ·ÎÁ÷Àº state==1ÀÏ¶§¿¡¸¸ ¹ßµ¿ÀÌ µÈ´Ù. 
+		if (PlayerState == EPlayerState::Idle)			//ë‘˜ë‹¤ëˆŒëŸ¿ì„ë•Œì˜ ë¡œì§ì€ state==1ì¼ë•Œì—ë§Œ ë°œë™ì´ ëœë‹¤. 
 			MoveCommand = EMoveCommand::Left;
 	}
-	else if (LEFTkey == false)	//¿ŞÂÊÅ°¸¦ ´©¸£°íÀÖÁö ¾Ê¾Ò´Ù¸é ¿òÁ÷ÀÌ´Â»óÅÂ¿´À»¶© ¸ØÃçÁà¾ßÇÑ´Ù.
+	else if (LEFTkey == false)	//ì™¼ìª½í‚¤ë¥¼ ëˆ„ë¥´ê³ ìˆì§€ ì•Šì•˜ë‹¤ë©´ ì›€ì§ì´ëŠ”ìƒíƒœì˜€ì„ë• ë©ˆì¶°ì¤˜ì•¼í•œë‹¤.
 	{
 		if (PlayerState == EPlayerState::Move)
 		{
 			PlayerState = EPlayerState::Idle;
-			MoveCommand = EMoveCommand::None;	//¿òÁ÷ÀÌ´Â ¹æÇâÀº ±×´ë·ÎÁö¸¸ ¿òÁ÷ÀÌÁö´Â ¾Ê´Â´Ù.
+			MoveCommand = EMoveCommand::None;	//ì›€ì§ì´ëŠ” ë°©í–¥ì€ ê·¸ëŒ€ë¡œì§€ë§Œ ì›€ì§ì´ì§€ëŠ” ì•ŠëŠ”ë‹¤.
 		}
-		else if (PlayerState == EPlayerState::Idle)	//Á¾Á¾¹ö±×¼º ÇÃ·¹ÀÌ·ÎÀÎÇØ¼­ (Á¡ÇÁÅ°¿Í µ¿½Ã¿¡ Å°¸¦ ´©¸¥ÈÄ ¹Ù´Ú¿¡ ´êÀ½°ú µ¿½Ã¿¡ ¶ª¶§) ÀÌ°æ¿ì°¡ÀÖ´Âµ¥, ÀÌ¶§µµ ¸ØÃçÁÖµµ·ÏÇÑ´Ù.
+		else if (PlayerState == EPlayerState::Idle)	//ì¢…ì¢…ë²„ê·¸ì„± í”Œë ˆì´ë¡œì¸í•´ì„œ (ì í”„í‚¤ì™€ ë™ì‹œì— í‚¤ë¥¼ ëˆ„ë¥¸í›„ ë°”ë‹¥ì— ë‹¿ìŒê³¼ ë™ì‹œì— ë•”ë•Œ) ì´ê²½ìš°ê°€ìˆëŠ”ë°, ì´ë•Œë„ ë©ˆì¶°ì£¼ë„ë¡í•œë‹¤.
 		{
 			MoveCommand = EMoveCommand::None;
 		}
-		if (DOWNkey == true)//¸¸¾à ¼ö±×¸®°íÀÖ¾ú´Ù¸é
+		if (DOWNkey == true)//ë§Œì•½ ìˆ˜ê·¸ë¦¬ê³ ìˆì—ˆë‹¤ë©´
 		{
-			if (PlayerState == EPlayerState::Idle)	//¼ö±×¸®±âÀÇ ¿ø·¡ ¾Ë°í¸®ÁòÀÎ state==1 ÀÏ¶§¸¸ ¼ö±×¸®µµ·Ï ÇÑ´Ù
+			if (PlayerState == EPlayerState::Idle)	//ìˆ˜ê·¸ë¦¬ê¸°ì˜ ì›ë˜ ì•Œê³ ë¦¬ì¦˜ì¸ state==1 ì¼ë•Œë§Œ ìˆ˜ê·¸ë¦¬ë„ë¡ í•œë‹¤
 			{
 				PlayerState = EPlayerState::Crouch;
 				height -= 12;
-				y += 12;//¿ø·¡´ë·Î µ¹·Á³öÁÖÀÚ
+				y += 12;//ì›ë˜ëŒ€ë¡œ ëŒë ¤ë†”ì£¼ì
 			}
 		}
 	}
 
-	LRkey = false;				//ÇÑ°³¸¦ ¶®À¸´Ï false
-	RIGHTkey = false;			//RIGHTkey ¶®À¸´Ï false
+	LRkey = false;				//í•œê°œë¥¼ ë• ìœ¼ë‹ˆ false
+	RIGHTkey = false;			//RIGHTkey ë• ìœ¼ë‹ˆ false
 }
 
 void PLAYER::HandleUpReleased()
 {
 	if (DOWNkey == true)
 	{
-		if (PlayerState == EPlayerState::RopeIdle)			//µÑ´Ù´­·µÀ»¶§ÀÇ ·ÎÁ÷Àº state==5ÀÏ¶§¿¡¸¸ ¹ßµ¿ÀÌ µÈ´Ù. 
+		if (PlayerState == EPlayerState::RopeIdle)			//ë‘˜ë‹¤ëˆŒëŸ¿ì„ë•Œì˜ ë¡œì§ì€ state==5ì¼ë•Œì—ë§Œ ë°œë™ì´ ëœë‹¤. 
 			MoveCommand = EMoveCommand::Down;
 	}
 	else if (DOWNkey == false)
@@ -297,17 +495,17 @@ void PLAYER::HandleDownReleased()
 {
 	if (UPkey == true)
 	{
-		if (PlayerState == EPlayerState::RopeIdle)			//µÑ´Ù´­·µÀ»¶§ÀÇ ·ÎÁ÷Àº state==1ÀÏ¶§¿¡¸¸ ¹ßµ¿ÀÌ µÈ´Ù. 
+		if (PlayerState == EPlayerState::RopeIdle)			//ë‘˜ë‹¤ëˆŒëŸ¿ì„ë•Œì˜ ë¡œì§ì€ state==1ì¼ë•Œì—ë§Œ ë°œë™ì´ ëœë‹¤. 
 			MoveCommand = EMoveCommand::Up;
 	}
-	else if (UPkey == false)	//¿À¸¥ÂÊÅ°¸¦ ´©¸£°íÀÖÁö ¾Ê¾Ò´Ù¸é ¿òÁ÷ÀÌ´Â»óÅÂ¿´À»¶© ¸ØÃçÁà¾ßÇÑ´Ù.
+	else if (UPkey == false)	//ì˜¤ë¥¸ìª½í‚¤ë¥¼ ëˆ„ë¥´ê³ ìˆì§€ ì•Šì•˜ë‹¤ë©´ ì›€ì§ì´ëŠ”ìƒíƒœì˜€ì„ë• ë©ˆì¶°ì¤˜ì•¼í•œë‹¤.
 	{
 		if (PlayerState == EPlayerState::RopeMove)
 		{
 			PlayerState = EPlayerState::RopeIdle;
-			MoveCommand = EMoveCommand::None;	//¿òÁ÷ÀÌ´Â ¹æÇâÀº ±×´ë·ÎÁö¸¸ ¿òÁ÷ÀÌÁö´Â ¾Ê´Â´Ù.
+			MoveCommand = EMoveCommand::None;	//ì›€ì§ì´ëŠ” ë°©í–¥ì€ ê·¸ëŒ€ë¡œì§€ë§Œ ì›€ì§ì´ì§€ëŠ” ì•ŠëŠ”ë‹¤.
 		}
-		else if (PlayerState == EPlayerState::Move)	//Á¾Á¾¹ö±×¼º ÇÃ·¹ÀÌ·ÎÀÎÇØ¼­ (Á¡ÇÁÅ°¿Í µ¿½Ã¿¡ Å°¸¦ ´©¸¥ÈÄ ¹Ù´Ú¿¡ ´êÀ½°ú µ¿½Ã¿¡ ¶ª¶§) ÀÌ°æ¿ì°¡ÀÖ´Âµ¥, ÀÌ¶§µµ ¸ØÃçÁÖµµ·ÏÇÑ´Ù.
+		else if (PlayerState == EPlayerState::Move)	//ì¢…ì¢…ë²„ê·¸ì„± í”Œë ˆì´ë¡œì¸í•´ì„œ (ì í”„í‚¤ì™€ ë™ì‹œì— í‚¤ë¥¼ ëˆ„ë¥¸í›„ ë°”ë‹¥ì— ë‹¿ìŒê³¼ ë™ì‹œì— ë•”ë•Œ) ì´ê²½ìš°ê°€ìˆëŠ”ë°, ì´ë•Œë„ ë©ˆì¶°ì£¼ë„ë¡í•œë‹¤.
 		{
 			MoveCommand = EMoveCommand::None;
 		}
@@ -317,7 +515,7 @@ void PLAYER::HandleDownReleased()
 		if (PlayerState == EPlayerState::Crouch)
 		{
 			height += 12;
-			y -= 12;	//´Ù½Ã Å° ´Ã·ÁÁÜ
+			y -= 12;	//ë‹¤ì‹œ í‚¤ ëŠ˜ë ¤ì¤Œ
 			PlayerState = EPlayerState::Idle;
 		}
 	}
@@ -367,13 +565,13 @@ void PLAYER::OnKeyReleased(WPARAM key)
 	}
 }
 
-//ÇÃ·¹ÀÌ¾î ¿òÁ÷ÀÓ
+//í”Œë ˆì´ì–´ ì›€ì§ì„
 void PLAYER::UpdateMovement(int delta_time)
 {
 	switch(PlayerState)
 	{
 	case EPlayerState::Idle:
-		FallAdjustSpeed = 0;		//¼öÁ÷³«ÇÏ ÇÑ ÈÄ´Â 1»óÅÂ°¡ µÇ¹Ç·Î ¿©±â¼­ ÃÊ±âÈ­½ÃÄÑÁÜ
+		FallAdjustSpeed = 0;		//ìˆ˜ì§ë‚™í•˜ í•œ í›„ëŠ” 1ìƒíƒœê°€ ë˜ë¯€ë¡œ ì—¬ê¸°ì„œ ì´ˆê¸°í™”ì‹œì¼œì¤Œ
 		if (LRkey == false)
 		{
 			if (RIGHTkey == true)
@@ -400,7 +598,7 @@ void PLAYER::UpdateMovement(int delta_time)
 			x += ROWSPEED;
 		}
 
-		if (bIsHurt == true)	//ÇÇ°İ´çÇÑ°æ¿ì
+		if (bIsHurt == true)	//í”¼ê²©ë‹¹í•œê²½ìš°
 		{
 			if (abs(y - SavedY) > 40) {
 				y -= 3;
@@ -408,13 +606,13 @@ void PLAYER::UpdateMovement(int delta_time)
 			else {
 				y -= COLSPEED / 2;
 			}
-			if (abs((y - SavedY)) >= 40)	//40ÇÈ¼¿¸¸Å­ ÇÇ°İ´çÇØ¼­ À§·Î »ìÂ¦¶ä
+			if (abs((y - SavedY)) >= 40)	//40í”½ì…€ë§Œí¼ í”¼ê²©ë‹¹í•´ì„œ ìœ„ë¡œ ì‚´ì§ëœ¸
 			{
-				PlayerState = EPlayerState::Airborne;			//´Ù½Ã ¶¥À¸·Î ¶³¾îÁö°ÔÇÔ
-				SavedX = x;			//ÀÌ¼ø°£ÀÇ xÁÂÇ¥¸¦ ±â¾ïÇÔ(°¡¼Óµµ¸¦ ¹Ş´Ù°¡ ¸ØÃá°ÍÃ³·³ ÇØÁÙ¿¹Á¤)
+				PlayerState = EPlayerState::Airborne;			//ë‹¤ì‹œ ë•…ìœ¼ë¡œ ë–¨ì–´ì§€ê²Œí•¨
+				SavedX = x;			//ì´ìˆœê°„ì˜ xì¢Œí‘œë¥¼ ê¸°ì–µí•¨(ê°€ì†ë„ë¥¼ ë°›ë‹¤ê°€ ë©ˆì¶˜ê²ƒì²˜ëŸ¼ í•´ì¤„ì˜ˆì •)
 			}
 		}
-		else if (bIsHurt == false)	//ÀÏ¹İ»óÅÂ
+		else if (bIsHurt == false)	//ì¼ë°˜ìƒíƒœ
 		{
 			if (abs(y - SavedY) > 80) {
 				y -= 3;
@@ -443,7 +641,7 @@ void PLAYER::UpdateMovement(int delta_time)
 		break;
 
 	case EPlayerState::RopeIdle:
-		SavedY = y;	//ÁÙ¿¡¸Å´Ş·ÈÀ»¶§´Â ±×ÀÚ¸®°¡ ÀúÀåÁöÁ¡ÀÌ´Ù
+		SavedY = y;	//ì¤„ì—ë§¤ë‹¬ë ¸ì„ë•ŒëŠ” ê·¸ìë¦¬ê°€ ì €ì¥ì§€ì ì´ë‹¤
 		if (UDkey == false)
 		{
 			if (UPkey || DOWNkey)
@@ -453,40 +651,40 @@ void PLAYER::UpdateMovement(int delta_time)
 
 	case EPlayerState::Hurt:
 		ROWSPEED *= 3;
-		InvincibleTime = 100;		//¹«Àû½Ã°£ 2ÃÊ
-		SavedY = y;			//ÇÇ°İ°ú µ¿½Ã¿¡ yÁÂÇ¥ÀúÀå(Àû´çÈ÷ ³»·Á¿À±â À§ÇØ)
-		bIsHurt = true;	//ÇÇ°İÇÔ¼ö on
-		PlayerState = EPlayerState::Jump;				//ÇÇ°İÇÏ¸é °øÁßÀ¸·Î ÇÑ¹ø ºØ ¶á´Ù
+		InvincibleTime = 100;		//ë¬´ì ì‹œê°„ 2ì´ˆ
+		SavedY = y;			//í”¼ê²©ê³¼ ë™ì‹œì— yì¢Œí‘œì €ì¥(ì ë‹¹íˆ ë‚´ë ¤ì˜¤ê¸° ìœ„í•´)
+		bIsHurt = true;	//í”¼ê²©í•¨ìˆ˜ on
+		PlayerState = EPlayerState::Jump;				//í”¼ê²©í•˜ë©´ ê³µì¤‘ìœ¼ë¡œ í•œë²ˆ ë¶• ëœ¬ë‹¤
 		break;
 
 	case EPlayerState::Airborne:
-		y += COLSPEED;					//¾Æ·¡·Î ¶³¾îÁü
-		if (FallAdjustSpeed < 1000)			//1000±îÁö¸¸ ¿ŞÂÊÀ¸·Î ¿òÁ÷ÀÓ
+		y += COLSPEED;					//ì•„ë˜ë¡œ ë–¨ì–´ì§
+		if (FallAdjustSpeed < 1000)			//1000ê¹Œì§€ë§Œ ì™¼ìª½ìœ¼ë¡œ ì›€ì§ì„
 			FallAdjustSpeed++;
-		if (LEFTkey == true)			//¶³¾îÁú¤¨ ¤À ¿ŞÂÊ ²Ú´©¸£°íÀÖÀ¸¸é
-			if (FallAdjustSpeed % 30 == 0)	//Å¸ÀÌ¸Ó°¡ 30¹ø µ¹¾Æ°¥¶§¸¶´Ù ÇÑ¹ø¾¿ ¿È°ÜÁÜ
+		if (LEFTkey == true)			//ë–¨ì–´ì§ˆã„¸ ã… ì™¼ìª½ ê¾¹ëˆ„ë¥´ê³ ìˆìœ¼ë©´
+			if (FallAdjustSpeed % 30 == 0)	//íƒ€ì´ë¨¸ê°€ 30ë²ˆ ëŒì•„ê°ˆë•Œë§ˆë‹¤ í•œë²ˆì”© ì˜´ê²¨ì¤Œ
 				x -= ROWSPEED;
 		if (RIGHTkey == true)
 			if (FallAdjustSpeed % 30 == 0)
 				x += ROWSPEED;
-		if (MoveCommand == EMoveCommand::Left)		//¿ŞÂÊÀ¸·Î ¿òÁ÷ÀÌ°íÀÖ´Ù¸é
+		if (MoveCommand == EMoveCommand::Left)		//ì™¼ìª½ìœ¼ë¡œ ì›€ì§ì´ê³ ìˆë‹¤ë©´
 		{
-			if (FallAdjustSpeed <= 10)	//¿ŞÂÊÀ¸·Î ½» °¬´Ù°¡
+			if (FallAdjustSpeed <= 10)	//ì™¼ìª½ìœ¼ë¡œ ìŠ¥ ê°”ë‹¤ê°€
 			{
 				x -= ROWSPEED;
 			}
-			if (FallAdjustSpeed > 10)		//10¹ø ¿ŞÂÊ °¬À¸¸é 2¹ø¿¡ ÇÑ¹ø¾¿ °¡ÁÜ
+			if (FallAdjustSpeed > 10)		//10ë²ˆ ì™¼ìª½ ê°”ìœ¼ë©´ 2ë²ˆì— í•œë²ˆì”© ê°€ì¤Œ
 			{
 				if (FallAdjustSpeed % 2 == 0)
 					x -= ROWSPEED;
 			}
-			else if (FallAdjustSpeed > 30)	//2¹ø¾¿ 10¹ø ¶Ç °¬À¸¸é ÀÌÁ¨ 5¹ø¿¡ 1¹ø¾¿ Âñ²û °¡ÁÜ ÀÌ°Ç ¿À¸¥ÂÊµµ ¶È°°ÀÌ Àû¿ë
+			else if (FallAdjustSpeed > 30)	//2ë²ˆì”© 10ë²ˆ ë˜ ê°”ìœ¼ë©´ ì´ì   5ë²ˆì— 1ë²ˆì”© ì°”ë” ê°€ì¤Œ ì´ê±´ ì˜¤ë¥¸ìª½ë„ ë˜‘ê°™ì´ ì ìš©
 			{
 				if (FallAdjustSpeed % 5 == 0)
 					x -= ROWSPEED;
 			}
 
-			if (LEFTkey == 0)				//50Ä­±îÁö´Â ¸ÇÃ³À½¹æÇâ´ë·Î °¡°í , ±×ÀÌÈÄ¿¡ ¿ŞÂÊÅ°¸¦ ¶§°íÀÖÀ¸¸é ¸ØÃã´çÇÏ°í ¾Æ´Ï¸é ¿ŞÂÊÀ¸·Î Âß ³¯¶ó°¨
+			if (LEFTkey == 0)				//50ì¹¸ê¹Œì§€ëŠ” ë§¨ì²˜ìŒë°©í–¥ëŒ€ë¡œ ê°€ê³  , ê·¸ì´í›„ì— ì™¼ìª½í‚¤ë¥¼ ë•Œê³ ìˆìœ¼ë©´ ë©ˆì¶¤ë‹¹í•˜ê³  ì•„ë‹ˆë©´ ì™¼ìª½ìœ¼ë¡œ ì­‰ ë‚ ë¼ê°
 				if (abs(x - SavedX) > 50)
 					MoveCommand = EMoveCommand::None;
 		}
@@ -513,8 +711,8 @@ void PLAYER::UpdateMovement(int delta_time)
 		break;
 
 	case EPlayerState::RopeMove:
-		SavedY = y;	//ÁÙ¿¡¸Å´Ş·ÈÀ»¶§´Â ±×ÀÚ¸®°¡ ÀúÀåÁöÁ¡ÀÌ´Ù
-		if (delta_time % 10 == 0)	//10¹ø Å¸ÀÌ¸Ó µ¹¾Æ°¥¶§ ÇÑ¹ø ¿òÁ÷ÀÌ°ÔÇØÁØ´Ù
+		SavedY = y;	//ì¤„ì—ë§¤ë‹¬ë ¸ì„ë•ŒëŠ” ê·¸ìë¦¬ê°€ ì €ì¥ì§€ì ì´ë‹¤
+		if (delta_time % 10 == 0)	//10ë²ˆ íƒ€ì´ë¨¸ ëŒì•„ê°ˆë•Œ í•œë²ˆ ì›€ì§ì´ê²Œí•´ì¤€ë‹¤
 			PlayAnim();
 		if (UDkey == false)
 		{
@@ -533,7 +731,7 @@ void PLAYER::UpdateMovement(int delta_time)
 
 }
 
-//»óÅÂ¿¡µû¶ó ºñÆ®¸ÊÀ» ¼±ÅÃÇÏ´Â ÇÔ¼ö
+//ìƒíƒœì—ë”°ë¼ ë¹„íŠ¸ë§µì„ ì„ íƒí•˜ëŠ” í•¨ìˆ˜
 void PLAYER::SelectBitmap()
 {
 	if (PlayerState == EPlayerState::Idle || PlayerState == EPlayerState::Move)
@@ -546,10 +744,10 @@ void PLAYER::SelectBitmap()
 		CurrentBitmap = ActionBitmap;
 }
 
-//ºñÆ®¸ÊÀ» ¹Ù²ãÁÖ´ÂÇÔ¼ö (¾Ö´Ï¸ŞÀÌ¼Ç)
+//ë¹„íŠ¸ë§µì„ ë°”ê¿”ì£¼ëŠ”í•¨ìˆ˜ (ì• ë‹ˆë©”ì´ì…˜)
 void PLAYER::PlayAnim()
 {
-	AnimX += 1;//ÀÎµ¦½º Çü½ÄÀ¸·Î ¹Ù²Ş
+	AnimX += 1;//ì¸ë±ìŠ¤ í˜•ì‹ìœ¼ë¡œ ë°”ê¿ˆ
 	if (PlayerState == EPlayerState::Move)
 	{
 		if (AnimX >= 5) AnimX = 1;
@@ -560,181 +758,10 @@ void PLAYER::PlayAnim()
 	}
 }
 
-//ÇÃ·¹ÀÌ¾î¸¦ ±×·ÁÁÜ
-void PLAYER::Render(HDC& backDC, HDC& playerDC)
-{
-	BLENDFUNCTION bf;
-	bf.AlphaFormat = 0;
-	bf.BlendFlags = 0;
-	bf.BlendOp = AC_SRC_OVER;
-	bf.SourceConstantAlpha = 255;
-
-
-
-	playerDC = CreateCompatibleDC(backDC);
-	//ÇÇ°İ´çÇßÀ»½Ã¿¡ Åõ¸íÃ³¸® ÇØÁÙ dc¸¦ mem1dc¿Í ¿¬°á
-	HDC gdidc = CreateCompatibleDC(backDC);
-	//mem1dcÀÇ Ä³¸¯ÅÍ±×¸±°ø°£¸¸Å­¸¸ ¾ò¾î¿Â´Ù(½ÇÁ¦ mem1dc¿¡´Â ¹è°æÀÌÀÖÀ¸¹Ç·Î 0,0 ºÎÅÍ 62,50 ±îÁöÀÇ ºñÆ®¸ÊÀÌ µé¾î°¨)
-	HBITMAP tmpdc = CreateCompatibleBitmap(backDC, 62, 50);
-	HBITMAP oldtmpdc = (HBITMAP)SelectObject(gdidc, tmpdc);
-	//¿©±â¼­ 0,0 ~62,50 ±îÁöÀÇ ºñÆ®¸ÊÀ» Ä³¸¯ÅÍ±âÁØÀ¸·Î ¹Ù²ãÁØ´Ù (ÇÃ·¹ÀÌ¾î°¡ ÀÖ´Â À§Ä¡ÀÇ ºñÆ®¸ÊÀ» º¹»çÇÔ)
-	BitBlt(gdidc, 0, 0, SpriteWidth * 2, height * 2, backDC, x - SpriteWidth, y - height, SRCCOPY);
-	//±âº» ¿òÁ÷ÀÓ
-	SelectObject(playerDC, CurrentBitmap);
-
-	switch (PlayerState)
-	{
-	case EPlayerState::Idle:
-		if (PlayerDirection == EPlayerDirection::Left)//¿ŞÂÊ
-		{
-			//gdidc´Â 0,0~ 62,50 ÀÌ´Ï±î ÀÌ À§Ä¡¿¡ Åõ¸íÇÑ Ä³¸¯ÅÍ¸¦ º¹»ç½ÃÄÑÁÖ°í GdialphaBlend ¸¦ ÅëÇØ Åõ¸íÈ­Ã³¸® ÇØÁØ´Ù.
-			TransparentBlt(gdidc, 0, 0, 62, 50, playerDC, 0, 0, 62, 50, RGB(255, 255, 255));
-
-			if (InvincibleTime > 0)
-			{
-				bf.SourceConstantAlpha = 155;
-				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, gdidc, 0, 0, 62, 50, bf);
-				bf.SourceConstantAlpha = 255;
-
-			}
-			else
-				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, gdidc, 0, 0, 62, 50, bf);
-		}
-		else if (PlayerDirection == EPlayerDirection::Right)//¿À¸¥ÂÊ
-		{
-			TransparentBlt(gdidc, 0, 0, 62, 50, playerDC, 0, 50, 62, 50, RGB(255, 255, 255));
-			if (InvincibleTime > 0)
-			{
-
-				bf.SourceConstantAlpha = 155;//Åõ¸íµµ
-				//ÀÌ ÇÔ¼ö´Â ÀÏ¹İ stretchblt ¿Í ºñ½ÁÇÏ´Ù gdidc ´Â ÃÖ´ë°¡ 0,0 ~62,50 ÀÌ¹Ç·Î µŞ ÀÎÀÚ´Â 0 0 62 50
-				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, gdidc, 0, 0, 62, 50, bf);
-				bf.SourceConstantAlpha = 255;
-
-			}
-			else
-				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, gdidc, 0, 0, 62, 50, bf);
-		}
-		break;
-	case EPlayerState::Move:
-		if (PlayerDirection == EPlayerDirection::Left)//¿ŞÂÊ
-		{
-			TransparentBlt(gdidc, 0, 0, 62, 50, playerDC, AnimX * 68, AnimY, AnimWidth, AnimHeight, RGB(255, 255, 255));
-			if (InvincibleTime > 0)
-			{
-
-				bf.SourceConstantAlpha = 155;//Åõ¸íµµ
-				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, gdidc, 0, 0, 62, 50, bf);
-				bf.SourceConstantAlpha = 255;
-
-			}
-			else
-				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, gdidc, 0, 0, 62, 50, bf);
-		}
-		else if (PlayerDirection == EPlayerDirection::Right)//¿À¸¥ÂÊ
-		{
-			TransparentBlt(gdidc, 0, 0, 62, 50, playerDC, AnimX * 68, AnimY + 50, AnimWidth, AnimHeight, RGB(255, 255, 255));
-			if (InvincibleTime > 0)
-			{
-
-				bf.SourceConstantAlpha = 155;//Åõ¸íµµ
-				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, gdidc, 0, 0, 62, 50, bf);
-				bf.SourceConstantAlpha = 255;
-
-			}
-			else
-				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, gdidc, 0, 0, 62, 50, bf);
-		}
-		break;
-	case EPlayerState::Jump:
-	case EPlayerState::Airborne:
-		if (PlayerDirection == EPlayerDirection::Left)//¿ŞÂÊ
-		{
-			TransparentBlt(gdidc, 0, 0, 62, 50, playerDC, 0, 107, 62, 50, RGB(255, 255, 255));
-			if (InvincibleTime > 0)
-			{
-
-				bf.SourceConstantAlpha = 155;//Åõ¸íµµ
-				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, gdidc, 0, 0, 62, 50, bf);
-				bf.SourceConstantAlpha = 255;
-
-			}
-			else
-				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, gdidc, 0, 0, 62, 50, bf);
-		}
-		else if (PlayerDirection == EPlayerDirection::Right)//¿À¸¥ÂÊ
-		{
-			TransparentBlt(gdidc, 0, 0, 62, 50, playerDC, 77, 107, 62, 48, RGB(255, 255, 255));
-			if (InvincibleTime > 0)
-			{
-
-				bf.SourceConstantAlpha = 155;//Åõ¸íµµ
-				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, gdidc, 0, 0, 62, 50, bf);
-				bf.SourceConstantAlpha = 255;
-
-			}
-			else
-				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, gdidc, 0, 0, 62, 50, bf);
-		}
-		break;
-	case EPlayerState::Crouch:
-		//h´Â ÁÙ°í y´Â ´Ã°í 
-		BitBlt(gdidc, 0, 0, SpriteWidth * 2, 26, backDC, x - SpriteWidth, y - height, SRCCOPY);
-		if (PlayerDirection == EPlayerDirection::Left)//¿ŞÂÊ
-		{
-			TransparentBlt(gdidc, 0, 0, 62, 26, playerDC, 0, 161, 62, 26, RGB(255, 255, 255));
-			if (InvincibleTime > 0)
-			{
-
-				bf.SourceConstantAlpha = 155;//Åõ¸íµµ
-				GdiAlphaBlend(backDC, x - SpriteWidth, y - 12 - height + 12, SpriteWidth * 2, height * 2, gdidc, 0, 0, 62, 26, bf);
-				bf.SourceConstantAlpha = 255;
-
-			}
-			else
-				GdiAlphaBlend(backDC, x - SpriteWidth, y - 12 - height + 12, SpriteWidth * 2, height * 2, gdidc, 0, 0, 62, 26, bf);
-		}
-		else if (PlayerDirection == EPlayerDirection::Right)//¿À¸¥ÂÊ
-		{
-			TransparentBlt(gdidc, 0, 0, 62, 26, playerDC, 77, 161, 62, 26, RGB(255, 255, 255));
-			if (InvincibleTime > 0)
-			{
-
-				bf.SourceConstantAlpha = 155;//Åõ¸íµµ
-				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, gdidc, 0, 0, 62, 26, bf);
-				bf.SourceConstantAlpha = 255;
-
-			}
-			else
-				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, gdidc, 0, 0, 62, 26, bf);
-		}
-		break;
-	case EPlayerState::RopeIdle:
-	case EPlayerState::RopeMove:
-		TransparentBlt(gdidc, 0, 0, 62, 50, playerDC, AnimX * 77, 54, 62, 50, RGB(255, 255, 255));
-
-		if (InvincibleTime > 0)
-		{
-
-			bf.SourceConstantAlpha = 155;
-			GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, gdidc, 0, 0, 62, 50, bf);
-			bf.SourceConstantAlpha = 255;
-
-		}
-		else GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, gdidc, 0, 0, 62, 50, bf);
-		break;
-	}
-
-	SelectObject(gdidc, oldtmpdc);
-	DeleteObject(tmpdc);
-	DeleteObject(gdidc);
-	DeleteObject(playerDC);
-
-}
 
 void PLAYER::UpdateInvincibilityTimer()
 {
-	if (bIsDead == 0)	//Á×À¸¸é ¹«Àû¾ÈÇ®¸²
+	if (bIsDead == 0)	//ì£½ìœ¼ë©´ ë¬´ì ì•ˆí’€ë¦¼
 		if (InvincibleTime > 0)
 		{
 			InvincibleTime--;
@@ -750,7 +777,7 @@ void PLAYER::UpdateSpikeKnockback()
 	if (SpikeKnockback < 0)
 	{
 		SpikeKnockback++;
-		x -= 4;			//¿ŞÂÊÀ¸·Î°¨
+		x -= 4;			//ì™¼ìª½ìœ¼ë¡œê°
 	}
 	else if (SpikeKnockback > 0)
 	{
@@ -763,7 +790,7 @@ void PLAYER::TakeDamage(Sound& sound)
 {
 	if (bIsDead == false)
 		CurrentHP -= 5;
-	if (CurrentHP <= 0)	//0 ÀÌÇÏ¶ó¸é
+	if (CurrentHP <= 0)	//0 ì´í•˜ë¼ë©´
 	{
 		Die(sound);
 	}

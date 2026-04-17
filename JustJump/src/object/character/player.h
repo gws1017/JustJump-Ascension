@@ -2,9 +2,9 @@
 #include "object/core/Object.h"
 class Sound;
 
-// ³Ê¹« ¸¹Áö¾Ê³ª
-// hurt bool ÀÌÀÖ´Âµ¥ ¿Ö¶Ç ½ºÅ×ÀÌÆ®°¡ÀÖÁö
-// crouchÀÏ¶§ ºñÆ®¸Ê ¼ÂÇØÁÖ´Â ½ÄÀ¸·Î ÇÔ¼ö ¹­À»¼öÀÕÀ»µí
+// ë„ˆë¬´ ë§ì§€ì•Šë‚˜
+// hurt bool ì´ìˆëŠ”ë° ì™œë˜ ìŠ¤í…Œì´íŠ¸ê°€ìˆì§€
+// crouchì¼ë•Œ ë¹„íŠ¸ë§µ ì…‹í•´ì£¼ëŠ” ì‹ìœ¼ë¡œ í•¨ìˆ˜ ë¬¶ì„ìˆ˜ì‡ì„ë“¯
 enum class EPlayerState
 {
 	Idle = 1,
@@ -36,7 +36,7 @@ class PLAYER : public Object
 
 public:
 	PLAYER();
-
+	virtual ~PLAYER();
 public:
 
 
@@ -67,7 +67,7 @@ public:
 	void SetFallSpeed(int speed) { FallAdjustSpeed = speed; }
 	void SetState(EPlayerState state) { PlayerState = state; }
 
-	//boolº¯¼ö ³Ê¹«¸¹Áö¾Ê³ª
+	//boolë³€ìˆ˜ ë„ˆë¬´ë§ì§€ì•Šë‚˜
 	void SetDirection(EPlayerDirection dir) { PlayerDirection = dir; }
 	void SetMoveCommand(EMoveCommand command) { MoveCommand = command; }
 	void SetHurt(bool value) { bIsHurt = value; }
@@ -82,35 +82,32 @@ public:
 
 
 public:
-	// Ä³¸¯ÅÍÀ§Ä¡ ÃÊ±âÈ­ ÇÔ¼ö
+	// ìºë¦­í„°ìœ„ì¹˜ ì´ˆê¸°í™” í•¨ìˆ˜
 	void Initialzie();
-
 	void InitializeAnimPosition();
 
-	//¹æÇâÅ° ´­·¶À»¶§ ÇÃ·¹ÀÌ¾î ¼¼ÆÃ
+	//ë°©í–¥í‚¤ ëˆŒë €ì„ë•Œ í”Œë ˆì´ì–´ ì„¸íŒ…
 	void OnKeyPressed(WPARAM key, Sound& sound);
-	//¹æÇâÅ° ¶®À»¶§ ÇÃ·¹ÀÌ¾î ¼¼ÆÃÇ®±â
+	//ë°©í–¥í‚¤ ë• ì„ë•Œ í”Œë ˆì´ì–´ ì„¸íŒ…í’€ê¸°
 	void OnKeyReleased(WPARAM key);
 	
 	void SavePositionX() {	SavedX = x;	}
-	//ÇÃ·¹ÀÌ¾î ¹«ºê
+	//í”Œë ˆì´ì–´ ë¬´ë¸Œ
 	void UpdateMovement(int delta_time);
-	//ÇÃ·¹ÀÌ¾î ½ºÇÁ¶óÀÌÆ®¼±ÅÃ
+	//í”Œë ˆì´ì–´ ìŠ¤í”„ë¼ì´íŠ¸ì„ íƒ
 	void SelectBitmap();
-	//¾Ö´Ï¸ŞÀÌ¼Ç
+	//ì• ë‹ˆë©”ì´ì…˜
 	void PlayAnim();
-	//ÇÃ·¹ÀÌ¾î ±×¸²
-	void Render(HDC& backDC, HDC& playerDC);
-	//ÇÇ°İ½Ã ¹«Àû½Ã°£
+	//í”Œë ˆì´ì–´ ê·¸ë¦¼
+	void Render(HDC& backDC);
+	//í”¼ê²©ì‹œ ë¬´ì ì‹œê°„
 	void UpdateInvincibilityTimer();
-	//°¡½ÃÇÑÅ× Âñ·ÈÀ»¶§ °­Á¦ÀÌµ¿°ª
+	//ê°€ì‹œí•œí…Œ ì°”ë ¸ì„ë•Œ ê°•ì œì´ë™ê°’
 	void UpdateSpikeKnockback();
-	//´ÙÃÆÀ»¶§ ÇÇ ´Ù´Â °è»ê½Ä + µÚÁö¸éÃÊ±âÈ­
+	//ë‹¤ì³¤ì„ë•Œ í”¼ ë‹¤ëŠ” ê³„ì‚°ì‹ + ë’¤ì§€ë©´ì´ˆê¸°í™”
 	void TakeDamage(Sound& sound);
-	//µÚÁö¸é ÃÊ±âÈ­
+	//ë’¤ì§€ë©´ ì´ˆê¸°í™”
 	void Die(Sound& sound);
-
-	virtual void Draw() override {}
 
 private:
 
@@ -126,37 +123,38 @@ private:
 	void HandleDownReleased();
 
 private:
-	int SpriteWidth, SpriteHeight;	//Ä³¸¯ÅÍ ÀüÃ¼ »çÀÌÁîÀÌ´Ù. 
-	int SavedX, SavedY;	//savey ´Â Á¡ÇÁ¶Û¶§ ±× ¼ø°£ÀÇ yÁÂÇ¥¸¦ ±â¾ïÇÏ±â À§ÇÔÀÌ°í x´Â È¤½Ã¸ô¶ó¼­ ³Ö¾îµÒ
+	int SpriteWidth, SpriteHeight;	//ìºë¦­í„° ì „ì²´ ì‚¬ì´ì¦ˆì´ë‹¤. 
+	int SavedX, SavedY;	//savey ëŠ” ì í”„ë›¸ë•Œ ê·¸ ìˆœê°„ì˜ yì¢Œí‘œë¥¼ ê¸°ì–µí•˜ê¸° ìœ„í•¨ì´ê³  xëŠ” í˜¹ì‹œëª°ë¼ì„œ ë„£ì–´ë‘ 
 
-	int CurrentHP;				//ÇÃ·¹ÀÌ¾îÀÇ hpÀÌ´Ù.
-	EPlayerDirection PlayerDirection;			//1¿ŞÂÊ 2¿À¸¥ÂÊ 3À§ 4¾Æ·¡ ÇÃ·¹ÀÌ¾î°¡ º¸°íÀÖ´Â'¹æÇâ'
-	EPlayerState PlayerState;			//1±âº»»óÅÂ,2Á¡ÇÁ»óÅÂ,3¼÷ÀÌ±â»óÅÂ,4ÀÌµ¿»óÅÂ,5ÁÙ Á¤Áö,6ÇÇ°İ»óÅÂ,7°øÁß¿¡ÀÖ´Â»óÅÂ 8 ÁÙÀÌµ¿
-	int FallAdjustSpeed;		//¶³¾îÁú¶§ x°ª ÃµÃµÈ÷ ÀÌµ¿½ÃÄÑÁÖ±â À§ÇÑ º¯¼ö
+	int CurrentHP;				//í”Œë ˆì´ì–´ì˜ hpì´ë‹¤.
+	EPlayerDirection PlayerDirection;			//1ì™¼ìª½ 2ì˜¤ë¥¸ìª½ 3ìœ„ 4ì•„ë˜ í”Œë ˆì´ì–´ê°€ ë³´ê³ ìˆëŠ”'ë°©í–¥'
+	EPlayerState PlayerState;			//1ê¸°ë³¸ìƒíƒœ,2ì í”„ìƒíƒœ,3ìˆ™ì´ê¸°ìƒíƒœ,4ì´ë™ìƒíƒœ,5ì¤„ ì •ì§€,6í”¼ê²©ìƒíƒœ,7ê³µì¤‘ì—ìˆëŠ”ìƒíƒœ 8 ì¤„ì´ë™
+	int FallAdjustSpeed;		//ë–¨ì–´ì§ˆë•Œ xê°’ ì²œì²œíˆ ì´ë™ì‹œì¼œì£¼ê¸° ìœ„í•œ ë³€ìˆ˜
 
-	EMoveCommand MoveCommand;	//ÀÌ°Ô ¿òÁ÷ÀÌ°íÀÖ´Â »óÈ²ÀÎÁö ¾Æ´ÑÁö ±¸ºĞ 1ÀÌ¸é¿ŞÂÊÀ¸·Î¿òÁ÷ÀÓ  2¸é ¿À¸¥ÂÊÀ¸·Î ¿òÁ÷ÀÓ0ÀÌ¸é ¾È¿òÁ÷ÀÓ 3ÀÌ¸é À§·Î¿òÁ÷ÀÓ 4¸é¾Æ·¡·Î¿òÁ÷ÀÓ
-	bool bIsHurt;	//ÃÄ¸ÂÀ¸¸é 1 ¾Æ´Ï¸é 0 Á¡ÇÁÇÒ¶§ ·ÎÁ÷¿¡ µé¾î°¨
-	bool bIsRopHurt;	//·ÎÇÁ¿¡¼­ ÃÄ¸ÂÀ¸¸é 1 ¾Æ´Ï¸é 0
-	bool bIsDead;	//Á×À¸¸é 1 ¾Æ´Ï¸é 0
-	bool IsGameMode;		//0ÀÌ¸é ÀÏ¹İ 1ÀÌ¸é ÇÃ¶óÀ×¸ğµå
+	EMoveCommand MoveCommand;	//ì´ê²Œ ì›€ì§ì´ê³ ìˆëŠ” ìƒí™©ì¸ì§€ ì•„ë‹Œì§€ êµ¬ë¶„ 1ì´ë©´ì™¼ìª½ìœ¼ë¡œì›€ì§ì„  2ë©´ ì˜¤ë¥¸ìª½ìœ¼ë¡œ ì›€ì§ì„0ì´ë©´ ì•ˆì›€ì§ì„ 3ì´ë©´ ìœ„ë¡œì›€ì§ì„ 4ë©´ì•„ë˜ë¡œì›€ì§ì„
+	bool bIsHurt;	//ì³ë§ìœ¼ë©´ 1 ì•„ë‹ˆë©´ 0 ì í”„í• ë•Œ ë¡œì§ì— ë“¤ì–´ê°
+	bool bIsRopHurt;	//ë¡œí”„ì—ì„œ ì³ë§ìœ¼ë©´ 1 ì•„ë‹ˆë©´ 0
+	bool bIsDead;	//ì£½ìœ¼ë©´ 1 ì•„ë‹ˆë©´ 0
+	bool IsGameMode;		//0ì´ë©´ ì¼ë°˜ 1ì´ë©´ í”Œë¼ì‰ëª¨ë“œ
 
-	int InvincibleTime;		//ÇÇ°İ½Ã ¹«Àû 2ÃÊ¸¦ ±âÁØÀ¸·ÎÇÑ´Ù.
-	int RopeJumpCooldown;		//ÁÙ¿¡¼­ Á¡ÇÁ½Ã ÁÙ ¹Ù·Î ¸øÀâ°ÔÇÑ´Ù. stealth ¿Í °°ÀÌ µ¹¾Æ°¥¿¹Á¤
-	int SpikeKnockback;		//ÇÏ°­Áß °¡½Ã·ÎÀÎÇÑ °­Á¦Àû ÁÂÇ¥ÀÌµ¿°ª -ÀÌ¸é ¿ŞÂÊÀ¸·Î°¡¾ßÇÔ + ÀÌ¸é ¿À¸¥ÂÊÀ¸·Î °­Á¦ÀÌµ¿
+	int InvincibleTime;		//í”¼ê²©ì‹œ ë¬´ì  2ì´ˆë¥¼ ê¸°ì¤€ìœ¼ë¡œí•œë‹¤.
+	int RopeJumpCooldown;		//ì¤„ì—ì„œ ì í”„ì‹œ ì¤„ ë°”ë¡œ ëª»ì¡ê²Œí•œë‹¤. stealth ì™€ ê°™ì´ ëŒì•„ê°ˆì˜ˆì •
+	int SpikeKnockback;		//í•˜ê°•ì¤‘ ê°€ì‹œë¡œì¸í•œ ê°•ì œì  ì¢Œí‘œì´ë™ê°’ -ì´ë©´ ì™¼ìª½ìœ¼ë¡œê°€ì•¼í•¨ + ì´ë©´ ì˜¤ë¥¸ìª½ìœ¼ë¡œ ê°•ì œì´ë™
 
-	HBITMAP CurrentBitmap;    //ÇöÀç »ç¿ëÁßÀÎ ºñÆ®¸Ê
-	HBITMAP WalkBitmap;   //°ÉÀ»¶§ ºñÆ®¸Ê
-	HBITMAP ActionBitmap;		//Á¡ÇÁ,¼÷ÀÌ±â ÁÙÅ¸±â ºñÆ®¸Ê
-	int AnimX, AnimY, AnimWidth, AnimHeight; //ºñÆ®¸ÊÀÇ ½ºÇÁ¶óÀÌÆ®À§Ä¡¸¦ ¹Ù²Ù±âÀ§ÇÑ ÁÂÇ¥ º¯¼ö
+	HBITMAP m_oldplayerBitmap = nullptr;
+	HBITMAP CurrentBitmap;    //í˜„ì¬ ì‚¬ìš©ì¤‘ì¸ ë¹„íŠ¸ë§µ
+	HBITMAP WalkBitmap;   //ê±¸ì„ë•Œ ë¹„íŠ¸ë§µ
+	HBITMAP ActionBitmap;		//ì í”„,ìˆ™ì´ê¸° ì¤„íƒ€ê¸° ë¹„íŠ¸ë§µ
+	int AnimX, AnimY, AnimWidth, AnimHeight; //ë¹„íŠ¸ë§µì˜ ìŠ¤í”„ë¼ì´íŠ¸ìœ„ì¹˜ë¥¼ ë°”ê¾¸ê¸°ìœ„í•œ ì¢Œí‘œ ë³€ìˆ˜
 };
 
 
-extern int ROWSPEED; 	//°¡·Î ÀÌµ¿¼Óµµ
-extern int COLSPEED;	//¼¼·Î ÀÌµ¿¼Óµµ
-extern bool LEFTkey;//¿ŞÂÊÅ° ´­·¶´ÂÁö 1ÀÌ¸é ´©¸§ 0ÀÌ¸é ¾È´©¸§
-extern bool RIGHTkey;//¿À¸¥ÂÊÅ° ´­·¶´ÂÁö 1ÀÌ¸é ´©¸§ 0ÀÌ¸é ¾È´©¸§
-extern bool UPkey;	//À§ÂÊÅ° ´­·¶´ÂÁö 1ÀÌ¸é ´©¸§ 0ÀÌ¸é ¾È´©¸§
-extern bool DOWNkey;//¾Æ·¡ÂÊÅ° ´­·¶´ÂÁö 1ÀÌ¸é ´©¸§ 0ÀÌ¸é ¾È´©¸§
+extern int ROWSPEED; 	//ê°€ë¡œ ì´ë™ì†ë„
+extern int COLSPEED;	//ì„¸ë¡œ ì´ë™ì†ë„
+extern bool LEFTkey;//ì™¼ìª½í‚¤ ëˆŒë €ëŠ”ì§€ 1ì´ë©´ ëˆ„ë¦„ 0ì´ë©´ ì•ˆëˆ„ë¦„
+extern bool RIGHTkey;//ì˜¤ë¥¸ìª½í‚¤ ëˆŒë €ëŠ”ì§€ 1ì´ë©´ ëˆ„ë¦„ 0ì´ë©´ ì•ˆëˆ„ë¦„
+extern bool UPkey;	//ìœ„ìª½í‚¤ ëˆŒë €ëŠ”ì§€ 1ì´ë©´ ëˆ„ë¦„ 0ì´ë©´ ì•ˆëˆ„ë¦„
+extern bool DOWNkey;//ì•„ë˜ìª½í‚¤ ëˆŒë €ëŠ”ì§€ 1ì´ë©´ ëˆ„ë¦„ 0ì´ë©´ ì•ˆëˆ„ë¦„
 extern int jumpcount;
 extern int diecount;
-//¿ŞÂÊ¿À¸¥ÂÊÅ° µ¿½Ã¿¡ ´­·ÁÀÖ´ÂÁöÈ®ÀÎ
+//ì™¼ìª½ì˜¤ë¥¸ìª½í‚¤ ë™ì‹œì— ëˆŒë ¤ìˆëŠ”ì§€í™•ì¸
