@@ -20,7 +20,7 @@ bool GameWorld::Initialize(HINSTANCE hinstance)
     AddFontResourceA("font/Maplestory Bold.ttf");
     AddFontResourceA("font/Maplestory Light.ttf");
 
-    //맵 초기화화
+    //맵 초기화
     m_map.CreateMap(m_hinstance);
     m_map.CreateUi(m_hinstance);
     m_map.CreateHP(m_hinstance);
@@ -28,7 +28,7 @@ bool GameWorld::Initialize(HINSTANCE hinstance)
     m_map.CreateStart(m_hinstance);
     m_map.CreateHelp(m_hinstance);
 
-    //플레이어 초기화화
+    //플레이어 초기화
     m_player.SetBitMap(m_hinstance);
     m_player.InitializeAnimPosition();
     m_player.SelectBitmap();
@@ -75,45 +75,19 @@ IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 
 void GameWorld::Update(float dt)
 {
-    dt = std::min(dt,0.05f);
-    m_anim_accum += dt;
-
-    while(m_anim_accum >= m_anim_tick)
-    {
-        m_anim_accum -= m_anim_tick;
-        ++m_obj_t; 
-        if (m_obj_t >= 27000) m_obj_t = 0;
-    }
-
-    m_player.UpdateMovement(m_obj_t);
-    m_object_manager.AdjustPlayer(m_player, m_map, m_ocount, m_hinstance, m_sound);
-    m_map.movemap();
-
-    //페이드 효과 업데이트트
-    if (m_map.BlackTime())
-    {
-        if (m_blendfunction.SourceConstantAlpha + 40 > 255)
-            m_blendfunction.SourceConstantAlpha = 255;
-        else
-            m_blendfunction.SourceConstantAlpha += 40;
-    }
-    else
-    {
-        if (m_player.GetGameMode() == 0)
-            m_object_manager.AdjustCamera(m_camera, m_player);
-    }
-
-    m_player.SelectBitmap();
-    m_player.UpdateInvincibilityTimer();
-    m_player.UpdateSpikeKnockback();
-
-    m_object_manager.IndexChange(m_obj_t);
+    TickAnimation(dt);
+    UpdateGameplay();
+    UpdateFadeAndCamera();
 }
 
 void GameWorld::Render(HDC hdc, const RECT& view)
 {
     m_rectview = view;
-    
+    RenderScene(hdc);
+}
+
+void GameWorld::RenderScene(HDC hdc)
+{
     HDC mem1dc = CreateCompatibleDC(hdc);
     HDC mem2dc = CreateCompatibleDC(hdc);
     HDC ui_dc = CreateCompatibleDC(hdc);
@@ -157,18 +131,14 @@ void GameWorld::Render(HDC hdc, const RECT& view)
 
     if (m_map.GetMapNumber() == 9)
     {
-        m_map.DrawStart(mem1dc, start_dc, m_start_button);
-        m_map.DrawHelp(mem1dc, help_dc, m_help_button);
+        RenderStartMenu(mem1dc, start_dc, help_dc);
     }
 
     m_player.Render(mem1dc);
 
     if (m_map.GetMapNumber() >= 10)
     {
-        m_map.DrawUi(mem1dc, ui_dc, m_camera);
-        m_map.DrawHP(mem1dc, hp_dc, m_camera, m_player);
-        if (m_player.IsDead() == 1)
-            m_map.DrawDie(mem1dc, die_dc, m_camera, m_sound);
+        RenderInGameUI(mem1dc, ui_dc, hp_dc, die_dc);
     }
 
     if (m_map.GetBlackTime() > 0) m_map.DrawLoadBK(mem1dc, mem2dc, m_blendfunction);
@@ -183,6 +153,91 @@ void GameWorld::Render(HDC hdc, const RECT& view)
     if (start_dc) DeleteDC(start_dc);
     if (help_dc) DeleteDC(help_dc);
 }
+
+void GameWorld::TickAnimation(float dt)
+{
+    dt = std::min(dt, 0.05f);
+    m_anim_accum += dt;
+
+    while (m_anim_accum >= m_anim_tick)
+    {
+        m_anim_accum -= m_anim_tick;
+        ++m_obj_t;
+        if (m_obj_t >= 27000)
+            m_obj_t = 0;
+    }
+}
+
+void GameWorld::UpdateGameplay()
+{
+    m_player.UpdateMovement(m_obj_t);
+    m_object_manager.AdjustPlayer(m_player, m_map, m_ocount, m_hinstance, m_sound);
+    m_map.movemap();
+
+    m_player.SelectBitmap();
+    m_player.UpdateInvincibilityTimer();
+    m_player.UpdateSpikeKnockback();
+    m_object_manager.IndexChange(m_obj_t);
+}
+
+void GameWorld::UpdateFadeAndCamera()
+{
+    if (m_map.BlackTime())
+    {
+        if (m_blendfunction.SourceConstantAlpha + 40 > 255)
+            m_blendfunction.SourceConstantAlpha = 255;
+        else
+            m_blendfunction.SourceConstantAlpha += 40;
+        return;
+    }
+
+    if (m_player.GetGameMode() == 0)
+        m_object_manager.AdjustCamera(m_camera, m_player);
+}
+
+void GameWorld::RenderStartMenu(HDC mem1dc, HDC start_dc, HDC help_dc)
+{
+    m_map.DrawStart(mem1dc, start_dc, m_start_button);
+    m_map.DrawHelp(mem1dc, help_dc, m_help_button);
+}
+
+void GameWorld::RenderInGameUI(HDC mem1dc, HDC ui_dc, HDC hp_dc, HDC die_dc)
+{
+    m_map.DrawUi(mem1dc, ui_dc, m_camera);
+    m_map.DrawHP(mem1dc, hp_dc, m_camera, m_player);
+    if (m_player.IsDead() == 1)
+        m_map.DrawDie(mem1dc, die_dc, m_camera, m_sound);
+}
+
+bool GameWorld::IsInRect(LPARAM mouse, int left, int top, int right, int bottom) const
+{
+    const int x = LOWORD(mouse);
+    const int y = HIWORD(mouse);
+    return left < x && x < right && top < y && y < bottom;
+}
+
+bool GameWorld::IsReviveButtonArea(LPARAM mouse) const
+{
+    return IsInRect(mouse, 584, 338, 620, 352);
+}
+
+bool GameWorld::IsStartButtonArea(LPARAM mouse) const
+{
+    return IsInRect(mouse, 290, 490, 430, 572);
+}
+
+bool GameWorld::IsHelpButtonArea(LPARAM mouse) const
+{
+    return IsInRect(mouse, 290, 345, 428, 427);
+}
+
+void GameWorld::ResetMenuButtons()
+{
+    m_start_button = 0;
+    m_help_button = 0;
+    m_occur_button = false;
+}
+
 void GameWorld::Shutdown()
 {
     // FMOD
@@ -258,69 +313,58 @@ void GameWorld::OnMouseMove(LPARAM mouse)
 {
     if (m_player.IsDead() == 1)
 	{
-		if (584 < LOWORD(mouse) && LOWORD(mouse) < 620)
-		{
-			if (338 < HIWORD(mouse) && HIWORD(mouse) < 352)
-			{
-				m_map.ChangeDieNotice(m_hinstance, 1);
-				if (m_occur_button == 0)
-				{
-					if (m_sound.Channel[1])
-						m_sound.Channel[1]->stop();
-					m_sound.System->playSound(
-						m_sound.effectSound[4],
-						nullptr,
-						false,
-						&m_sound.Channel[1]);
-					m_occur_button = true;
-				}
-				return;
-			}
-		}
+        if (IsReviveButtonArea(mouse))
+        {
+            m_map.ChangeDieNotice(m_hinstance, 1);
+            if (!m_occur_button)
+            {
+                if (m_sound.Channel[1])
+                    m_sound.Channel[1]->stop();
+                m_sound.System->playSound(
+                    m_sound.effectSound[4],
+                    nullptr,
+                    false,
+                    &m_sound.Channel[1]);
+                m_occur_button = true;
+            }
+            return;
+        }
 		m_map.ChangeDieNotice(m_hinstance, 0);
 		m_occur_button = false;
 	}
 	if (m_map.GetMapNumber() == 9)
 	{
-		if (290 < LOWORD(mouse) && LOWORD(mouse) < 430)
-		{
-			if (490 < HIWORD(mouse) && HIWORD(mouse) < 572)
-			{
-				if (m_start_button == 0)
-				{
-					if (m_sound.Channel[1])
-						m_sound.Channel[1]->stop();
-					m_sound.System->playSound(
-						m_sound.effectSound[4],
-						nullptr,
-						false,
-						&m_sound.Channel[1]);
-					m_start_button = 1;
-				}
-				return;
-			}
-		}
-		if (290 < LOWORD(mouse) && LOWORD(mouse) < 428)
-		{
-			if (345 < HIWORD(mouse) && HIWORD(mouse) < 427)
-			{
-				if (m_help_button == 0)
-				{
-					if (m_sound.Channel[1])
-						m_sound.Channel[1]->stop();
-					m_sound.System->playSound(
-						m_sound.effectSound[4],
-						nullptr,
-						false,
-						&m_sound.Channel[1]);
-					m_help_button = 1;
-				}
-				return;
-			}
-		}
-		m_start_button = 0;
-		m_help_button = 0;
-		m_occur_button = false;
+        if (IsStartButtonArea(mouse))
+        {
+            if (m_start_button == 0)
+            {
+                if (m_sound.Channel[1])
+                    m_sound.Channel[1]->stop();
+                m_sound.System->playSound(
+                    m_sound.effectSound[4],
+                    nullptr,
+                    false,
+                    &m_sound.Channel[1]);
+                m_start_button = 1;
+            }
+            return;
+        }
+        if (IsHelpButtonArea(mouse))
+        {
+            if (m_help_button == 0)
+            {
+                if (m_sound.Channel[1])
+                    m_sound.Channel[1]->stop();
+                m_sound.System->playSound(
+                    m_sound.effectSound[4],
+                    nullptr,
+                    false,
+                    &m_sound.Channel[1]);
+                m_help_button = 1;
+            }
+            return;
+        }
+		ResetMenuButtons();
 	}
 }
 void GameWorld::OnMouseDown(LPARAM mouse) 
@@ -328,100 +372,85 @@ void GameWorld::OnMouseDown(LPARAM mouse)
     SetCursor(LoadCursorFromFile(TEXT("cursor/cursor4.cur")));
 	if (m_player.IsDead() == 1)
 	{
-		if (584 < LOWORD(mouse) && LOWORD(mouse) < 620)
-		{
-			if (338 < HIWORD(mouse) && HIWORD(mouse) < 352)
-			{
-				m_map.ChangeDieNotice(m_hinstance, 2);
-				if (m_sound.Channel[1])
-					m_sound.Channel[1]->stop();
-				m_sound.System->playSound(
-					m_sound.effectSound[3],
-					nullptr,
-					false,
-					&m_sound.Channel[1]);
-				return;
-			}
-		}
+        if (IsReviveButtonArea(mouse))
+        {
+            m_map.ChangeDieNotice(m_hinstance, 2);
+            if (m_sound.Channel[1])
+                m_sound.Channel[1]->stop();
+            m_sound.System->playSound(
+                m_sound.effectSound[3],
+                nullptr,
+                false,
+                &m_sound.Channel[1]);
+            return;
+        }
 	}
 	if (m_map.GetMapNumber() == 9)
 	{
-		if (290 < LOWORD(mouse) && LOWORD(mouse) < 430)
-		{
-			if (490 < HIWORD(mouse) && HIWORD(mouse) < 572)
-			{
-				if (m_start_button == 1)
-				{
-					if (m_sound.Channel[1])
-						m_sound.Channel[1]->stop();
-					m_sound.System->playSound(
-						m_sound.effectSound[3],
-						nullptr,
-						false,
-						&m_sound.Channel[1]);
-					m_start_button = 2;
-				}
-				return;
-			}
-		}
+        if (IsStartButtonArea(mouse) && m_start_button == 1)
+        {
+            if (m_sound.Channel[1])
+                m_sound.Channel[1]->stop();
+            m_sound.System->playSound(
+                m_sound.effectSound[3],
+                nullptr,
+                false,
+                &m_sound.Channel[1]);
+            m_start_button = 2;
+            return;
+        }
     }
 }
 void GameWorld::OnMouseUp(LPARAM mouse) 
 {
     if (m_player.IsDead() == 1)
     {
-        if (584 < LOWORD(mouse) && LOWORD(mouse) < 620)
+        if (IsReviveButtonArea(mouse))
         {
-            if (338 < HIWORD(mouse) && HIWORD(mouse) < 352)
-            {
-                m_map.ChangeDieNotice(m_hinstance, 0);
-                m_player.Initialzie();
-                m_player.SetCurrentHP(100);
-            }
+            m_map.ChangeDieNotice(m_hinstance, 0);
+            m_player.Initialzie();
+            m_player.SetCurrentHP(100);
         }
     }
     if (m_map.GetMapNumber() == 9)
     {
-        if (290 < LOWORD(mouse) && LOWORD(mouse) < 430)
+        if (IsStartButtonArea(mouse))
         {
-            if (490 < HIWORD(mouse) && HIWORD(mouse) < 572)
-            {
-                m_occur_button = 0;
-                m_map.SetBlackTime(50);
-                m_map.SetMapNumber(m_map.GetMapNumber() + 1);
-                m_player.Initialzie();
-                m_object_manager.ResetObstacle();
-                m_ocount = m_object_manager.InitObject( m_map.GetMapNumber(), m_hinstance);
+            m_occur_button = 0;
+            m_map.SetBlackTime(50);
+            m_map.SetMapNumber(m_map.GetMapNumber() + 1);
+            m_player.Initialzie();
+            m_object_manager.ResetObstacle();
+            m_ocount = m_object_manager.InitObject(m_map.GetMapNumber(), m_hinstance);
 
-                m_map.CreateMap(m_hinstance);
-                m_hbit1 = (HBITMAP)LoadImage(m_hinstance, TEXT("img/bk.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-                m_sound.SetIndex(m_sound.GetIndex() + 1);
+            m_map.CreateMap(m_hinstance);
+            m_hbit1 = (HBITMAP)LoadImage(m_hinstance, TEXT("img/bk.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+            m_sound.SetIndex(m_sound.GetIndex() + 1);
 
-                if (m_sound.Channel[1]) {
-                    m_sound.Channel[1]->stop();
-                }
-
-                FMOD_RESULT result = m_sound.System->playSound(
-                    m_sound.effectSound[1],
-                    nullptr,
-                    false,
-                    &m_sound.Channel[1]
-                );
-
-                if (m_sound.Channel[0]) {
-                    m_sound.Channel[0]->stop();
-                }
-
-                result = m_sound.System->playSound(
-                    m_sound.bgmSound[1],
-                    nullptr,
-                    false,
-                    &m_sound.Channel[0]
-                );
-                m_player.SetCurrentHP(100);
-                m_camera.SetX(0);
-                m_camera.SetY(3232);
+            if (m_sound.Channel[1]) {
+                m_sound.Channel[1]->stop();
             }
+
+            FMOD_RESULT result = m_sound.System->playSound(
+                m_sound.effectSound[1],
+                nullptr,
+                false,
+                &m_sound.Channel[1]
+            );
+
+            if (m_sound.Channel[0]) {
+                m_sound.Channel[0]->stop();
+            }
+
+            result = m_sound.System->playSound(
+                m_sound.bgmSound[1],
+                nullptr,
+                false,
+                &m_sound.Channel[0]
+            );
+            m_player.SetCurrentHP(100);
+            m_camera.SetX(0);
+            m_camera.SetY(3232);
         }
     }
 }

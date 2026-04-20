@@ -64,13 +64,6 @@ private:
 
 	//Render 관련 변수
 	PAINTSTRUCT m_ps{};
-	HDC m_mem1dc = nullptr;
-	HDC m_mem2dc = nullptr;
-	HDC m_ui_dc = nullptr;
-	HDC m_hp_dc = nullptr;
-	HDC m_die_dc = nullptr;
-	HDC m_start_dc = nullptr;
-	HDC m_help_dc = nullptr;
 	HBITMAP m_hbit1 = nullptr;
 	HBITMAP m_ui_bit = nullptr;
 	HBITMAP m_hp_bit = nullptr;
@@ -79,8 +72,17 @@ private:
 	HBITMAP m_help_bit = nullptr;
 
 private:
-	// 이후 WndProc에서 옮길 내부 헬퍼들
-	void UpdateGameLogic(float dt) {};
-	void UpdateLoadingFade() {};
-	void UpdateCamera() {};
+	void TickAnimation(float dt);
+	void UpdateGameplay();
+	void UpdateFadeAndCamera();
+
+	void RenderScene(HDC hdc);
+	void RenderStartMenu(HDC mem1dc, HDC start_dc, HDC help_dc);
+	void RenderInGameUI(HDC mem1dc, HDC ui_dc, HDC hp_dc, HDC die_dc);
+
+	bool IsInRect(LPARAM mouse, int left, int top, int right, int bottom) const;
+	bool IsReviveButtonArea(LPARAM mouse) const;
+	bool IsStartButtonArea(LPARAM mouse) const;
+	bool IsHelpButtonArea(LPARAM mouse) const;
+	void ResetMenuButtons();
 };

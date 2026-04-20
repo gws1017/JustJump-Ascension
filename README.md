@@ -48,6 +48,9 @@
 - **스마트 포인터/캡슐화 적용**
   - unique_ptr, shared_ptr 등을 사용하여 전역 변수 제거 및 메모리 안전성 강화
 
+  좋아요. 바로 `README.md`에 붙여넣기 쉬운 형태로 정리해드릴게요.
+
+
 ### 진행 예정
 
 - **사운드 시스템 리팩토링**
@@ -76,3 +79,32 @@
 게임 내 사용된 모든 이미지, 사운드 및 기타 리소스의 저작권은 ㈜넥슨코리아(Nexon Korea Corp.)에 있습니다.
 
 본 프로젝트는 상업적 용도로 사용되지 않았으며, 원 저작권자의 요청 시 언제든지 삭제될 수 있습니다.
+
+
+## 리팩토링 진행 기록 (추가용)
+
+### 최근 반영 내용
+
+- **GameWorld 구조 정리 (월드 오케스트레이션 유지)**
+  - `GameWorld::Update()`를 월드 단위 흐름 제어 중심으로 유지
+  - 내부 로직을 `TickAnimation`, `UpdateGameplay`, `UpdateFadeAndCamera`로 분리해 가독성과 유지보수성 개선
+- **Render 단계 분리**
+  - 렌더 진입점은 `Render()`로 유지하고, 내부를 `RenderScene`, `RenderStartMenu`, `RenderInGameUI`로 분리
+  - 기능 단위 분리로 렌더 파이프라인 파악이 쉬워짐
+- **입력 hit-test 가독성 개선**
+  - 마우스 좌표 판정을 `IsInRect`, `IsReviveButtonArea`, `IsStartButtonArea`, `IsHelpButtonArea`로 분리
+  - 중첩 if 블록을 줄여 입력 처리 흐름 확인이 쉬워짐
+- **임시 실험 구조 정리**
+  - 과도한 컨텍스트/외부 위임(`GameWorldContext`, `m_update`, `m_render`) 방식은 현재 프로젝트 단계에서 복잡도 증가로 판단하여 제거
+  - `GameWorld` 중심 구조를 유지한 채, 내부 함수 분리 방식으로 정리
+
+### 다음 작업 계획
+
+- **입력 시스템 분리**
+  - `GameWorldInputSystem`(가칭) 도입해 `OnKey/OnMouse` 로직 분리
+- **하드코딩 상수화**
+  - UI 버튼 좌표를 `constexpr`/구조체 테이블로 이전
+- **렌더 컨텍스트 도입**
+  - 다수의 `HDC` 인자를 `RenderContext`로 묶어 함수 시그니처 단순화
+- **UI 렌더링 통합**
+  - `RenderStartMenu`, `RenderInGameUI`를 상태 기반 `RenderUI`로 통합 검토
