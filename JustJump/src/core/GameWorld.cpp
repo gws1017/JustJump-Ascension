@@ -283,7 +283,7 @@ void GameWorld::OnChar(WPARAM ch)
 {
 	if (ch == 'r')
 	{
-		// 포탈 위치(다음맵 이동) 조정하는 치트키 코드 추가
+		//ToDo: 포탈 위치(다음맵 이동) 조정하는 치트키 코드 추가
 		return;
 	}
 	if (ch == 'c')

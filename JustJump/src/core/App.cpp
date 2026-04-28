@@ -157,7 +157,7 @@ void App::DestroyWindow()
 LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
 	const auto& app = App::GetApp();
-	const auto& gameWorld = app->m_game_world;
+	const auto& gameWorld = app ? app->GetGameWorld() : nullptr;
 
 	//Null Check
 	if(!app || !gameWorld)

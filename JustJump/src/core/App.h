@@ -26,7 +26,7 @@ public:
 
 public:
 	inline static App* GetApp() { return s_instance; }
-
+	GameWorld* GetGameWorld() { return m_game_world.get(); }
 private:
 	void Update(float delta_time);
 	void Render(HDC hdc, const RECT& client_rect);
