@@ -159,6 +159,7 @@
     <ClCompile Include="src\core\App.cpp" />
     <ClCompile Include="src\core\entry_point.cpp" />
     <ClCompile Include="src\core\GameWorld.cpp" />
+    <ClCompile Include="src\core\InputManager.cpp" />
     <ClCompile Include="src\core\Timer.cpp" />
     <ClCompile Include="src\core\window.cpp" />
     <ClCompile Include="src\JustJumpApp.cpp" />
@@ -175,6 +176,7 @@
     <ClInclude Include="src\core\App.h" />
     <ClInclude Include="src\core\entry_point.h" />
     <ClInclude Include="src\core\GameWorld.h" />
+    <ClInclude Include="src\core\InputManager.h" />
     <ClInclude Include="src\core\IObject.h" />
     <ClInclude Include="src\core\Timer.h" />
     <ClInclude Include="src\core\util\ptr_template.h" />

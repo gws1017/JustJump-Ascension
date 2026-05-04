@@ -9,6 +9,7 @@ namespace
 class Timer;
 class ObjectManager;
 class GameWorld;
+class InputManger;
 struct Window;
 
 class App
@@ -25,8 +26,11 @@ public:
 	void Run();
 
 public:
+
 	inline static App* GetApp() { return s_instance; }
 	GameWorld* GetGameWorld() { return m_game_world.get(); }
+	InputManager* GetInputManager() { return m_input_manager.get(); }
+
 private:
 	void Update(float delta_time);
 	void Render(HDC hdc, const RECT& client_rect);
@@ -43,6 +47,7 @@ protected:
 
 private:
     UPtr<GameWorld> m_game_world;
+	UPtr<InputManager> m_input_manager;
 	UPtr<Timer> m_timer;
 
 public:

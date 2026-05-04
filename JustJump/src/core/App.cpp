@@ -3,6 +3,7 @@
 #include "core/window.h"
 #include "core/Timer.h"
 #include "core/GameWorld.h"
+#include "core/InputManager.h"
 
 #ifdef _DEBUG
 #pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
@@ -17,6 +18,7 @@ App::App(std::wstring_view app_name)
 	m_timer = CreateUPtr<Timer>();
 	m_window = CreateSPtr<Window>(APP_WIDTH, APP_HEIGHT);
 	m_game_world = CreateUPtr<GameWorld>();
+	m_input_manager = CreateUPtr<InputManager>();
 }
 
 App::~App()
@@ -45,13 +47,17 @@ bool App::Initialize()
 		std::cout << "Fail GameWorld Initialize" << std::endl;
 		return false;
 	}
-
+	InputManager::Register(m_input_manager.get());
 	return true;
 }
 
 void App::Shutdown()
 {
 	if(m_game_world)
+		m_game_world->Shutdown();
+
+	InputManager::Unregister();
+	if (m_game_world)
 		m_game_world->Shutdown();
 }
 
@@ -88,8 +94,12 @@ void App::Run()
 
 void App::Update(float delta_time)
 {
-	if(m_game_world)
-		m_game_world->Update(delta_time);
+	if (!m_game_world || !m_input_manager)
+		return;
+
+	m_input_manager->BeginFrame();
+	m_game_world->Update(delta_time);
+	m_input_manager->EndFrame();
 }
 
 void App::Render(HDC hdc, const RECT& client_rect)
@@ -158,9 +168,10 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 {
 	const auto& app = App::GetApp();
 	const auto& gameWorld = app ? app->GetGameWorld() : nullptr;
+	const auto& input = app ? app->GetInputManager() : nullptr;
 
 	//Null Check
-	if(!app || !gameWorld)
+	if(!app || !gameWorld || !input)
 		return DefWindowProc(hwnd, iMessage, wParam, lParam);
 
 	switch (iMessage)
@@ -183,30 +194,33 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 	}
 
 	case WM_KEYDOWN:
-
+		input->OnKeyDown(wParam);
 		gameWorld->OnKeyDown(wParam);
 		break;
 
 	case WM_KEYUP:
 
+		input->OnKeyUp(wParam);
 		gameWorld->OnKeyUp(wParam);
 		break;
 
 	case WM_MOUSEMOVE:
+		input->OnMouseMove(lParam);
+
 		gameWorld->OnMouseMove(lParam);
 		break;
 
 	case WM_LBUTTONDOWN:
+		input->OnMouseDown(wParam,lParam);
 		gameWorld->OnMouseDown(lParam);
 		break;
 
 	case WM_LBUTTONUP:
-
+		input->OnMouseUp(wParam,lParam);
 		gameWorld->OnMouseUp(lParam);
 		break;
 
 	case WM_CHAR:
-
 		gameWorld->OnChar(wParam);
 		break;
 

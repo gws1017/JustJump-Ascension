@@ -86,6 +86,8 @@ public:
 	void Initialzie();
 	void InitializeAnimPosition();
 
+	void ProcessInput(Sound& sound);
+
 	//방향키 눌렀을때 플레이어 세팅
 	void OnKeyPressed(WPARAM key, Sound& sound);
 	//방향키 땠을때 플레이어 세팅풀기

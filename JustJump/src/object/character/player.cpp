@@ -1,5 +1,6 @@
 #include "Global.h"
 #include "object/character/player.h"
+#include "core/InputManager.h"
 #pragma comment (lib, "Msimg32.lib")
 
 int ROWSPEED = 3; 	//가로 이동속도
@@ -257,6 +258,25 @@ void PLAYER::InitializeAnimPosition()
 	AnimWidth = 0;
 	AnimHeight = 0;
 }
+
+void PLAYER::ProcessInput(Sound& sound)
+{
+	if (bIsDead)
+		return;
+	if (IsGameMode) // 플라잉 모드면 키는 카메라 쪽 — 여기서는 아무 것도 안 함
+		return;
+	auto& input = InputManager::Get();
+	if (input.IsKeyPressed(VK_LEFT))  OnKeyPressed(VK_LEFT, sound);
+	if (input.IsKeyPressed(VK_RIGHT)) OnKeyPressed(VK_RIGHT, sound);
+	if (input.IsKeyPressed(VK_UP))    OnKeyPressed(VK_UP, sound);
+	if (input.IsKeyPressed(VK_DOWN))  OnKeyPressed(VK_DOWN, sound);
+	if (input.IsKeyPressed(VK_SPACE)) OnKeyPressed(VK_SPACE, sound);
+	if (input.IsKeyReleased(VK_LEFT))  OnKeyReleased(VK_LEFT);
+	if (input.IsKeyReleased(VK_RIGHT)) OnKeyReleased(VK_RIGHT);
+	if (input.IsKeyReleased(VK_UP))    OnKeyReleased(VK_UP);
+	if (input.IsKeyReleased(VK_DOWN))  OnKeyReleased(VK_DOWN);
+}
+
 void PLAYER::HandleLeftPressed()
 {
 	LEFTkey = true;				//키 누름상태
