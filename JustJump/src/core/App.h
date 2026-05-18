@@ -9,7 +9,7 @@ namespace
 class Timer;
 class ObjectManager;
 class GameWorld;
-class InputManger;
+class InputManager;
 struct Window;
 
 class App

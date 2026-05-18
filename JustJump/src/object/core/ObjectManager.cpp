@@ -5,6 +5,7 @@
 #include "object/character/player.h"
 #include "world/obstacle/obstacle.h"
 #include "object/view/Camera.h"
+#include "core/InputManager.h"
 #include "world/Map.h"
 
 
@@ -36,7 +37,7 @@ bool ObjectManager::CollP2W(PLAYER player, SPtr<Obstacle> obstacle)
 
 		if (obstacle->GetX() < player.GetX() && player.GetX() < obstacle->GetX() + obstacle->GetWidth())	//파이프가 그래도 좀 두꺼우니 이안에들어오면 cehck
 		{
-			if (UPkey == true)//여기는 특이하게 올라가면 올라가는쪽 체크는 끝이나야한다.
+			if (InputHelper::IsUpDown())//여기는 특이하게 올라가면 올라가는쪽 체크는 끝이나야한다.
 			{
 
 				if (player.GetY() + player.GetHeight() <= obstacle->GetY())	//올라갔을때 아랫키를 만족하면 충돌체크 x 안그러면 반응해서 계속 줄에매달리는 오류
@@ -44,7 +45,7 @@ bool ObjectManager::CollP2W(PLAYER player, SPtr<Obstacle> obstacle)
 				if (player.GetY() < obstacle->GetY() + obstacle->GetHeight())
 					return 1;
 			}
-			else if (DOWNkey == true)
+			else if (InputHelper::IsDownDown())
 			{
 
 				if (player.GetY() + player.GetHeight() <= obstacle->GetY())
@@ -123,16 +124,16 @@ void ObjectManager::AdjustPlayer(PLAYER& player, MAP& m, int& ocount, HINSTANCE 
 					}
 					player.SetY(obstacle->GetY() - player.GetHeight());//발판위로 y좌표 세팅해주고
 
-					if (LEFTkey == 0 && RIGHTkey == 0)	//근데 그와중에도 아무키도 안누르고있었다 ? 
+					if (!InputHelper::IsLeftDown() && !InputHelper::IsRightDown())	//근데 그와중에도 아무키도 안누르고있었다 ? 
 						player.SetMoveCommand(EMoveCommand::None);	//그럼 진행방향으로 가는걸 멈추도록해준다.
-					else if (LEFTkey == 1 && RIGHTkey == 1)
+					else if (InputHelper::IsLeftDown() && InputHelper::IsRightDown())
 						player.SetMoveCommand(EMoveCommand::None);	//동시에 누르고있었어도 멈춰준다
-					else if (LEFTkey == 1)	//하지만 뭔가를 누르고있었다?
+					else if (InputHelper::IsLeftDown())	//하지만 뭔가를 누르고있었다?
 						player.SetMoveCommand(EMoveCommand::Left);
-					else if (RIGHTkey == 1)			//그에맞춰바꿔준다
+					else if (InputHelper::IsRightDown())			//그에맞춰바꿔준다
 						player.SetMoveCommand(EMoveCommand::Right);
 
-					if (DOWNkey == true) {
+					if (InputHelper::IsDownDown()) {
 						player.SetState(EPlayerState::Crouch);	//숙이고있던 상태였다면 계속 숙이고있어줌
 						player.SetY(player.GetY() + 12);
 						player.SetHeight(player.GetHeight() - 12);	//계산이 끝났다면 다시 숙이기상태로 돌려줌
@@ -197,13 +198,13 @@ void ObjectManager::AdjustPlayer(PLAYER& player, MAP& m, int& ocount, HINSTANCE 
 					{
 						player.SetY(obstacle->GetY() - player.GetHeight());//발판위로 y좌표 세팅해주고
 
-						if (LEFTkey == 0 && RIGHTkey == 0)	//근데 그와중에도 아무키도 안누르고있었다 ? 
+						if (!InputHelper::IsLeftDown() && !InputHelper::IsRightDown())	//근데 그와중에도 아무키도 안누르고있었다 ? 
 							player.SetMoveCommand(EMoveCommand::None);	//그럼 진행방향으로 가는걸 멈추도록해준다.
-						else if (LEFTkey == 1 && RIGHTkey == 1)
+						else if (InputHelper::IsLeftDown() && InputHelper::IsRightDown())
 							player.SetMoveCommand(EMoveCommand::None);	//동시에 누르고있었어도 멈춰준다
-						else if (LEFTkey == 1)	//하지만 뭔가를 누르고있었다?
+						else if (InputHelper::IsLeftDown())	//하지만 뭔가를 누르고있었다?
 							player.SetMoveCommand(EMoveCommand::Left);
-						else if (RIGHTkey == 1)			//그에맞춰바꿔준다
+						else if (InputHelper::IsRightDown())			//그에맞춰바꿔준다
 							player.SetMoveCommand(EMoveCommand::Right);
 
 						player.SetState(EPlayerState::Idle);				//그리고 땅에부딪혔으니 정지상태해줌
@@ -338,7 +339,7 @@ void ObjectManager::AdjustPlayer(PLAYER& player, MAP& m, int& ocount, HINSTANCE 
 			{
 				if (obstacle->GetType() == 201) //Portal
 				{
-					if (UPkey == true)
+					if (InputHelper::IsUpDown())
 					{
 						m.SetBlackTime(50);
 						/*m.CreateBlack(g_hinst);*/
@@ -377,20 +378,20 @@ void ObjectManager::AdjustPlayer(PLAYER& player, MAP& m, int& ocount, HINSTANCE 
 				{
 					if (player.IsRopeHurt() == 0)	//로프에서 맞으면 다시 로프 못탐
 					{
-						if (UPkey == true || DOWNkey == true)
+						if (InputHelper::IsUpDown() || InputHelper::IsDownDown())
 						{
-							if (DOWNkey == true && (player.GetState() == EPlayerState::Jump || player.GetState() == EPlayerState::Airborne))	//공중에있거나 점프중일때 아랫키로는 줄에 붙을수없다
+							if (InputHelper::IsDownDown() && (player.GetState() == EPlayerState::Jump || player.GetState() == EPlayerState::Airborne))	//공중에있거나 점프중일때 아랫키로는 줄에 붙을수없다
 								return;
 
 							if (player.GetState() != EPlayerState::RopeIdle && player.GetState() != EPlayerState::RopeMove)	//줄에 매달려있지 않았다면 줄에 매달리는 상태를 만들어준다. 이미붙어있다면 해줄필요없음
 							{
 								player.SetState(EPlayerState::RopeIdle);
-								if (UPkey == true)
+								if (InputHelper::IsUpDown())
 									player.SetMoveCommand(EMoveCommand::Up);
-								if (DOWNkey == true)
+								if (InputHelper::IsDownDown())
 									player.SetMoveCommand(EMoveCommand::Down);
 								player.SetX(obstacle->GetX() + (obstacle->GetWidth() / 2));
-								if (DOWNkey == true)	//이때는 수그리기아니라 밧줄 아래로 내려가는것이므로 수그리기로 깍인거 돌려준다
+								if (InputHelper::IsDownDown())	//이때는 수그리기아니라 밧줄 아래로 내려가는것이므로 수그리기로 깍인거 돌려준다
 								{
 									player.SetY(player.GetY() - 12);
 									player.SetHeight(25);

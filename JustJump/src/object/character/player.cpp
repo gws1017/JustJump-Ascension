@@ -6,14 +6,11 @@
 int ROWSPEED = 3; 	//가로 이동속도
 int COLSPEED = 10;	//세로 이동속도
 int ROPESPEED = 2;
-bool LEFTkey = 0;//왼쪽키 눌렀는지 1이면 누름 0이면 안누름
-bool RIGHTkey = 0;//오른쪽키 눌렀는지 1이면 누름 0이면 안누름
-bool UPkey = 0;	//위쪽키 눌렀는지 1이면 누름 0이면 안누름
-bool DOWNkey = 0;//아래쪽키 눌렀는지 1이면 누름 0이면 안누름
-bool LRkey = 0;//왼쪽오른쪽키 동시에 눌렀는지 1이면눌림 0이면 안눌림
-bool UDkey = 0;
+
 int jumpcount = 0;
 int diecount = 0;
+
+
 
 PLAYER::PLAYER()
 	: Object(80,655,14,25), SavedY(3700),
@@ -277,13 +274,11 @@ void PLAYER::ProcessInput(Sound& sound)
 	if (input.IsKeyReleased(VK_DOWN))  OnKeyReleased(VK_DOWN);
 }
 
+//왼쪽키 처리
 void PLAYER::HandleLeftPressed()
 {
-	LEFTkey = true;				//키 누름상태
-
-	if (RIGHTkey == true)		//좌우를 동시에 누르고있다면 움직이지않음
+	if (InputHelper::IsRightDown())		//좌우를 동시에 누르고있다면 움직이지않음
 	{
-		LRkey = true;
 		if (PlayerState == EPlayerState::Move)		//움직이고 있을때나 1로 해서 멈추게하는거지 다를때 1로바꾸면 난리남
 			PlayerState = EPlayerState::Idle;
 		return;
@@ -310,12 +305,11 @@ void PLAYER::HandleLeftPressed()
 	}
 }
 
+//오른키 처리
 void PLAYER::HandleRightPressed()
 {
-	RIGHTkey = true;	//키 누름상태
-	if (LEFTkey == true)
+	if (InputHelper::IsLeftDown())
 	{
-		LRkey = true;
 		if (PlayerState == EPlayerState::Move)		//움직이고 있을때나 1로 해서 멈추게하는거지 다를때 1로바꾸면 난리남
 			PlayerState = EPlayerState::Idle;
 		return;
@@ -341,13 +335,11 @@ void PLAYER::HandleRightPressed()
 	}
 }
 
+//윗키 처리
 void PLAYER::HandleUpPressed()
 {
-	UPkey = true;
-
-	if (DOWNkey == true)
+	if (InputHelper::IsDownDown())
 	{
-		UDkey = true;
 		if (PlayerState == EPlayerState::RopeMove)
 			PlayerState = EPlayerState::RopeIdle;
 		return;
@@ -359,14 +351,13 @@ void PLAYER::HandleUpPressed()
 	}
 }
 
+//아래키 처리
 void PLAYER::HandleDownPressed()
 {
 	if (bIsHurt == 1)
 		return;
-	DOWNkey = true;
-	if (UPkey == true)
+	if (InputHelper::IsUpDown())
 	{
-		UDkey = true;
 		if (PlayerState == EPlayerState::RopeMove)
 			PlayerState = EPlayerState::RopeIdle;
 		return;
@@ -388,15 +379,15 @@ void PLAYER::HandleDownPressed()
 
 void PLAYER::HandleSpacePressed(Sound& sound)
 {
-	if (DOWNkey == true)//수그리고있을땐 점프못함
+	if (InputHelper::IsDownDown())//수그리고있을땐 점프못함
 	{
 		return;	//아무것도해주지않는다 현상태유지
 	}
 	if (PlayerState == EPlayerState::RopeIdle || PlayerState == EPlayerState::RopeMove)//줄에 매달렸을때
 	{
-		if (LRkey == 0)		//동시에 좌우키가 눌리지 않았으면서
+		if (!InputHelper::IsLRConflict())		//동시에 좌우키가 눌리지 않았으면서
 		{
-			if (LEFTkey == 1 || RIGHTkey == 1)	//둘중에 하나의 키라도 누르고있었다면 점프뜀 하지만 아니면 못뜀
+			if (InputHelper::IsLeftDown() || InputHelper::IsRightDown())	//둘중에 하나의 키라도 누르고있었다면 점프뜀 하지만 아니면 못뜀
 			{
 				MoveCommand = static_cast<EMoveCommand>(PlayerDirection);	//그리고 이때 어디로뛸건지 강제로 정함
 				RopeJumpCooldown = 2;	//점프시 다시못잡게도 바꿔줌
@@ -425,7 +416,7 @@ void PLAYER::HandleSpacePressed(Sound& sound)
 
 void PLAYER::HandleLeftReleased()
 {
-	if (RIGHTkey) //오른쪽키도 누르고있었다면 왼쪽키를 땟을때 오른쪽으로 몸을틀어야한다
+	if (InputHelper::IsRightDown()) //오른쪽키도 누르고있었다면 왼쪽키를 땟을때 오른쪽으로 몸을틀어야한다
 	{
 		PlayerDirection = EPlayerDirection::Right;
 		if (PlayerState == EPlayerState::Idle)			//둘다눌럿을때의 로직은 state==1일때에만 발동이 된다. 
@@ -442,7 +433,7 @@ void PLAYER::HandleLeftReleased()
 		{
 			MoveCommand = EMoveCommand::None;
 		}
-		if (DOWNkey == true)//만약 수그리고있었다면
+		if (InputHelper::IsDownDown())//만약 수그리고있었다면
 		{
 			if (PlayerState == EPlayerState::Idle)	//수그리기의 원래 알고리즘인 state==1 일때만 수그리도록 한다
 			{
@@ -452,20 +443,17 @@ void PLAYER::HandleLeftReleased()
 			}
 		}
 	}
-
-	LRkey = false;				//한개를 땠으니 false
-	LEFTkey = false;			//LEFTkey 땠으니 false
 }
 
 void PLAYER::HandleRightReleased()
 {
-	if (LEFTkey == true)		//왼쪽키도 누르고있었다면 오른쪽키를 땟을때 왼쪽으로 몸을틀어야한다
+	if (InputHelper::IsLeftDown())		//왼쪽키도 누르고있었다면 오른쪽키를 땟을때 왼쪽으로 몸을틀어야한다
 	{
 		PlayerDirection = EPlayerDirection::Left;
 		if (PlayerState == EPlayerState::Idle)			//둘다눌럿을때의 로직은 state==1일때에만 발동이 된다. 
 			MoveCommand = EMoveCommand::Left;
 	}
-	else if (LEFTkey == false)	//왼쪽키를 누르고있지 않았다면 움직이는상태였을땐 멈춰줘야한다.
+	else if (!InputHelper::IsLeftDown())	//왼쪽키를 누르고있지 않았다면 움직이는상태였을땐 멈춰줘야한다.
 	{
 		if (PlayerState == EPlayerState::Move)
 		{
@@ -476,7 +464,7 @@ void PLAYER::HandleRightReleased()
 		{
 			MoveCommand = EMoveCommand::None;
 		}
-		if (DOWNkey == true)//만약 수그리고있었다면
+		if (InputHelper::IsDownDown())//만약 수그리고있었다면
 		{
 			if (PlayerState == EPlayerState::Idle)	//수그리기의 원래 알고리즘인 state==1 일때만 수그리도록 한다
 			{
@@ -487,18 +475,16 @@ void PLAYER::HandleRightReleased()
 		}
 	}
 
-	LRkey = false;				//한개를 땠으니 false
-	RIGHTkey = false;			//RIGHTkey 땠으니 false
 }
 
 void PLAYER::HandleUpReleased()
 {
-	if (DOWNkey == true)
+	if (InputHelper::IsDownDown())
 	{
 		if (PlayerState == EPlayerState::RopeIdle)			//둘다눌럿을때의 로직은 state==5일때에만 발동이 된다. 
 			MoveCommand = EMoveCommand::Down;
 	}
-	else if (DOWNkey == false)
+	else if (!InputHelper::IsDownDown())
 	{
 		if (PlayerState == EPlayerState::RopeMove)
 		{
@@ -506,19 +492,16 @@ void PLAYER::HandleUpReleased()
 			MoveCommand = EMoveCommand::None;
 		}
 	}
-
-	UPkey = false;
-	UDkey = false;
 }
 
 void PLAYER::HandleDownReleased()
 {
-	if (UPkey == true)
+	if (InputHelper::IsUpDown())
 	{
 		if (PlayerState == EPlayerState::RopeIdle)			//둘다눌럿을때의 로직은 state==1일때에만 발동이 된다. 
 			MoveCommand = EMoveCommand::Up;
 	}
-	else if (UPkey == false)	//오른쪽키를 누르고있지 않았다면 움직이는상태였을땐 멈춰줘야한다.
+	else if (!InputHelper::IsUpDown())	//오른쪽키를 누르고있지 않았다면 움직이는상태였을땐 멈춰줘야한다.
 	{
 		if (PlayerState == EPlayerState::RopeMove)
 		{
@@ -530,18 +513,14 @@ void PLAYER::HandleDownReleased()
 			MoveCommand = EMoveCommand::None;
 		}
 	}
-	if (DOWNkey == true)
-	{
+
 		if (PlayerState == EPlayerState::Crouch)
 		{
 			height += 12;
 			y -= 12;	//다시 키 늘려줌
 			PlayerState = EPlayerState::Idle;
 		}
-	}
-
-	UDkey = false;
-	DOWNkey = false;
+	
 }
 
 void PLAYER::OnKeyPressed(WPARAM key, Sound& sound)
@@ -592,14 +571,14 @@ void PLAYER::UpdateMovement(int delta_time)
 	{
 	case EPlayerState::Idle:
 		FallAdjustSpeed = 0;		//수직낙하 한 후는 1상태가 되므로 여기서 초기화시켜줌
-		if (LRkey == false)
+		if (!InputHelper::IsLRConflict())
 		{
-			if (RIGHTkey == true)
+			if (InputHelper::IsRightDown())
 			{
 				PlayerDirection = EPlayerDirection::Right;
 				PlayerState = EPlayerState::Move;
 			}
-			if (LEFTkey == true)
+			if (InputHelper::IsLeftDown())
 			{
 				PlayerDirection = EPlayerDirection::Left;
 				PlayerState = EPlayerState::Move;
@@ -649,7 +628,7 @@ void PLAYER::UpdateMovement(int delta_time)
 		break;
 
 	case EPlayerState::Move:
-		if (LRkey == false)
+		if (!InputHelper::IsLRConflict())
 		{
 			if (delta_time % 5 == 0)
 				PlayAnim();
@@ -662,9 +641,9 @@ void PLAYER::UpdateMovement(int delta_time)
 
 	case EPlayerState::RopeIdle:
 		SavedY = y;	//줄에매달렸을때는 그자리가 저장지점이다
-		if (UDkey == false)
+		if (!InputHelper::IsUDConflict())
 		{
-			if (UPkey || DOWNkey)
+			if (InputHelper::IsUpDown() || InputHelper::IsDownDown())
 				PlayerState = EPlayerState::RopeMove;
 		}
 		break;
@@ -681,10 +660,10 @@ void PLAYER::UpdateMovement(int delta_time)
 		y += COLSPEED;					//아래로 떨어짐
 		if (FallAdjustSpeed < 1000)			//1000까지만 왼쪽으로 움직임
 			FallAdjustSpeed++;
-		if (LEFTkey == true)			//떨어질ㄸ ㅐ 왼쪽 꾹누르고있으면
+		if (InputHelper::IsLeftDown())			//떨어질ㄸ ㅐ 왼쪽 꾹누르고있으면
 			if (FallAdjustSpeed % 30 == 0)	//타이머가 30번 돌아갈때마다 한번씩 옴겨줌
 				x -= ROWSPEED;
-		if (RIGHTkey == true)
+		if (InputHelper::IsRightDown())
 			if (FallAdjustSpeed % 30 == 0)
 				x += ROWSPEED;
 		if (MoveCommand == EMoveCommand::Left)		//왼쪽으로 움직이고있다면
@@ -704,7 +683,7 @@ void PLAYER::UpdateMovement(int delta_time)
 					x -= ROWSPEED;
 			}
 
-			if (LEFTkey == 0)				//50칸까지는 맨처음방향대로 가고 , 그이후에 왼쪽키를 때고있으면 멈춤당하고 아니면 왼쪽으로 쭉 날라감
+			if (InputHelper::IsLeftDown())				//50칸까지는 맨처음방향대로 가고 , 그이후에 왼쪽키를 때고있으면 멈춤당하고 아니면 왼쪽으로 쭉 날라감
 				if (abs(x - SavedX) > 50)
 					MoveCommand = EMoveCommand::None;
 		}
@@ -724,7 +703,7 @@ void PLAYER::UpdateMovement(int delta_time)
 				if (FallAdjustSpeed % 5 == 0)
 					x += ROWSPEED;
 			}
-			if (RIGHTkey == 0)
+			if (InputHelper::IsRightDown())
 				if (abs(x - SavedX) > 50)
 					MoveCommand = EMoveCommand::None;
 		}
@@ -734,7 +713,7 @@ void PLAYER::UpdateMovement(int delta_time)
 		SavedY = y;	//줄에매달렸을때는 그자리가 저장지점이다
 		if (delta_time % 10 == 0)	//10번 타이머 돌아갈때 한번 움직이게해준다
 			PlayAnim();
-		if (UDkey == false)
+		if (InputHelper::IsUDConflict())
 		{
 			if (MoveCommand == EMoveCommand::Up)
 			{
@@ -825,10 +804,6 @@ void PLAYER::Die(Sound& sound)
 	y += 12;
 	height = 13;
 	InvincibleTime = 1;
-	LEFTkey = 0;
-	RIGHTkey = 0;
-	UPkey = 0;
-	DOWNkey = 0;
 
 	if (sound.Channel[1]) {
 		sound.Channel[1]->stop();

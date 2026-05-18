@@ -66,8 +66,9 @@ void InputManager::EndFrame()
 	m_lmbPrev = m_lmbCurr;
 }
 
-bool InputManager::IsKeyHeld(std::uint8_t vk) const
+bool InputManager::IsKeyDown(std::uint8_t vk) const
 {
+	if (!IsRegistered()) return false;
 	return m_keyCurr[vk];
 }
 
@@ -94,4 +95,13 @@ bool InputManager::IsMousePressed() const
 bool InputManager::IsMouseReleased() const
 {
 	return !m_lmbCurr && m_lmbPrev;
+}
+
+namespace InputHelper{
+	bool IsLeftDown() { return InputManager::Get().IsKeyDown(VK_LEFT); }
+	bool IsRightDown() { return InputManager::Get().IsKeyDown(VK_RIGHT); }
+	bool IsUpDown() { return InputManager::Get().IsKeyDown(VK_UP); }
+	bool IsDownDown() { return InputManager::Get().IsKeyDown(VK_DOWN); }
+	bool IsLRConflict() { return IsLeftDown() && IsRightDown(); }  // 예전 LRkey 대체
+	bool IsUDConflict() { return IsUpDown() && IsDownDown(); }     // 예전 UDkey 대체
 }

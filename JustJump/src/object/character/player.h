@@ -153,10 +153,7 @@ private:
 
 extern int ROWSPEED; 	//가로 이동속도
 extern int COLSPEED;	//세로 이동속도
-extern bool LEFTkey;//왼쪽키 눌렀는지 1이면 누름 0이면 안누름
-extern bool RIGHTkey;//오른쪽키 눌렀는지 1이면 누름 0이면 안누름
-extern bool UPkey;	//위쪽키 눌렀는지 1이면 누름 0이면 안누름
-extern bool DOWNkey;//아래쪽키 눌렀는지 1이면 누름 0이면 안누름
+
 extern int jumpcount;
 extern int diecount;
 //왼쪽오른쪽키 동시에 눌려있는지확인

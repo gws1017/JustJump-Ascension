@@ -22,7 +22,7 @@ public:
 	void BeginFrame();
 	void EndFrame();
 
-	bool IsKeyHeld(std::uint8_t vk) const;
+	bool IsKeyDown(std::uint8_t vk) const;
 	bool IsKeyPressed(std::uint8_t vk) const;
 	bool IsKeyReleased(std::uint8_t vk) const;
 
@@ -43,3 +43,12 @@ private:
 	bool m_lmbCurr = false;
 	bool m_lmbPrev = false;
 };
+
+namespace InputHelper {
+	bool IsLeftDown();
+	bool IsRightDown();
+	bool IsUpDown();
+	bool IsDownDown();
+	bool IsLRConflict();
+	bool IsUDConflict();
+}

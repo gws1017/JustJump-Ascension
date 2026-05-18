@@ -1,5 +1,6 @@
 #include "Global.h"
 #include "core/GameWorld.h"
+#include "core/InputManager.h"
 
 #include "world/Map.h"
 #include "system/Sound.h"
@@ -170,6 +171,9 @@ void GameWorld::TickAnimation(float dt)
 
 void GameWorld::UpdateGameplay()
 {
+    if (InputManager::IsRegistered())
+        m_player.ProcessInput(m_sound);
+
     m_player.UpdateMovement(m_obj_t);
     m_object_manager.AdjustPlayer(m_player, m_map, m_ocount, m_hinstance, m_sound);
     m_map.movemap();
@@ -299,15 +303,15 @@ void GameWorld::OnChar(WPARAM ch)
 
 void GameWorld::OnKeyDown(WPARAM key)
 {
-    if (m_player.IsDead() == 1) return; //사망시 체크 하지않음음
-    if (m_player.GetGameMode() == 0) m_player.OnKeyPressed(key, m_sound);
-    else if (m_player.GetGameMode() == 1) m_camera.CameraSetting(key);
+    if (!m_player.GetGameMode() || m_player.IsDead())
+        return;
+    m_camera.CameraSetting(key);
 }
 void GameWorld::OnKeyUp(WPARAM key)
 {
-    if (m_player.IsDead() == 1) return;
-    if (m_player.GetGameMode() == 0) m_player.OnKeyReleased(key);
-    else if (m_player.GetGameMode() == 1) m_camera.CameraSetting(key);
+    if (!m_player.GetGameMode() || m_player.IsDead())
+        return;
+    m_camera.CameraSetting(key);
 }
 void GameWorld::OnMouseMove(LPARAM mouse) 
 {
