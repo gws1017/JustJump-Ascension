@@ -3,14 +3,6 @@
 #include "core/InputManager.h"
 #pragma comment (lib, "Msimg32.lib")
 
-int ROWSPEED = 3; 	//가로 이동속도
-int COLSPEED = 10;	//세로 이동속도
-int ROPESPEED = 2;
-
-int jumpcount = 0;
-int diecount = 0;
-
-
 
 PLAYER::PLAYER()
 	: Object(80,655,14,25), SavedY(3700),
@@ -293,7 +285,7 @@ void PLAYER::HandleLeftPressed()
 		break;
 	case EPlayerState::Jump:
 		if (bIsHurt != 1)	//쳐맞고있을때는 이 로직 안통해요~
-			ROWSPEED = 1;	//점프했을때 방향을 바꾸려하면 드라마틱하게 다시 오는경우는 없지만 그래도 원했던것보단 조금 나감
+			m_rowSpeed = 1;	//점프했을때 방향을 바꾸려하면 드라마틱하게 다시 오는경우는 없지만 그래도 원했던것보단 조금 나감
 		break;
 	case EPlayerState::Crouch:
 		height += 12;
@@ -325,7 +317,7 @@ void PLAYER::HandleRightPressed()
 		break;
 	case EPlayerState::Jump:
 		if (bIsHurt != 1)	//쳐맞고있을때는 이 로직 안통해요~
-			ROWSPEED = 1;	//점프했을때 방향을 바꾸려하면 드라마틱하게 다시 오는경우는 없지만 그래도 원했던것보단 조금 나감
+			m_rowSpeed = kJumpRowSpeed;	//점프했을때 방향을 바꾸려하면 드라마틱하게 다시 오는경우는 없지만 그래도 원했던것보단 조금 나감
 		break;
 	case EPlayerState::Crouch:
 		height += 12;
@@ -408,7 +400,7 @@ void PLAYER::HandleSpacePressed(Sound& sound)
 			false,
 			&sound.Channel[1]
 		);
-		jumpcount++;
+		m_jumpCount++;
 		PlayerState = EPlayerState::Jump;
 		SavedY = y;
 	}
@@ -590,11 +582,11 @@ void PLAYER::UpdateMovement(int delta_time)
 
 		if (MoveCommand == EMoveCommand::Left)
 		{
-			x -= ROWSPEED;
+			x -= m_rowSpeed;
 		}
 		else if (MoveCommand == EMoveCommand::Right)
 		{
-			x += ROWSPEED;
+			x += m_rowSpeed;
 		}
 
 		if (bIsHurt == true)	//피격당한경우
@@ -603,7 +595,7 @@ void PLAYER::UpdateMovement(int delta_time)
 				y -= 3;
 			}
 			else {
-				y -= COLSPEED / 2;
+				y -= kColSpeed / 2;
 			}
 			if (abs((y - SavedY)) >= 40)	//40픽셀만큼 피격당해서 위로 살짝뜸
 			{
@@ -617,7 +609,7 @@ void PLAYER::UpdateMovement(int delta_time)
 				y -= 3;
 			}
 			else {
-				y -= COLSPEED;
+				y -= kColSpeed;
 			}
 			if (abs((y - SavedY)) >= 100)
 			{
@@ -633,9 +625,9 @@ void PLAYER::UpdateMovement(int delta_time)
 			if (delta_time % 5 == 0)
 				PlayAnim();
 			if (MoveCommand == EMoveCommand::Left)
-				x -= ROWSPEED;
+				x -= m_rowSpeed;
 			else if (MoveCommand == EMoveCommand::Right)
-				x += ROWSPEED;
+				x += m_rowSpeed;
 		}
 		break;
 
@@ -649,7 +641,7 @@ void PLAYER::UpdateMovement(int delta_time)
 		break;
 
 	case EPlayerState::Hurt:
-		ROWSPEED *= 3;
+		m_rowSpeed *= 3;
 		InvincibleTime = 100;		//무적시간 2초
 		SavedY = y;			//피격과 동시에 y좌표저장(적당히 내려오기 위해)
 		bIsHurt = true;	//피격함수 on
@@ -657,30 +649,30 @@ void PLAYER::UpdateMovement(int delta_time)
 		break;
 
 	case EPlayerState::Airborne:
-		y += COLSPEED;					//아래로 떨어짐
+		y += kColSpeed;					//아래로 떨어짐
 		if (FallAdjustSpeed < 1000)			//1000까지만 왼쪽으로 움직임
 			FallAdjustSpeed++;
 		if (InputHelper::IsLeftDown())			//떨어질ㄸ ㅐ 왼쪽 꾹누르고있으면
 			if (FallAdjustSpeed % 30 == 0)	//타이머가 30번 돌아갈때마다 한번씩 옴겨줌
-				x -= ROWSPEED;
+				x -= m_rowSpeed;
 		if (InputHelper::IsRightDown())
 			if (FallAdjustSpeed % 30 == 0)
-				x += ROWSPEED;
+				x += m_rowSpeed;
 		if (MoveCommand == EMoveCommand::Left)		//왼쪽으로 움직이고있다면
 		{
 			if (FallAdjustSpeed <= 10)	//왼쪽으로 슥 갔다가
 			{
-				x -= ROWSPEED;
+				x -= m_rowSpeed;
 			}
 			if (FallAdjustSpeed > 10)		//10번 왼쪽 갔으면 2번에 한번씩 가줌
 			{
 				if (FallAdjustSpeed % 2 == 0)
-					x -= ROWSPEED;
+					x -= m_rowSpeed;
 			}
 			else if (FallAdjustSpeed > 30)	//2번씩 10번 또 갔으면 이젠 5번에 1번씩 찔끔 가줌 이건 오른쪽도 똑같이 적용
 			{
 				if (FallAdjustSpeed % 5 == 0)
-					x -= ROWSPEED;
+					x -= m_rowSpeed;
 			}
 
 			if (InputHelper::IsLeftDown())				//50칸까지는 맨처음방향대로 가고 , 그이후에 왼쪽키를 때고있으면 멈춤당하고 아니면 왼쪽으로 쭉 날라감
@@ -691,17 +683,17 @@ void PLAYER::UpdateMovement(int delta_time)
 		{
 			if (FallAdjustSpeed <= 10)
 			{
-				x += ROWSPEED;
+				x += m_rowSpeed;
 			}
 			if (FallAdjustSpeed > 10)
 			{
 				if (FallAdjustSpeed % 2 == 0)
-					x += ROWSPEED;
+					x += m_rowSpeed;
 			}
 			else if (FallAdjustSpeed > 30)
 			{
 				if (FallAdjustSpeed % 5 == 0)
-					x += ROWSPEED;
+					x += m_rowSpeed;
 			}
 			if (InputHelper::IsRightDown())
 				if (abs(x - SavedX) > 50)
@@ -717,11 +709,11 @@ void PLAYER::UpdateMovement(int delta_time)
 		{
 			if (MoveCommand == EMoveCommand::Up)
 			{
-				y -= ROPESPEED;
+				y -= kRopeSpeed;
 			}
 			else if (MoveCommand == EMoveCommand::Down)
 			{
-				y += ROPESPEED;
+				y += kRopeSpeed;
 			}
 		}
 		break;
@@ -815,5 +807,5 @@ void PLAYER::Die(Sound& sound)
 		false,
 		&sound.Channel[1]
 	);
-	diecount++;
+	m_dieCount++;
 }

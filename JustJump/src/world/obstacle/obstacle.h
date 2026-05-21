@@ -2,8 +2,8 @@
 #include "object/core/Object.h"
 
 #define beltspeed 2 //belt speed
-#define gearrowspeed 5 //row gear speed
-#define gearcolspeed 3 // col gear speed
+#define gearm_rowSpeed 5 //row gear speed
+#define gearkColSpeed 3 // col gear speed
 class Obstacle : public Object
 {
 

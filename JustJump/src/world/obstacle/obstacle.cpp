@@ -152,14 +152,14 @@ void Obstacle::Move()
 	{
 		if (mx > 150) s = -1;
 		else if (mx < -150) s = 1;
-		mx += s * gearrowspeed;
+		mx += s * gearm_rowSpeed;
 		
 	}
 	else if (dir == 1) //Up or Down
 	{
 		if (my > 100) s = -1;
 		else if (my < -100) s = 1;
-		my += s * gearcolspeed;
+		my += s * gearkColSpeed;
 
 	}
 	

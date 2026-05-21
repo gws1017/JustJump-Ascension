@@ -44,11 +44,14 @@ public:
 	int GetSpriteWidth() { return SpriteWidth; }
 	int GetSpriteHeight() { return SpriteHeight; }
 
+	int GetRowSpeed() { return m_rowSpeed; }
 	int GetCurrentHP() { return CurrentHP; }
 	int GetFallSpeed() { return FallAdjustSpeed; }
 	int GetInvincibleTime() { return InvincibleTime; }
 	int GetJumpCooldown() { return RopeJumpCooldown; }
 	int GetSpikeKnockback() { return SpikeKnockback; }
+	int GetJumpCount() const { return m_jumpCount; }
+	int GetDieCount() const { return m_dieCount; }
 
 	bool GetGameMode() { return IsGameMode; }
 	bool IsHurt() { return bIsHurt; }
@@ -66,7 +69,7 @@ public:
 	void SetCurrentHP(int hp) { CurrentHP = hp; }
 	void SetFallSpeed(int speed) { FallAdjustSpeed = speed; }
 	void SetState(EPlayerState state) { PlayerState = state; }
-
+	void SetRowSpeed(int val) { m_rowSpeed = val; }
 	//bool변수 너무많지않나
 	void SetDirection(EPlayerDirection dir) { PlayerDirection = dir; }
 	void SetMoveCommand(EMoveCommand command) { MoveCommand = command; }
@@ -142,6 +145,16 @@ private:
 	int InvincibleTime;		//피격시 무적 2초를 기준으로한다.
 	int RopeJumpCooldown;		//줄에서 점프시 줄 바로 못잡게한다. stealth 와 같이 돌아갈예정
 	int SpikeKnockback;		//하강중 가시로인한 강제적 좌표이동값 -이면 왼쪽으로가야함 + 이면 오른쪽으로 강제이동
+	
+	// 이동 속도 (예전 전역 ROWSPEED / kColSpeed / kRopeSpeed)
+	static constexpr int kColSpeed = 10;
+	static constexpr int kRopeSpeed = 2;
+	static constexpr int kDefaultRowSpeed = 3;
+	static constexpr int kJumpRowSpeed = 1;
+	int m_rowSpeed = kDefaultRowSpeed;
+
+	int m_jumpCount = 0;
+	int m_dieCount = 0;
 
 	HBITMAP m_oldplayerBitmap = nullptr;
 	HBITMAP CurrentBitmap;    //현재 사용중인 비트맵
@@ -149,11 +162,3 @@ private:
 	HBITMAP ActionBitmap;		//점프,숙이기 줄타기 비트맵
 	int AnimX, AnimY, AnimWidth, AnimHeight; //비트맵의 스프라이트위치를 바꾸기위한 좌표 변수
 };
-
-
-extern int ROWSPEED; 	//가로 이동속도
-extern int COLSPEED;	//세로 이동속도
-
-extern int jumpcount;
-extern int diecount;
-//왼쪽오른쪽키 동시에 눌려있는지확인

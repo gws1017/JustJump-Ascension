@@ -44,11 +44,24 @@ private:
 	bool m_lmbPrev = false;
 };
 
-namespace InputHelper {
-	bool IsLeftDown();
-	bool IsRightDown();
-	bool IsUpDown();
-	bool IsDownDown();
-	bool IsLRConflict();
-	bool IsUDConflict();
+namespace InputHelper
+{
+	inline bool IsLeftDown()
+	{
+		return InputManager::IsRegistered() && InputManager::Get().IsKeyDown(VK_LEFT);
+	}
+	inline bool IsRightDown()
+	{
+		return InputManager::IsRegistered() && InputManager::Get().IsKeyDown(VK_RIGHT);
+	}
+	inline bool IsUpDown()
+	{
+		return InputManager::IsRegistered() && InputManager::Get().IsKeyDown(VK_UP);
+	}
+	inline bool IsDownDown()
+	{
+		return InputManager::IsRegistered() && InputManager::Get().IsKeyDown(VK_DOWN);
+	}
+	inline bool IsLRConflict() { return IsLeftDown() && IsRightDown(); }
+	inline bool IsUDConflict() { return IsUpDown() && IsDownDown(); }
 }

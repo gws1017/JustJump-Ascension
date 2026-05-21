@@ -143,8 +143,8 @@ void ObjectManager::AdjustPlayer(PLAYER& player, MAP& m, int& ocount, HINSTANCE 
 					player.SetHurt(0);			//땅에 닿았으면 피격아님
 					player.SetRopeHurt(0);		//땅에 닿았으면 피격아님
 
-					if (ROWSPEED != 3)		//ROWSPEED를 임의로 바꿔주었다면 땅에 닿으면 초기화니 원래대로 돌려준다
-						ROWSPEED = 3;
+					if (player.GetRowSpeed() != 3)		//m_rowSpeed를 임의로 바꿔주었다면 땅에 닿으면 초기화니 원래대로 돌려준다
+						player.SetRowSpeed(3);
 				}
 
 				if (obstacle->GetType() == 4)
@@ -212,8 +212,8 @@ void ObjectManager::AdjustPlayer(PLAYER& player, MAP& m, int& ocount, HINSTANCE 
 						player.SetHurt(0);			//땅에 닿았으면 피격아님
 						player.SetRopeHurt(0);		//땅에 닿았으면 피격아님
 
-						if (ROWSPEED != 3)		//ROWSPEED를 임의로 바꿔주었다면 땅에 닿으면 초기화니 원래대로 돌려준다
-							ROWSPEED = 3;
+						if (player.GetRowSpeed() != 3)		//m_rowSpeed를 임의로 바꿔주었다면 땅에 닿으면 초기화니 원래대로 돌려준다
+							player.SetRowSpeed(3);
 					}
 					//X Collapse
 					if (player.GetState() == EPlayerState::Idle || player.GetState() == EPlayerState::Move) //Walking Collpse
@@ -407,8 +407,8 @@ void ObjectManager::AdjustPlayer(PLAYER& player, MAP& m, int& ocount, HINSTANCE 
 			{
 
 			}
-			//if (ROWSPEED != 3)		//ROWSPEED를 임의로 바꿔주었다면 땅에 닿으면 초기화니 원래대로 돌려준다
-			//	ROWSPEED = 3; 잠깐 위로 올려줬음 주석처리하고 ㅇㅇ 근데 이게 맞을거같긴해
+			//if (m_rowSpeed != 3)		//m_rowSpeed를 임의로 바꿔주었다면 땅에 닿으면 초기화니 원래대로 돌려준다
+			//	m_rowSpeed = 3; 잠깐 위로 올려줬음 주석처리하고 ㅇㅇ 근데 이게 맞을거같긴해
 
 			//return;			//하나라도 부딪혔다면 그대로 탈출한다
 		}

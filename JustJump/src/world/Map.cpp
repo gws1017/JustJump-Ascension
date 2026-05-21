@@ -66,7 +66,7 @@ void MAP::movemap()
 	if (ms >= 3021) ms = 0;
 }
 
-void MAP :: DrawBK(HDC& mem1dc, HDC& mem2dc, RECT& rectview)
+void MAP :: DrawBK(HDC& mem1dc, HDC& mem2dc, RECT& rectview, const PLAYER& player)
 {
 	
 	mem2dc = CreateCompatibleDC(mem1dc);
@@ -90,11 +90,11 @@ void MAP :: DrawBK(HDC& mem1dc, HDC& mem2dc, RECT& rectview)
 		HFONT oldfont = (HFONT)SelectObject(mem1dc, hfont);
 		TCHAR count[100];
 		TextOut(mem1dc, 100, 3400, L"Á¡ÇÁ È½¼ö : ", lstrlenW(L"Á¡ÇÁ È½¼ö : "));
-		_itow_s(jumpcount, count, 10);
+		_itow_s(player.GetJumpCount(), count, 10);
 		TextOut(mem1dc, 300, 3400, count, lstrlenW(count));
 
 		TextOut(mem1dc, 500, 3400, L"Á×Àº È½¼ö : ", lstrlenW(L"Á×Àº È½¼ö : "));
-		_itow_s(diecount, count, 10);
+		_itow_s(player.GetDieCount(), count, 10);
 		TextOut(mem1dc, 700, 3400, count, lstrlenW(count));
 		SelectObject(mem1dc, oldfont);
 		DeleteObject(hfont);

@@ -124,7 +124,7 @@ void GameWorld::RenderScene(HDC hdc)
 
     if (0 >= m_map.GetBlackTime())
     {
-        m_map.DrawBK(mem1dc, mem2dc, m_rectview);
+        m_map.DrawBK(mem1dc, mem2dc, m_rectview,m_player);
     }
 
     m_object_manager.SetMem1DC(&mem1dc);
