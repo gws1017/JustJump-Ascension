@@ -8,7 +8,7 @@
 #include "object/character/player.h"
 #include "object/view/Camera.h"
 #include "object/core/ObjectManager.h"
-
+#include "world/obstacle/obstacle.h"
 
 GameWorld::GameWorld() = default;
 
@@ -287,7 +287,14 @@ void GameWorld::OnChar(WPARAM ch)
 {
 	if (ch == 'r')
 	{
-		//ToDo: 포탈 위치(다음맵 이동) 조정하는 치트키 코드 추가
+        int offset = 40;
+		for (const auto& obs : m_object_manager.GetObjects()) {
+			if (obs->GetType() == 201) {
+				m_player.SetX(obs->GetX() + offset);
+				m_player.SetY(obs->GetY() + offset); // 발 위치 맞추기
+				break;
+			}
+		}
 		return;
 	}
 	if (ch == 'c')

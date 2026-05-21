@@ -713,7 +713,7 @@ void PLAYER::UpdateMovement(int delta_time)
 		SavedY = y;	//줄에매달렸을때는 그자리가 저장지점이다
 		if (delta_time % 10 == 0)	//10번 타이머 돌아갈때 한번 움직이게해준다
 			PlayAnim();
-		if (InputHelper::IsUDConflict())
+		if (!InputHelper::IsUDConflict())
 		{
 			if (MoveCommand == EMoveCommand::Up)
 			{
