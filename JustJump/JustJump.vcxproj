@@ -173,6 +173,7 @@
     <ClCompile Include="src\world\obstacle\obstacle.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GameConstants.h" />
     <ClInclude Include="src\core\App.h" />
     <ClInclude Include="src\core\entry_point.h" />
     <ClInclude Include="src\core\GameWorld.h" />

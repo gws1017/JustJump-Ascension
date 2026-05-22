@@ -143,6 +143,9 @@
     <ClInclude Include="src\core\InputManager.h">
       <Filter>소스 파일\src\core</Filter>
     </ClInclude>
+    <ClInclude Include="GameConstants.h">
+      <Filter>소스 파일\src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc">

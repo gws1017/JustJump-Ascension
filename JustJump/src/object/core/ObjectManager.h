@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 class PLAYER;
 class Obstacle;
@@ -24,14 +24,14 @@ public:
 
 public:
 
-	//¶¥¹Ù´Ú°ú ÇÃ·¹ÀÌ¾î Ãæµ¹Ã¼Å© 1ÀÌ¸é ºÎ´ÚÄ§
+	//ë•…ë°”ë‹¥ê³¼ í”Œë ˆì´ì–´ ì¶©ëŒì²´í¬ 1ì´ë©´ ë¶€ë‹¥ì¹¨
 	bool CollP2W(PLAYER player, SPtr<Obstacle> object);
-	//ÇÃ·¹ÀÌ¾î¿Í ¿ÀºêÁ§Æ®°£ »óÈ£ÀÛ¿ë ÆÇ´ÜÇÏ°í ±×¿¡¸Â°Ô ¹Ù²ãÁÜ
+	//í”Œë ˆì´ì–´ì™€ ì˜¤ë¸Œì íŠ¸ê°„ ìƒí˜¸ì‘ìš© íŒë‹¨í•˜ê³  ê·¸ì—ë§ê²Œ ë°”ê¿”ì¤Œ
 	void AdjustPlayer(PLAYER& player, MAP& m, int& ocount, HINSTANCE g_hinst, Sound& sound);
 
-	//int(¸Ê ¹øÈ£) ¿¡ µû¶ó Àå¾Ö¹° À§Ä¡°ª ³Ö¾îÁÖ°í ¸î°³ÀÇ ¿ÀºêÁ§Æ®°¡ µé¾î°¬´ÂÁö ¾Ë·ÁÁÖ´Â ÇÔ¼ö
+	//int(ë§µ ë²ˆí˜¸) ì— ë”°ë¼ ì¥ì• ë¬¼ ìœ„ì¹˜ê°’ ë„£ì–´ì£¼ê³  ëª‡ê°œì˜ ì˜¤ë¸Œì íŠ¸ê°€ ë“¤ì–´ê°”ëŠ”ì§€ ì•Œë ¤ì£¼ëŠ” í•¨ìˆ˜
 	int InitObject(int mapnum, HINSTANCE g_hinst);
-	//Ä«¸Ş¶ó ¹«ºù¿öÅ©
+	//ì¹´ë©”ë¼ ë¬´ë¹™ì›Œí¬
 	void AdjustCamera(CAMERA& camera, PLAYER player);
 
 	void DrawObjects();
@@ -48,3 +48,11 @@ private:
 	HDC* mem1dc;
 	std::vector<SPtr<Obstacle>> m_obstacles;
 };
+
+namespace AnimPeriod {
+	constexpr int kType0 = 10;
+	constexpr int kType4 = 8;
+	constexpr int kType103 = 30;
+	constexpr int kGear = 5;
+	constexpr int kPortal = 20;
+}

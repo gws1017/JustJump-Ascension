@@ -53,7 +53,6 @@ private:
 
 	// animation / ui state
 	float m_anim_accum = 0.0f;
-    float m_anim_tick = 1.0f / 60.0f;
 	
 	int m_obj_t = 0;
 	int m_ocount = 0;
@@ -81,6 +80,7 @@ private:
 	void RenderInGameUI(HDC mem1dc, HDC ui_dc, HDC hp_dc, HDC die_dc);
 
 	bool IsInRect(LPARAM mouse, int left, int top, int right, int bottom) const;
+	bool IsInRect(LPARAM mouse, const UiRect& r) const
 	bool IsReviveButtonArea(LPARAM mouse) const;
 	bool IsStartButtonArea(LPARAM mouse) const;
 	bool IsHelpButtonArea(LPARAM mouse) const;

@@ -35,7 +35,7 @@ bool GameWorld::Initialize(HINSTANCE hinstance)
     m_player.SelectBitmap();
 
     //카메라 초기화
-    if (m_map.GetMapNumber() == 9)
+    if (m_map.GetMapNumber() == static_cast<int>(EMapId::Title))
     {
         m_camera.SetX(0);
         m_camera.SetY(0);
@@ -56,10 +56,10 @@ bool GameWorld::Initialize(HINSTANCE hinstance)
     }
     m_sound.System->playSound(m_sound.bgmSound[0], nullptr, false, &m_sound.Channel[0]);
 
-    if (m_map.GetMapNumber() == 9)
+    if (m_map.GetMapNumber() == static_cast<int>(EMapId::Title))
     m_hbit1 = (HBITMAP)LoadImage(m_hinstance, TEXT("img/start_rayer1.bmp"), 
 IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-    else if (m_map.GetMapNumber() == 13)
+    else if (m_map.GetMapNumber() == static_cast<int>(EMapId::Clear))
         m_hbit1 = (HBITMAP)LoadImage(m_hinstance, TEXT("img/clear.bmp"), 
     IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 
@@ -69,7 +69,7 @@ IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
     m_hp_bit = (HBITMAP)LoadImage(m_hinstance, TEXT("img/Ui_HP.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
     m_die_bit = (HBITMAP)LoadImage(m_hinstance, TEXT("img/Notice3.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
     
-    m_ocount = m_object_manager.InitObject(9, m_hinstance);
+    m_ocount = m_object_manager.InitObject(static_cast<int>(EMapId::Title), m_hinstance);
 
     return true;
 }
@@ -130,21 +130,21 @@ void GameWorld::RenderScene(HDC hdc)
     m_object_manager.SetMem1DC(&mem1dc);
     m_object_manager.DrawObjects();
 
-    if (m_map.GetMapNumber() == 9)
+    if (m_map.GetMapNumber() == static_cast<int>(EMapId::Title))
     {
         RenderStartMenu(mem1dc, start_dc, help_dc);
     }
 
     m_player.Render(mem1dc);
 
-    if (m_map.GetMapNumber() >= 10)
+    if (m_map.GetMapNumber() >= static_cast<int>(EMapId::GameplayMin))
     {
         RenderInGameUI(mem1dc, ui_dc, hp_dc, die_dc);
     }
 
     if (m_map.GetBlackTime() > 0) m_map.DrawLoadBK(mem1dc, mem2dc, m_blendfunction);
 
-    BitBlt(hdc, 0, 0, 1024, 768, mem1dc, m_camera.GetX(), m_camera.GetY(), SRCCOPY);
+    BitBlt(hdc, 0, 0, GameConst::kViewportWidth, GameConst::kViewportHeight, mem1dc, m_camera.GetX(), m_camera.GetY(), SRCCOPY);
     
     if (mem1dc) DeleteDC(mem1dc);
     if (mem2dc) DeleteDC(mem2dc);
@@ -157,14 +157,14 @@ void GameWorld::RenderScene(HDC hdc)
 
 void GameWorld::TickAnimation(float dt)
 {
-    dt = std::min(dt, 0.05f);
+    dt = std::min(dt, GameConst::kMaxDeltaTime);
     m_anim_accum += dt;
 
-    while (m_anim_accum >= m_anim_tick)
+    while (m_anim_accum >= GameConst::kAnimTickSeconds)
     {
-        m_anim_accum -= m_anim_tick;
+        m_anim_accum -= GameConst::kAnimTickSeconds;
         ++m_obj_t;
-        if (m_obj_t >= 27000)
+        if (m_obj_t >= GameConst::kAnimCounterMax)
             m_obj_t = 0;
     }
 }
@@ -188,10 +188,10 @@ void GameWorld::UpdateFadeAndCamera()
 {
     if (m_map.BlackTime())
     {
-        if (m_blendfunction.SourceConstantAlpha + 40 > 255)
-            m_blendfunction.SourceConstantAlpha = 255;
+        if (m_blendfunction.SourceConstantAlpha + GameConst::kFadeStep > GameConst::kAlphaMax)
+            m_blendfunction.SourceConstantAlpha = GameConst::kAlphaMax;
         else
-            m_blendfunction.SourceConstantAlpha += 40;
+            m_blendfunction.SourceConstantAlpha += GameConst::kFadeStep;
         return;
     }
 
@@ -220,19 +220,23 @@ bool GameWorld::IsInRect(LPARAM mouse, int left, int top, int right, int bottom)
     return left < x && x < right && top < y && y < bottom;
 }
 
+bool GameWorld::IsInRect(LPARAM mouse, const UiRect& r) const {
+    return IsInRect(mouse, r.left, r.top, r.right, r.bottom);
+}
+
 bool GameWorld::IsReviveButtonArea(LPARAM mouse) const
 {
-    return IsInRect(mouse, 584, 338, 620, 352);
+    return IsInRect(mouse, UiHitbox::kRevive);
 }
 
 bool GameWorld::IsStartButtonArea(LPARAM mouse) const
 {
-    return IsInRect(mouse, 290, 490, 430, 572);
+    return IsInRect(mouse, UiHitbox::kStart);
 }
 
 bool GameWorld::IsHelpButtonArea(LPARAM mouse) const
 {
-    return IsInRect(mouse, 290, 345, 428, 427);
+    return IsInRect(mouse, UiHitbox::kHelp);
 }
 
 void GameWorld::ResetMenuButtons()
@@ -287,9 +291,9 @@ void GameWorld::OnChar(WPARAM ch)
 {
 	if (ch == 'r')
 	{
-        int offset = 40;
+        int offset = GameConst::kPortalCheatOffset;
 		for (const auto& obs : m_object_manager.GetObjects()) {
-			if (obs->GetType() == 201) {
+			if (obs->GetType() == static_cast<int>(EObstacleType::Portal)) {
 				m_player.SetX(obs->GetX() + offset);
 				m_player.SetY(obs->GetY() + offset); // 발 위치 맞추기
 				break;
@@ -343,7 +347,7 @@ void GameWorld::OnMouseMove(LPARAM mouse)
 		m_map.ChangeDieNotice(m_hinstance, 0);
 		m_occur_button = false;
 	}
-	if (m_map.GetMapNumber() == 9)
+	if (m_map.GetMapNumber() == static_cast<int>(EMapId::Title))
 	{
         if (IsStartButtonArea(mouse))
         {
@@ -396,7 +400,7 @@ void GameWorld::OnMouseDown(LPARAM mouse)
             return;
         }
 	}
-	if (m_map.GetMapNumber() == 9)
+	if (m_map.GetMapNumber() == static_cast<int>(EMapId::Title))
 	{
         if (IsStartButtonArea(mouse) && m_start_button == 1)
         {
@@ -423,7 +427,7 @@ void GameWorld::OnMouseUp(LPARAM mouse)
             m_player.SetCurrentHP(100);
         }
     }
-    if (m_map.GetMapNumber() == 9)
+    if (m_map.GetMapNumber() == static_cast<int>(EMapId::Title))
     {
         if (IsStartButtonArea(mouse))
         {
@@ -461,7 +465,7 @@ void GameWorld::OnMouseUp(LPARAM mouse)
             );
             m_player.SetCurrentHP(100);
             m_camera.SetX(0);
-            m_camera.SetY(3232);
+            m_camera.SetY(GameConst::kDefaultCameraY);
         }
     }
 }

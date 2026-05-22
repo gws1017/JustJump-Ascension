@@ -2,8 +2,8 @@
 
 namespace 
 {
-	constexpr int APP_WIDTH = 1024;
-	constexpr int APP_HEIGHT = 768;
+	constexpr int APP_WIDTH = GameConst::kViewportWidth;
+	constexpr int APP_HEIGHT = GameConst::kViewportHeight;
 }
 
 class Timer;

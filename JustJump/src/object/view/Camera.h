@@ -3,7 +3,7 @@
 class CAMERA{
 
 public:
-	CAMERA() : x_(0), y_(3232) {}
+	CAMERA() : x_(0), y_(GameConst::kDefaultCameraY) {}
 
 public:
     void SetX(int x) { x_ = x; }
