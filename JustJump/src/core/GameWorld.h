@@ -32,8 +32,6 @@ public:
 	void Shutdown();
 
 	void OnChar(WPARAM key);
-	void OnKeyDown(WPARAM key);
-	void OnKeyUp(WPARAM key);
 	void OnMouseMove(LPARAM mouse);
 	void OnMouseDown(LPARAM mouse);
 	void OnMouseUp(LPARAM mouse);
@@ -80,7 +78,7 @@ private:
 	void RenderInGameUI(HDC mem1dc, HDC ui_dc, HDC hp_dc, HDC die_dc);
 
 	bool IsInRect(LPARAM mouse, int left, int top, int right, int bottom) const;
-	bool IsInRect(LPARAM mouse, const UiRect& r) const
+	bool IsInRect(LPARAM mouse, const UiRect& r) const;
 	bool IsReviveButtonArea(LPARAM mouse) const;
 	bool IsStartButtonArea(LPARAM mouse) const;
 	bool IsHelpButtonArea(LPARAM mouse) const;

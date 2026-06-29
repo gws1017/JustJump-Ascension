@@ -1,22 +1,15 @@
 #include "Global.h"
 #include "object/view/Camera.h"
+#include "core/InputManager.h"
 
-void CAMERA::CameraSetting(WPARAM key)
+void CAMERA::ProcessInput()
 {
-    switch (key)
-    {
-    case VK_UP:
-        if (y_ > 0)
-            y_ -= 20;
-        break;
+    if (!InputManager::IsRegistered())
+        return;
 
-    case VK_DOWN:
-        if (y_ + 768 < 4096)
-            y_ += 20;
-        break;
-
-    case VK_LEFT:
-    case VK_RIGHT:
-        break;
-    }
+    auto& input = InputManager::Get();
+    if (input.IsKeyDown(VK_UP) && y_ > 0)
+        y_ -= 20;
+    if (input.IsKeyDown(VK_DOWN) && y_ + 768 < 4096)
+        y_ += 20;
 }

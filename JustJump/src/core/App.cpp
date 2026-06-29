@@ -195,13 +195,10 @@ LRESULT CALLBACK App::WndProc(HWND hwnd, UINT iMessage, WPARAM wParam, LPARAM lP
 
 	case WM_KEYDOWN:
 		input->OnKeyDown(wParam);
-		gameWorld->OnKeyDown(wParam);
 		break;
 
 	case WM_KEYUP:
-
 		input->OnKeyUp(wParam);
-		gameWorld->OnKeyUp(wParam);
 		break;
 
 	case WM_MOUSEMOVE:

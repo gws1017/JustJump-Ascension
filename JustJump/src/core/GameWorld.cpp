@@ -172,7 +172,12 @@ void GameWorld::TickAnimation(float dt)
 void GameWorld::UpdateGameplay()
 {
     if (InputManager::IsRegistered())
+    {
         m_player.ProcessInput(m_sound);
+
+        if (m_player.GetGameMode() && !m_player.IsDead())
+            m_camera.ProcessInput();
+    }
 
     m_player.UpdateMovement(m_obj_t);
     m_object_manager.AdjustPlayer(m_player, m_map, m_ocount, m_hinstance, m_sound);
@@ -312,19 +317,7 @@ void GameWorld::OnChar(WPARAM ch)
 	}
 }
 
-void GameWorld::OnKeyDown(WPARAM key)
-{
-    if (!m_player.GetGameMode() || m_player.IsDead())
-        return;
-    m_camera.CameraSetting(key);
-}
-void GameWorld::OnKeyUp(WPARAM key)
-{
-    if (!m_player.GetGameMode() || m_player.IsDead())
-        return;
-    m_camera.CameraSetting(key);
-}
-void GameWorld::OnMouseMove(LPARAM mouse) 
+void GameWorld::OnMouseMove(LPARAM mouse)
 {
     if (m_player.IsDead() == 1)
 	{

@@ -14,7 +14,7 @@ public:
 
 public:
 
-    void CameraSetting(WPARAM key);
+    void ProcessInput();
 
 private:
     int x_;
