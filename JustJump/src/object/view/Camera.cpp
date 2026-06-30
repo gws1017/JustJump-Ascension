@@ -8,8 +8,8 @@ void CAMERA::ProcessInput()
         return;
 
     auto& input = InputManager::Get();
-    if (input.IsKeyDown(VK_UP) && y_ > 0)
-        y_ -= 20;
-    if (input.IsKeyDown(VK_DOWN) && y_ + 768 < 4096)
-        y_ += 20;
+    if (input.IsActionDown(EInputAction::CameraUp) && y_ > 0)
+        y_ -= GameConst::kCameraScrollSpeed;
+    if (input.IsActionDown(EInputAction::CameraDown) && y_ + GameConst::kViewportHeight < GameConst::kWorldHeight)
+        y_ += GameConst::kCameraScrollSpeed;
 }

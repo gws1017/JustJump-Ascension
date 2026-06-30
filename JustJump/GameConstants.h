@@ -18,6 +18,9 @@ namespace GameConst {
     constexpr int kPortalCheatOffset = 40; // OnChar 'r'
 
     constexpr int kDefaultCameraY = 3232;  // Camera.h 기본 y, GameWorld SetY(3232)
+
+    constexpr int kWorldHeight = 4096;       // 맵 전체 세로 크기, 카메라 스크롤 하한
+    constexpr int kCameraScrollSpeed = 20;   // 카메라 상/하 스크롤 속도(px/프레임)
 }
 
 // 맵 ID

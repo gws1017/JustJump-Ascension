@@ -255,15 +255,15 @@ void PLAYER::ProcessInput(Sound& sound)
 	if (IsGameMode) // 플라잉 모드면 키는 카메라 쪽 — 여기서는 아무 것도 안 함
 		return;
 	auto& input = InputManager::Get();
-	if (input.IsKeyPressed(VK_LEFT))  OnKeyPressed(VK_LEFT, sound);
-	if (input.IsKeyPressed(VK_RIGHT)) OnKeyPressed(VK_RIGHT, sound);
-	if (input.IsKeyPressed(VK_UP))    OnKeyPressed(VK_UP, sound);
-	if (input.IsKeyPressed(VK_DOWN))  OnKeyPressed(VK_DOWN, sound);
-	if (input.IsKeyPressed(VK_SPACE)) OnKeyPressed(VK_SPACE, sound);
-	if (input.IsKeyReleased(VK_LEFT))  OnKeyReleased(VK_LEFT);
-	if (input.IsKeyReleased(VK_RIGHT)) OnKeyReleased(VK_RIGHT);
-	if (input.IsKeyReleased(VK_UP))    OnKeyReleased(VK_UP);
-	if (input.IsKeyReleased(VK_DOWN))  OnKeyReleased(VK_DOWN);
+	if (input.IsActionPressed(EInputAction::MoveLeft))  OnKeyPressed(VK_LEFT, sound);
+	if (input.IsActionPressed(EInputAction::MoveRight)) OnKeyPressed(VK_RIGHT, sound);
+	if (input.IsActionPressed(EInputAction::MoveUp))    OnKeyPressed(VK_UP, sound);
+	if (input.IsActionPressed(EInputAction::MoveDown))  OnKeyPressed(VK_DOWN, sound);
+	if (input.IsActionPressed(EInputAction::Jump))      OnKeyPressed(VK_SPACE, sound);
+	if (input.IsActionReleased(EInputAction::MoveLeft))  OnKeyReleased(VK_LEFT);
+	if (input.IsActionReleased(EInputAction::MoveRight)) OnKeyReleased(VK_RIGHT);
+	if (input.IsActionReleased(EInputAction::MoveUp))    OnKeyReleased(VK_UP);
+	if (input.IsActionReleased(EInputAction::MoveDown))  OnKeyReleased(VK_DOWN);
 }
 
 //왼쪽키 처리
