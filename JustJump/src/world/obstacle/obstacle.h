@@ -9,6 +9,42 @@ namespace ObstacleConst {
 	constexpr int kGearRangeY = 100;  // 세로 기어 진동 범위
 }
 
+struct AnimStrip {
+	int x0, y, w, h, stride; // src_x = x0 + index * stride
+	int dst_h_offset = 0;    // 화면 출력 높이 = 오브젝트 height + dst_h_offset
+};
+
+struct SpriteRect {
+	int x, y, w, h;
+	int dst_h_offset = 0; // 화면 출력 높이 = 오브젝트 height + dst_h_offset
+	int dst_w_offset = 0; // 화면 출력 너비 = 오브젝트 width  + dst_w_offset
+};
+
+namespace ObstacleSprite {
+	constexpr AnimStrip kBelt        { 16,  9, 250,  43, 272, 42 };
+	constexpr AnimStrip kGear        {  0,  4,  18,  18,  23     };
+	constexpr AnimStrip kPortal      {  0, 55,  63, 135,  79     };
+
+	constexpr SpriteRect kPlatform   { 11, 15,  77,  18, 17 };   // type 2
+	constexpr SpriteRect kSmall      {  0,  0,  19,  19, 18 };   // type 3
+	constexpr SpriteRect kNail       {  1,  0,  26,  15,  0, 11 }; // type 101
+	constexpr SpriteRect kBrokenPipe {  0,  1,  17,  75 };        // type 102
+
+	namespace Platform7 {                                          // type 7
+		constexpr SpriteRect kHead  { 11, 15, 14, 18 };
+		constexpr SpriteRect kBody  { 27, 15, 50, 18 };
+		constexpr SpriteRect kTail  { 78, 15, 13, 18 };
+		constexpr int kBodyCount    = 6;
+		constexpr int kDstHOffset   = 17;
+	}
+
+	namespace Rope {
+		constexpr SpriteRect kHead {  0,   0, 24, 32 };
+		constexpr SpriteRect kBody {  0,  33, 24, 41 };
+		constexpr SpriteRect kTail {  0, 148, 24, 21 };
+	}
+}
+
 class Obstacle : public Object
 {
 
@@ -19,14 +55,12 @@ public:
 	int GetMY() { return my; }
 	int GetSpriteIndex() { return index; }
 
-	//1.바닥 2.기본 발판 3.작은발판 4.컨베이어 벨트 5.투명바닥 101.나사못 102.깨진파이프 103.증기 106,107.톱니바퀴 201.포탈 301.로프
-	int GetType() { return type; }
-	
+	EObstacleType GetType() const { return type; }
+
 	//오브젝트가 몇개들어갔는지
 	//int getocount();
 
-	//1~100 플랫폼 101~장애물
-	void SetType(int _type) { type = _type; }
+	void SetType(EObstacleType _type) { type = _type; }
 	void SetHbit(HINSTANCE g_hinst);
 
 public:
@@ -48,7 +82,7 @@ private:
 	int dir;					//오브젝트 이동방향n 0 == left , right / 1 == up , down
 	int s;						//부호
 
-	int type;					//1.바닥 2.기본 발판 3.작은발판 4.컨베이어 벨트 5.투명바닥 101.나사못 102.깨진파이프 103.증기 106,107.톱니바퀴 201.포탈 301.로프
+	EObstacleType type;
 	int index;					//애니메이션 돌릴때 배열의 인덱스를 바꿔주어 이미지를 바꾼다
 
 	HBITMAP hbit;

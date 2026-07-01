@@ -11,20 +11,20 @@ void Obstacle::Create(int _x, int _y, int _w, int _h, int _type)
 	y = _y;
 	width = _w;
 	height = _h;
-	type = _type;
+	type = static_cast<EObstacleType>(_type);
 	index = 0;
 
 	mx = 0;
 	my = 0;
-	
+
 	//row gear
-	if (type == 106)
+	if (type == EObstacleType::GearRow)
 	{
 		s = 1;
 		dir = 0;
 	}
 	//col gear
-	else if (type == 107)
+	else if (type == EObstacleType::GearCol)
 	{
 		s = 1;
 		dir = 1;
@@ -34,7 +34,7 @@ void Obstacle::Create(int _x, int _y, int _w, int _h, int _type)
 
 void Obstacle::SetHbit(HINSTANCE g_hinst)
 {
-	hbit = LoadObj(hbit, g_hinst, type);
+	hbit = LoadObj(hbit, g_hinst, static_cast<int>(type));
 }
 
 // All objects reset
@@ -49,7 +49,7 @@ void Obstacle::ResetObject()
 	y = 0;
 	width = 0;
 	height = 0;
-	type = 0;
+	type = EObstacleType::AnimatedBg;
 	index = 0;
 	hbit = NULL;
 }
@@ -57,59 +57,64 @@ void Obstacle::ResetObject()
 void Obstacle::IndexChange()
 {
 	index += 1;
-	if (type == 0)
+	if (type == EObstacleType::AnimatedBg)
 	{
 		if (index >= 7) index = 0;
 	}
-	else if (type == 4 || type ==6)
+	else if (type == EObstacleType::BeltRight || type == EObstacleType::BeltLeft)
 	{
 		if (index >= 4) index = 0;
 	}
-	else if (type == 103) //가스 공백포함 이미지 4개
+	else if (type == EObstacleType::Gas) //가스 공백포함 이미지 4개
 	{
 		if (index >= 4) index = 0;
 	}
-	else if (type == 106 || type == 107) //톱니바퀴 회전하는 이미지 2개
+	else if (type == EObstacleType::GearRow || type == EObstacleType::GearCol) //톱니바퀴 회전하는 이미지 2개
 	{
 		if (index >= 2) index = 0;
 	}
-	else if (type == 201)//포탈 이미지 7개
+	else if (type == EObstacleType::Portal) //포탈 이미지 7개
 	{
 		if (index >= 7) index = 0;
 	}
-	
 }
 
 void Obstacle::DrawObj(HDC& mem1dc)
 {
 	odc = CreateCompatibleDC(mem1dc);
 	SelectObject(odc, hbit);
-	if (type == 1)
+	if (type == EObstacleType::Ground)
 	{
-	  TransparentBlt(mem1dc, x, y, width, height, odc, 0, 0, 1023, 62, RGB(255, 255, 255));
+		TransparentBlt(mem1dc, x, y, width, height, odc, 0, 0, 1023, 62, RGB(255, 255, 255));
 	}
-	else if(type == 0)TransparentBlt(mem1dc, x, y, width, height, odc, 0, 0 + index * 768, 1024, 768, RGB(142, 203, 162));
-	else if (type == 2) TransparentBlt(mem1dc, x, y, width, height + 17, odc, 11, 15, 77, 18, RGB(255, 255, 255));	// 원본그림에서 x 11~88 y 15 33 만큼 잘라내서 투명처리후 출력
-	else if (type == 3) TransparentBlt(mem1dc, x, y, width, height + 18, odc, 0, 0, 19, 19, RGB(255, 255, 255));
-	else if (type == 4) TransparentBlt(mem1dc, x, y, width, height + 42, odc, 16 + index * 272, 9, 250, 43, RGB(0, 0, 0));
-	else if (type == 6) TransparentBlt(mem1dc, x, y, width, height + 42, odc, 16 + index * 272, 9, 250, 43, RGB(0, 0, 0));
-	else if (type == 7)
+	else if (type == EObstacleType::AnimatedBg)
+		TransparentBlt(mem1dc, x, y, width, height, odc, 0, 0 + index * 768, 1024, 768, RGB(142, 203, 162));
+	else if (type == EObstacleType::Platform)
+		TransparentBlt(mem1dc, x, y, width, height + ObstacleSprite::kPlatform.dst_h_offset, odc, ObstacleSprite::kPlatform.x, ObstacleSprite::kPlatform.y, ObstacleSprite::kPlatform.w, ObstacleSprite::kPlatform.h, RGB(255, 255, 255));	// 원본그림에서 x 11~88 y 15 33 만큼 잘라내서 투명처리후 출력
+	else if (type == EObstacleType::SmallPlat)
+		TransparentBlt(mem1dc, x, y, width, height + ObstacleSprite::kSmall.dst_h_offset, odc, ObstacleSprite::kSmall.x, ObstacleSprite::kSmall.y, ObstacleSprite::kSmall.w, ObstacleSprite::kSmall.h, RGB(255, 255, 255));
+	else if (type == EObstacleType::BeltRight || type == EObstacleType::BeltLeft)
+		TransparentBlt(mem1dc, x, y, width, height + ObstacleSprite::kBelt.dst_h_offset, odc, ObstacleSprite::kBelt.x0 + index * ObstacleSprite::kBelt.stride, ObstacleSprite::kBelt.y, ObstacleSprite::kBelt.w, ObstacleSprite::kBelt.h, RGB(0, 0, 0));
+	else if (type == EObstacleType::LongPlat)
 	{
-		//23 50 // 1.73 / 2.123  /3.173 4.223 5.273 6.323 7. 373 350 
-		TransparentBlt(mem1dc, x, y, 14, height+17, odc, 11, 15, 14, 18, RGB(255, 255, 255));//heightead
-
-		
-		for (int i = 0; i < 6; i++)
+		const auto& ph = ObstacleSprite::Platform7::kHead;
+		const auto& pb = ObstacleSprite::Platform7::kBody;
+		const auto& pt = ObstacleSprite::Platform7::kTail;
+		const int dh = ObstacleSprite::Platform7::kDstHOffset;
+		TransparentBlt(mem1dc, x, y, ph.w, height + dh, odc, ph.x, ph.y, ph.w, ph.h, RGB(255, 255, 255));//head
+		for (int i = 0; i < ObstacleSprite::Platform7::kBodyCount; i++)
 		{
-			TransparentBlt(mem1dc, x + 14 + 50 * i, y ,50, height+17, odc, 27, 15, 50, 18, RGB(255, 255, 255));//body
+			TransparentBlt(mem1dc, x + ph.w + pb.w * i, y, pb.w, height + dh, odc, pb.x, pb.y, pb.w, pb.h, RGB(255, 255, 255));//body
 		}
-			
-		TransparentBlt(mem1dc, x + 14 + 300, y , 13, height+17, odc, 78, 15, 13, 18, RGB(255, 255, 255));//tail
+		TransparentBlt(mem1dc, x + ph.w + pb.w * ObstacleSprite::Platform7::kBodyCount, y, pt.w, height + dh, odc, pt.x, pt.y, pt.w, pt.h, RGB(255, 255, 255));//tail
 	}
-	else if (type == 5) TransparentBlt(mem1dc, x, y, width, height , odc, 0, 9, 0, 0, RGB(255, 255, 255));
-	else if (type == 101) TransparentBlt(mem1dc, x, y, width+11, height, odc, 1, 0, 26, 15, RGB(255, 255, 255));
-	else if (type == 102) TransparentBlt(mem1dc, x, y, width, height, odc, 0, 1, 17, 75, RGB(255, 255, 255));
-	else if (type == 103) // 103번의 경우 102번의 y값에서 51을 뺀 위치가 파이프 깨진부분이다.
+	else if (type == EObstacleType::Transparent)
+		TransparentBlt(mem1dc, x, y, width, height, odc, 0, 9, 0, 0, RGB(255, 255, 255));
+	else if (type == EObstacleType::Nail)
+		TransparentBlt(mem1dc, x, y, width + ObstacleSprite::kNail.dst_w_offset, height, odc, ObstacleSprite::kNail.x, ObstacleSprite::kNail.y, ObstacleSprite::kNail.w, ObstacleSprite::kNail.h, RGB(255, 255, 255));
+	else if (type == EObstacleType::BrokenPipe)
+		TransparentBlt(mem1dc, x, y, width, height, odc, ObstacleSprite::kBrokenPipe.x, ObstacleSprite::kBrokenPipe.y, ObstacleSprite::kBrokenPipe.w, ObstacleSprite::kBrokenPipe.h, RGB(255, 255, 255));
+	else if (type == EObstacleType::Gas) // 103번의 경우 102번의 y값에서 51을 뺀 위치가 파이프 깨진부분이다.
 	{
 		//그림의 크기가 각각 다르기때문에 임시변수를 만들어  값을 저장하고 인덱스에따라 바꿔주는 형식이다.
 		RECT gas[4] = { {0,2,7,7},{10,2,18,7},{31,0,33,9},{0,0,0,0} }; //1번째인자는 아무것도 안그리는것
@@ -120,27 +125,29 @@ void Obstacle::DrawObj(HDC& mem1dc)
 		else tx = 0;
 		TransparentBlt(mem1dc, tx, y, gas[index].right, gas[index].bottom, odc, gas[index].left, gas[index].top, gas[index].right, gas[index].bottom, RGB(255, 255, 255));
 	}
-	else if (type == 106 || type == 107) //gear
+	else if (type == EObstacleType::GearRow || type == EObstacleType::GearCol)
 	{
-		TransparentBlt(mem1dc, x+mx , y+my, width, height, odc, index * 23, 4, 18, 18, RGB(255, 255, 255)); // 인덱스로 only x change
+		const auto& g = ObstacleSprite::kGear;
+		TransparentBlt(mem1dc, x+mx, y+my, width, height, odc, g.x0 + index * g.stride, g.y, g.w, g.h, RGB(255, 255, 255));
 	}
-	else if (type == 201) //portal
+	else if (type == EObstacleType::Portal)
 	{
-		TransparentBlt(mem1dc, x, y, width, height, odc, index*79, 55, 63, 135, RGB(0, 0, 0)); // 인덱스로 only x change
+		const auto& p = ObstacleSprite::kPortal;
+		TransparentBlt(mem1dc, x, y, width, height, odc, p.x0 + index * p.stride, p.y, p.w, p.h, RGB(0, 0, 0));
 	}
-	else if (type == 301)//Rope
+	else if (type == EObstacleType::Rope)
 	{
 		//머리+ 꼬리 53 몸통 41 전체 94 기본 길이 94 더긴거는 135 176 217 258 299 340 381 422 463
-		int body = (height - 53) / 41;
-		TransparentBlt(mem1dc, x, y, width, 32, odc, 0, 0, 24,32, RGB(255, 255, 255));//head
-		
+		const auto& rh = ObstacleSprite::Rope::kHead;
+		const auto& rb = ObstacleSprite::Rope::kBody;
+		const auto& rt = ObstacleSprite::Rope::kTail;
+		int body = (height - (rh.h + rt.h)) / rb.h;
+		TransparentBlt(mem1dc, x, y, width, rh.h, odc, rh.x, rh.y, rh.w, rh.h, RGB(255, 255, 255));//head
 		for (int i = 0; i < body; i++)
 		{
-			TransparentBlt(mem1dc, x, y + 32 + i * 41, width, 41, odc, 0, 33, 24, 41, RGB(255, 255, 255));//body
-			
+			TransparentBlt(mem1dc, x, y + rh.h + i * rb.h, width, rb.h, odc, rb.x, rb.y, rb.w, rb.h, RGB(255, 255, 255));//body
 		}
-		
-		TransparentBlt(mem1dc, x, y + 32 + body * 41, width, 21, odc, 0, 148, 24, 21, RGB(255, 255, 255));//tail
+		TransparentBlt(mem1dc, x, y + rh.h + body * rb.h, width, rt.h, odc, rt.x, rt.y, rt.w, rt.h, RGB(255, 255, 255));//tail
 	}
 	DeleteDC(odc);
 }

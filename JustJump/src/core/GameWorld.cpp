@@ -298,7 +298,8 @@ void GameWorld::OnChar(WPARAM ch)
 	{
         int offset = GameConst::kPortalCheatOffset;
 		for (const auto& obs : m_object_manager.GetObjects()) {
-			if (obs->GetType() == static_cast<int>(EObstacleType::Portal)) {
+			if (obs->GetType() == EObstacleType::Portal)
+            {
 				m_player.SetX(obs->GetX() + offset);
 				m_player.SetY(obs->GetY() + offset); // 발 위치 맞추기
 				break;

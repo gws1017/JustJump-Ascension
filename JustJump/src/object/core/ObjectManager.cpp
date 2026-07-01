@@ -15,8 +15,8 @@ bool ObjectManager::CollP2W(PLAYER player, SPtr<Obstacle> obstacle)
 {
 	int adjust = 10;
 	//왜 101이 먼저오냐면 발판보다는 장애물이 우선순위기때문임
-	if (101 <= obstacle->GetType() && obstacle->GetType() < 301) { //장애물일때는 플레이어 네모빡스가 히트박스가된다
-		if (obstacle->GetType() == 106 || obstacle->GetType() == 107)
+	if (ObstacleTypeUtil::IsBoxHitbox(obstacle->GetType())) { //장애물일때는 플레이어 네모빡스가 히트박스가된다
+		if (obstacle->GetType() == EObstacleType::GearRow || obstacle->GetType() == EObstacleType::GearCol)
 		{
 			if (player.GetX() + player.GetWidth() < obstacle->GetX() + obstacle->GetMX() || player.GetX() - player.GetWidth() > obstacle->GetX() + obstacle->GetMX() + obstacle->GetWidth()) return 0;
 			if (player.GetY() + player.GetHeight() < obstacle->GetY() + obstacle->GetMY() || player.GetY() - player.GetHeight() > obstacle->GetY() + obstacle->GetMY() + obstacle->GetHeight()) return 0;
@@ -30,7 +30,7 @@ bool ObjectManager::CollP2W(PLAYER player, SPtr<Obstacle> obstacle)
 
 		return 1;
 	}
-	else if (301 <= obstacle->GetType() && obstacle->GetType() < 401)	//로프,밧줄같은 딱코 맞춰야하는 오브젝 위로는 플레이어 발까지 닿아야하고 아래로는 플레이어 중점에서 끝난다 하지만 내려갈수도 있어야하므로 조금 후하게 준다
+	else if (ObstacleTypeUtil::IsRope(obstacle->GetType()))	//로프,밧줄같은 딱코 맞춰야하는 오브젝 위로는 플레이어 발까지 닿아야하고 아래로는 플레이어 중점에서 끝난다 하지만 내려갈수도 있어야하므로 조금 후하게 준다
 	{
 
 		if (player.GetY() + player.GetHeight() < obstacle->GetY() || player.GetY() - player.GetHeight() > obstacle->GetY() + obstacle->GetHeight()) return 0;	//일단먼저 닿았으면 들어와
@@ -58,7 +58,7 @@ bool ObjectManager::CollP2W(PLAYER player, SPtr<Obstacle> obstacle)
 
 		return 0;
 	}
-	else if (obstacle->GetType() == 1)	//땅바닥일때
+	else if (obstacle->GetType() == EObstacleType::Ground)	//땅바닥일때
 	{
 		if (obstacle->GetX() <= player.GetX() && player.GetX() <= obstacle->GetX() + obstacle->GetWidth())
 		{
@@ -68,7 +68,7 @@ bool ObjectManager::CollP2W(PLAYER player, SPtr<Obstacle> obstacle)
 			}
 		}
 	}
-	else if (obstacle->GetType() <= 100) {	//플랫폼일때는 플레이어 중점이 히트박스가된다
+	else if (ObstacleTypeUtil::IsPlatform(obstacle->GetType())) {	//플랫폼일때는 플레이어 중점이 히트박스가된다
 		if (obstacle->GetX() <= player.GetX() && player.GetX() <= obstacle->GetX() + obstacle->GetWidth())
 		{
 			if (obstacle->GetY() <= player.GetY() + player.GetHeight() && player.GetY() + player.GetHeight() <= obstacle->GetY() + adjust)
@@ -107,7 +107,7 @@ void ObjectManager::AdjustPlayer(PLAYER& player, MAP& m, int& ocount, HINSTANCE 
 		if (CollP2W(player, obstacle))
 		{
 			check_coll++;	//하나라도 부딪혔으면 coll이 올라감
-			if (obstacle->GetType() < 101 && obstacle->GetType() > 0)			//근데 그게 땅바닥이였다?
+			if (ObstacleTypeUtil::IsPlatform(obstacle->GetType()))			//근데 그게 땅바닥이였다?
 			{
 
 				if (player.GetState() == EPlayerState::Airborne) //떨어지는 중일때 부딪혔다 ?
@@ -147,19 +147,15 @@ void ObjectManager::AdjustPlayer(PLAYER& player, MAP& m, int& ocount, HINSTANCE 
 						player.SetRowSpeed(3);
 				}
 
-				if (obstacle->GetType() == 4)
-				{
+				if (obstacle->GetType() == EObstacleType::BeltRight)
 					player.SetX(player.GetX() + ObstacleConst::kBeltSpeed);
-				}
-				if (obstacle->GetType() == 6)
-				{
+				if (obstacle->GetType() == EObstacleType::BeltLeft)
 					player.SetX(player.GetX() - ObstacleConst::kBeltSpeed);
-				}
 			}
-			else if (obstacle->GetType() >= 101 && obstacle->GetType() <= 200)	//장애물에 부딪히면
+			else if (ObstacleTypeUtil::IsHazard(obstacle->GetType()))	//장애물에 부딪히면
 			{
 
-				if (obstacle->GetType() == 101)	//까시라면
+				if (obstacle->GetType() == EObstacleType::Nail)	//까시라면
 				{
 					if (player.GetInvincibleTime() == 0)	//무적이 아니라면
 					{
@@ -191,7 +187,7 @@ void ObjectManager::AdjustPlayer(PLAYER& player, MAP& m, int& ocount, HINSTANCE 
 						player.TakeDamage(sound);
 					}
 				}
-				else if (obstacle->GetType() == 102) //Break Pipe Left
+				else if (obstacle->GetType() == EObstacleType::BrokenPipe) //Break Pipe Left
 				{
 					//Copy and Paste is very good (Y Collapse)
 					if (player.GetState() == EPlayerState::Airborne) //떨어지는 중일때 부딪혔다 ?
@@ -228,7 +224,7 @@ void ObjectManager::AdjustPlayer(PLAYER& player, MAP& m, int& ocount, HINSTANCE 
 						}
 					}
 				}
-				else if (obstacle->GetType() == 103) //왼쪽 증기, 가시와 비슷함 대신 증기가 완전히 뿜어져  나왔을때 피격판정이 있다.
+				else if (obstacle->GetType() == EObstacleType::Gas) //왼쪽 증기, 가시와 비슷함 대신 증기가 완전히 뿜어져  나왔을때 피격판정이 있다.
 				{
 					if (obstacle->GetSpriteIndex() == 2) //증기가 완전히 뿜어졌을때만 피격이 발생한다
 					{
@@ -260,48 +256,7 @@ void ObjectManager::AdjustPlayer(PLAYER& player, MAP& m, int& ocount, HINSTANCE 
 						}
 					}
 				}
-				else if (obstacle->GetType() == 104) //Break Pipe Right
-				{
-					//Update Cooming Soon
-				}
-				else if (obstacle->GetType() == 105) //Gas Right
-				{
-					//Update Cooming Soon
-				}
-				else if (obstacle->GetType() == 106)
-				{
-					if (player.GetInvincibleTime() == 0)	//무적이 아니라면
-					{
-						if (player.GetState() == EPlayerState::RopeIdle || player.GetState() == EPlayerState::RopeMove)
-						{
-							player.SetRopeHurt(1);
-						}
-						if (player.GetState() == EPlayerState::Crouch) //숙이고있었다면
-						{
-							player.SetY(player.GetY() - 12);
-							player.SetHeight(player.GetHeight() + 12);	//계산전에 돌려놓고 시작한다. 이건 땅에 닿을시점에 다시돌려준다
-						}
-						if (player.GetState() == EPlayerState::Airborne)//일반일때는 살짝 점프 뛰듯이 가는데 떨어지는중이면 살짝만 이동한다
-						{
-							if (player.GetDirection() == EPlayerDirection::Left)
-							{
-								player.SetSpikeHurt(-8);	//8번 왼쪽으로 감
-							}
-							else if (player.GetDirection() == EPlayerDirection::Right)
-							{
-								player.SetSpikeHurt(8);	//8번 오른쪽으로감
-							}
-
-							player.SetInvicible(100);	//무적시간 넣어줌 (이동하는로직은 state==7 일때 알아서 다뤄줌
-						}
-						else {
-							player.SetMoveCommand(static_cast<EMoveCommand>(player.GetDirection()));
-							player.SetState(EPlayerState::Hurt);		//피격으로감
-						}
-						player.TakeDamage(sound);
-					}
-				}
-				else if (obstacle->GetType() == 107)
+				else if (obstacle->GetType() == EObstacleType::GearRow || obstacle->GetType() == EObstacleType::GearCol)
 				{
 					if (player.GetInvincibleTime() == 0)	//무적이 아니라면
 					{
@@ -335,9 +290,9 @@ void ObjectManager::AdjustPlayer(PLAYER& player, MAP& m, int& ocount, HINSTANCE 
 					}
 				}
 			}
-			else if (obstacle->GetType() >= 201 && obstacle->GetType() <= 300) //플레이어와 상호작용하는 오브젝트 ex)포탈
+			else if (ObstacleTypeUtil::IsInteractive(obstacle->GetType())) //플레이어와 상호작용하는 오브젝트 ex)포탈
 			{
-				if (obstacle->GetType() == 201) //Portal
+				if (obstacle->GetType() == EObstacleType::Portal)
 				{
 					if (InputHelper::IsUpDown())
 					{
@@ -372,7 +327,7 @@ void ObjectManager::AdjustPlayer(PLAYER& player, MAP& m, int& ocount, HINSTANCE 
 					}
 				}
 			}
-			else if (obstacle->GetType() == 301) //Rope
+			else if (ObstacleTypeUtil::IsRope(obstacle->GetType()))
 			{
 				if (player.GetJumpCooldown() <= 0)
 				{
@@ -403,7 +358,7 @@ void ObjectManager::AdjustPlayer(PLAYER& player, MAP& m, int& ocount, HINSTANCE 
 					}
 				}
 			}
-			else if (obstacle->GetType() == 0)
+			else if (obstacle->GetType() == EObstacleType::AnimatedBg)
 			{
 
 			}
@@ -566,58 +521,26 @@ void ObjectManager::IndexChange(const int obj_t)
 {
 	for (auto& obstacle : m_obstacles)
 	{
-		if (obstacle->GetType() == 0)
+		if (obstacle->GetType() == EObstacleType::AnimatedBg)
 		{
-			if (obj_t % 10 == 0)
-			{
-				obstacle->IndexChange();
-
-			}
-
+			if (obj_t % 10 == 0) obstacle->IndexChange();
 		}
-		if (obstacle->GetType() == 4)
+		if (obstacle->GetType() == EObstacleType::BeltRight || obstacle->GetType() == EObstacleType::BeltLeft)
 		{
-			if (obj_t % 8 == 0)
-			{
-				obstacle->IndexChange();
-
-			}
-
+			if (obj_t % 8 == 0) obstacle->IndexChange();
 		}
-		if (obstacle->GetType() == 6)
+		if (obstacle->GetType() == EObstacleType::Gas)
 		{
-			if (obj_t % 8 == 0)
-			{
-				obstacle->IndexChange();
-
-			}
-
+			if (obj_t % 30 == 0) obstacle->IndexChange();
 		}
-		if (obstacle->GetType() == 103)
+		if (obstacle->GetType() == EObstacleType::GearRow || obstacle->GetType() == EObstacleType::GearCol)
 		{
-			if (obj_t % 30 == 0)
-			{
-				obstacle->IndexChange();
-
-			}
-
-		}
-		if (obstacle->GetType() == 106 || obstacle->GetType() == 107)
-		{
-			if (obj_t % 5 == 0)
-			{
-				obstacle->IndexChange();
-
-			}
+			if (obj_t % 5 == 0) obstacle->IndexChange();
 			obstacle->Move();
 		}
-		else if (obstacle->GetType() == 201)
+		else if (obstacle->GetType() == EObstacleType::Portal)
 		{
-			if (obj_t % 20 == 0)
-			{
-				obstacle->IndexChange();
-
-			}
+			if (obj_t % 20 == 0) obstacle->IndexChange();
 		}
 	}
 }
