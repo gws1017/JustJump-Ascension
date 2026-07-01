@@ -31,6 +31,24 @@ enum class EMoveCommand {
 	Down = 4
 };
 
+namespace PlayerSprite {
+	// 스프라이트 프레임 기본 크기 (WalkBitmap / ActionBitmap 공통)
+	constexpr int kFrameW      = 62;
+	constexpr int kFrameH      = 50;
+
+	// WalkBitmap: 상행=좌향 y=0, 하행=우향 y=kFrameH, x 간격=kWalkStride
+	constexpr int kWalkStride  = 68;
+
+	// ActionBitmap
+	constexpr int kRightColX    = 77;   // 우향 컬럼 x (점프·웅크리기) — 로프 stride와 동일
+	constexpr int kRopeY        = 54;   // 로프 프레임 y
+	constexpr int kJumpY        = 107;  // 점프/공중 프레임 y
+	constexpr int kJumpRightH   = 48;   // 점프 우향 프레임 높이 (좌향 50과 다름)
+	constexpr int kCrouchY      = 161;  // 웅크리기 프레임 y
+	constexpr int kCrouchFrameH = 26;   // 웅크리기 프레임 높이
+	constexpr int kDeathPoseH   = 13;   // 사망 자세 높이
+}
+
 class PLAYER : public Object
 {
 

@@ -62,7 +62,7 @@ void PLAYER::Render(HDC& backDC)
 	}
 
 	//mem1dc의 캐릭터그릴공간만큼만 얻어온다(실제 mem1dc에는 배경이있으므로 0,0 부터 62,50 까지의 비트맵이 들어감)
-	HBITMAP compositeBitmap = CreateCompatibleBitmap(backDC, 62, 50);
+	HBITMAP compositeBitmap = CreateCompatibleBitmap(backDC, PlayerSprite::kFrameW, PlayerSprite::kFrameH);
 	if (!compositeBitmap)
 	{
 		DeleteDC(compositeDC);
@@ -88,140 +88,140 @@ void PLAYER::Render(HDC& backDC)
 		if (PlayerDirection == EPlayerDirection::Left)//왼쪽
 		{
 			//compositeDC는 0,0~ 62,50 이니까 이 위치에 투명한 캐릭터를 복사시켜주고 GdialphaBlend 를 통해 투명화처리 해준다.
-			TransparentBlt(compositeDC, 0, 0, 62, 50, playerDC, 0, 0, 62, 50, RGB(255, 255, 255));
+			TransparentBlt(compositeDC, 0, 0, PlayerSprite::kFrameW, PlayerSprite::kFrameH, playerDC, 0, 0, PlayerSprite::kFrameW, PlayerSprite::kFrameH, RGB(255, 255, 255));
 
 			if (InvincibleTime > 0)
 			{
 				bf.SourceConstantAlpha = 155;
-				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, 62, 50, bf);
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, PlayerSprite::kFrameW, PlayerSprite::kFrameH, bf);
 				bf.SourceConstantAlpha = 255;
 
 			}
 			else
-				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, 62, 50, bf);
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, PlayerSprite::kFrameW, PlayerSprite::kFrameH, bf);
 		}
 		else if (PlayerDirection == EPlayerDirection::Right)//오른쪽
 		{
-			TransparentBlt(compositeDC, 0, 0, 62, 50, playerDC, 0, 50, 62, 50, RGB(255, 255, 255));
+			TransparentBlt(compositeDC, 0, 0, PlayerSprite::kFrameW, PlayerSprite::kFrameH, playerDC, 0, PlayerSprite::kFrameH, PlayerSprite::kFrameW, PlayerSprite::kFrameH, RGB(255, 255, 255));
 			if (InvincibleTime > 0)
 			{
 
 				bf.SourceConstantAlpha = 155;//투명도
 				//이 함수는 일반 stretchblt 와 비슷하다 gdidc 는 최대가 0,0 ~62,50 이므로 뒷 인자는 0 0 62 50
-				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, 62, 50, bf);
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, PlayerSprite::kFrameW, PlayerSprite::kFrameH, bf);
 				bf.SourceConstantAlpha = 255;
 
 			}
 			else
-				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, 62, 50, bf);
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, PlayerSprite::kFrameW, PlayerSprite::kFrameH, bf);
 		}
 		break;
 	case EPlayerState::Move:
 		if (PlayerDirection == EPlayerDirection::Left)//왼쪽
 		{
-			TransparentBlt(compositeDC, 0, 0, 62, 50, playerDC, AnimX * 68, AnimY, AnimWidth, AnimHeight, RGB(255, 255, 255));
+			TransparentBlt(compositeDC, 0, 0, PlayerSprite::kFrameW, PlayerSprite::kFrameH, playerDC, AnimX * PlayerSprite::kWalkStride, AnimY, AnimWidth, AnimHeight, RGB(255, 255, 255));
 			if (InvincibleTime > 0)
 			{
 
 				bf.SourceConstantAlpha = 155;//투명도
-				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, 62, 50, bf);
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, PlayerSprite::kFrameW, PlayerSprite::kFrameH, bf);
 				bf.SourceConstantAlpha = 255;
 
 			}
 			else
-				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, 62, 50, bf);
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, PlayerSprite::kFrameW, PlayerSprite::kFrameH, bf);
 		}
 		else if (PlayerDirection == EPlayerDirection::Right)//오른쪽
 		{
-			TransparentBlt(compositeDC, 0, 0, 62, 50, playerDC, AnimX * 68, AnimY + 50, AnimWidth, AnimHeight, RGB(255, 255, 255));
+			TransparentBlt(compositeDC, 0, 0, PlayerSprite::kFrameW, PlayerSprite::kFrameH, playerDC, AnimX * PlayerSprite::kWalkStride, AnimY + PlayerSprite::kFrameH, AnimWidth, AnimHeight, RGB(255, 255, 255));
 			if (InvincibleTime > 0)
 			{
 
 				bf.SourceConstantAlpha = 155;//투명도
-				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, 62, 50, bf);
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, PlayerSprite::kFrameW, PlayerSprite::kFrameH, bf);
 				bf.SourceConstantAlpha = 255;
 
 			}
 			else
-				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, 62, 50, bf);
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, PlayerSprite::kFrameW, PlayerSprite::kFrameH, bf);
 		}
 		break;
 	case EPlayerState::Jump:
 	case EPlayerState::Airborne:
 		if (PlayerDirection == EPlayerDirection::Left)//왼쪽
 		{
-			TransparentBlt(compositeDC, 0, 0, 62, 50, playerDC, 0, 107, 62, 50, RGB(255, 255, 255));
+			TransparentBlt(compositeDC, 0, 0, PlayerSprite::kFrameW, PlayerSprite::kFrameH, playerDC, 0, PlayerSprite::kJumpY, PlayerSprite::kFrameW, PlayerSprite::kFrameH, RGB(255, 255, 255));
 			if (InvincibleTime > 0)
 			{
 
 				bf.SourceConstantAlpha = 155;//투명도
-				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, 62, 50, bf);
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, PlayerSprite::kFrameW, PlayerSprite::kFrameH, bf);
 				bf.SourceConstantAlpha = 255;
 
 			}
 			else
-				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, 62, 50, bf);
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, PlayerSprite::kFrameW, PlayerSprite::kFrameH, bf);
 		}
 		else if (PlayerDirection == EPlayerDirection::Right)//오른쪽
 		{
-			TransparentBlt(compositeDC, 0, 0, 62, 50, playerDC, 77, 107, 62, 48, RGB(255, 255, 255));
+			TransparentBlt(compositeDC, 0, 0, PlayerSprite::kFrameW, PlayerSprite::kFrameH, playerDC, PlayerSprite::kRightColX, PlayerSprite::kJumpY, PlayerSprite::kFrameW, PlayerSprite::kJumpRightH, RGB(255, 255, 255));
 			if (InvincibleTime > 0)
 			{
 
 				bf.SourceConstantAlpha = 155;//투명도
-				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, 62, 50, bf);
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, PlayerSprite::kFrameW, PlayerSprite::kFrameH, bf);
 				bf.SourceConstantAlpha = 255;
 
 			}
 			else
-				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, 62, 50, bf);
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, PlayerSprite::kFrameW, PlayerSprite::kFrameH, bf);
 		}
 		break;
 	case EPlayerState::Crouch:
 		//h는 줄고 y는 늘고 
-		BitBlt(compositeDC, 0, 0, SpriteWidth * 2, 26, backDC, x - SpriteWidth, y - height, SRCCOPY);
+		BitBlt(compositeDC, 0, 0, SpriteWidth * 2, PlayerSprite::kCrouchFrameH, backDC, x - SpriteWidth, y - height, SRCCOPY);
 		if (PlayerDirection == EPlayerDirection::Left)//왼쪽
 		{
-			TransparentBlt(compositeDC, 0, 0, 62, 26, playerDC, 0, 161, 62, 26, RGB(255, 255, 255));
+			TransparentBlt(compositeDC, 0, 0, PlayerSprite::kFrameW, PlayerSprite::kCrouchFrameH, playerDC, 0, PlayerSprite::kCrouchY, PlayerSprite::kFrameW, PlayerSprite::kCrouchFrameH, RGB(255, 255, 255));
 			if (InvincibleTime > 0)
 			{
 
 				bf.SourceConstantAlpha = 155;//투명도
-				GdiAlphaBlend(backDC, x - SpriteWidth, y - 12 - height + 12, SpriteWidth * 2, height * 2, compositeDC, 0, 0, 62, 26, bf);
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - 12 - height + 12, SpriteWidth * 2, height * 2, compositeDC, 0, 0, PlayerSprite::kFrameW, PlayerSprite::kCrouchFrameH, bf);
 				bf.SourceConstantAlpha = 255;
 
 			}
 			else
-				GdiAlphaBlend(backDC, x - SpriteWidth, y - 12 - height + 12, SpriteWidth * 2, height * 2, compositeDC, 0, 0, 62, 26, bf);
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - 12 - height + 12, SpriteWidth * 2, height * 2, compositeDC, 0, 0, PlayerSprite::kFrameW, PlayerSprite::kCrouchFrameH, bf);
 		}
 		else if (PlayerDirection == EPlayerDirection::Right)//오른쪽
 		{
-			TransparentBlt(compositeDC, 0, 0, 62, 26, playerDC, 77, 161, 62, 26, RGB(255, 255, 255));
+			TransparentBlt(compositeDC, 0, 0, PlayerSprite::kFrameW, PlayerSprite::kCrouchFrameH, playerDC, PlayerSprite::kRightColX, PlayerSprite::kCrouchY, PlayerSprite::kFrameW, PlayerSprite::kCrouchFrameH, RGB(255, 255, 255));
 			if (InvincibleTime > 0)
 			{
 
 				bf.SourceConstantAlpha = 155;//투명도
-				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, 62, 26, bf);
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, PlayerSprite::kFrameW, PlayerSprite::kCrouchFrameH, bf);
 				bf.SourceConstantAlpha = 255;
 
 			}
 			else
-				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, 62, 26, bf);
+				GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, PlayerSprite::kFrameW, PlayerSprite::kCrouchFrameH, bf);
 		}
 		break;
 	case EPlayerState::RopeIdle:
 	case EPlayerState::RopeMove:
-		TransparentBlt(compositeDC, 0, 0, 62, 50, playerDC, AnimX * 77, 54, 62, 50, RGB(255, 255, 255));
+		TransparentBlt(compositeDC, 0, 0, PlayerSprite::kFrameW, PlayerSprite::kFrameH, playerDC, AnimX * PlayerSprite::kRightColX, PlayerSprite::kRopeY, PlayerSprite::kFrameW, PlayerSprite::kFrameH, RGB(255, 255, 255));
 
 		if (InvincibleTime > 0)
 		{
 
 			bf.SourceConstantAlpha = 155;
-			GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, 62, 50, bf);
+			GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, PlayerSprite::kFrameW, PlayerSprite::kFrameH, bf);
 			bf.SourceConstantAlpha = 255;
 
 		}
-		else GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, 62, 50, bf);
+		else GdiAlphaBlend(backDC, x - SpriteWidth, y - height, SpriteWidth * 2, height * 2, compositeDC, 0, 0, PlayerSprite::kFrameW, PlayerSprite::kFrameH, bf);
 		break;
 	}
 
@@ -728,8 +728,8 @@ void PLAYER::SelectBitmap()
 	if (PlayerState == EPlayerState::Idle || PlayerState == EPlayerState::Move)
 	{
 		CurrentBitmap = WalkBitmap;
-		AnimWidth = 62;
-		AnimHeight = 50;
+		AnimWidth = PlayerSprite::kFrameW;
+		AnimHeight = PlayerSprite::kFrameH;
 	}
 	else
 		CurrentBitmap = ActionBitmap;
@@ -794,7 +794,7 @@ void PLAYER::Die(Sound& sound)
 	MoveCommand = EMoveCommand::None;
 	PlayerState = EPlayerState::Crouch;
 	y += GameConst::kCrouchHeightDelta;
-	height = 13;
+	height = PlayerSprite::kDeathPoseH;
 	InvincibleTime = 1;
 
 	if (sound.Channel[1]) {
