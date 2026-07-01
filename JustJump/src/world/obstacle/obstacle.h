@@ -1,26 +1,31 @@
 #pragma once
 #include "object/core/Object.h"
 
-#define beltspeed 2 //belt speed
-#define gearm_rowSpeed 5 //row gear speed
-#define gearkColSpeed 3 // col gear speed
+namespace ObstacleConst {
+	constexpr int kBeltSpeed = 2;     // ë²¨íŠ¸ ì´ë™ ì†ë„
+	constexpr int kGearRowSpeed = 5;  // ê°€ë¡œ ê¸°ì–´ ì†ë„
+	constexpr int kGearColSpeed = 3;  // ì„¸ë¡œ ê¸°ì–´ ì†ë„
+	constexpr int kGearRangeX = 150;  // ê°€ë¡œ ê¸°ì–´ ì§„ë™ ë²”ìœ„
+	constexpr int kGearRangeY = 100;  // ì„¸ë¡œ ê¸°ì–´ ì§„ë™ ë²”ìœ„
+}
+
 class Obstacle : public Object
 {
 
 public:
-	//¿ÀºêÁ§Æ®ÀÇ x y ´Â ¿ŞÂÊ»ó´ÜÀÌ ±âÁØÀÌ´Ù.
+	//ì˜¤ë¸Œì íŠ¸ì˜ x y ëŠ” ì™¼ìª½ìƒë‹¨ì´ ê¸°ì¤€ì´ë‹¤.
 
 	int GetMX() { return mx; }
 	int GetMY() { return my; }
 	int GetSpriteIndex() { return index; }
 
-	//1.¹Ù´Ú 2.±âº» ¹ßÆÇ 3.ÀÛÀº¹ßÆÇ 4.ÄÁº£ÀÌ¾î º§Æ® 5.Åõ¸í¹Ù´Ú 101.³ª»ç¸ø 102.±úÁøÆÄÀÌÇÁ 103.Áõ±â 106,107.Åé´Ï¹ÙÄû 201.Æ÷Å» 301.·ÎÇÁ
+	//1.ë°”ë‹¥ 2.ê¸°ë³¸ ë°œíŒ 3.ì‘ì€ë°œíŒ 4.ì»¨ë² ì´ì–´ ë²¨íŠ¸ 5.íˆ¬ëª…ë°”ë‹¥ 101.ë‚˜ì‚¬ëª» 102.ê¹¨ì§„íŒŒì´í”„ 103.ì¦ê¸° 106,107.í†±ë‹ˆë°”í€´ 201.í¬íƒˆ 301.ë¡œí”„
 	int GetType() { return type; }
 	
-	//¿ÀºêÁ§Æ®°¡ ¸î°³µé¾î°¬´ÂÁö
+	//ì˜¤ë¸Œì íŠ¸ê°€ ëª‡ê°œë“¤ì–´ê°”ëŠ”ì§€
 	//int getocount();
 
-	//1~100 ÇÃ·§Æû 101~Àå¾Ö¹°
+	//1~100 í”Œë«í¼ 101~ì¥ì• ë¬¼
 	void SetType(int _type) { type = _type; }
 	void SetHbit(HINSTANCE g_hinst);
 
@@ -31,20 +36,20 @@ public:
 	void ResetObject();
 	//Move gear object
 	void Move();
-	//¿ÀºêÁ§Æ® ¾Ö´Ï¸ŞÀÌ¼Ç ¾µ¶§ »ç¿ëÇÏ´ÂÇÔ¼ö
+	//ì˜¤ë¸Œì íŠ¸ ì• ë‹ˆë©”ì´ì…˜ ì“¸ë•Œ ì‚¬ìš©í•˜ëŠ”í•¨ìˆ˜
 	void IndexChange();
-	//¿ÀºêÁ§Æ®¸¦ ±×·ÁÁÜ
+	//ì˜¤ë¸Œì íŠ¸ë¥¼ ê·¸ë ¤ì¤Œ
 	void DrawObj(HDC& mem1dc);
 
 private:
 
-	int mx, my;					// x,y Ãà±âÁØ Áõ°¨·®
+	int mx, my;					// x,y ì¶•ê¸°ì¤€ ì¦ê°ëŸ‰
 
-	int dir;					//¿ÀºêÁ§Æ® ÀÌµ¿¹æÇân 0 == left , right / 1 == up , down
-	int s;						//ºÎÈ£
+	int dir;					//ì˜¤ë¸Œì íŠ¸ ì´ë™ë°©í–¥n 0 == left , right / 1 == up , down
+	int s;						//ë¶€í˜¸
 
-	int type;					//1.¹Ù´Ú 2.±âº» ¹ßÆÇ 3.ÀÛÀº¹ßÆÇ 4.ÄÁº£ÀÌ¾î º§Æ® 5.Åõ¸í¹Ù´Ú 101.³ª»ç¸ø 102.±úÁøÆÄÀÌÇÁ 103.Áõ±â 106,107.Åé´Ï¹ÙÄû 201.Æ÷Å» 301.·ÎÇÁ
-	int index;					//¾Ö´Ï¸ŞÀÌ¼Ç µ¹¸±¶§ ¹è¿­ÀÇ ÀÎµ¦½º¸¦ ¹Ù²ãÁÖ¾î ÀÌ¹ÌÁö¸¦ ¹Ù²Û´Ù
+	int type;					//1.ë°”ë‹¥ 2.ê¸°ë³¸ ë°œíŒ 3.ì‘ì€ë°œíŒ 4.ì»¨ë² ì´ì–´ ë²¨íŠ¸ 5.íˆ¬ëª…ë°”ë‹¥ 101.ë‚˜ì‚¬ëª» 102.ê¹¨ì§„íŒŒì´í”„ 103.ì¦ê¸° 106,107.í†±ë‹ˆë°”í€´ 201.í¬íƒˆ 301.ë¡œí”„
+	int index;					//ì• ë‹ˆë©”ì´ì…˜ ëŒë¦´ë•Œ ë°°ì—´ì˜ ì¸ë±ìŠ¤ë¥¼ ë°”ê¿”ì£¼ì–´ ì´ë¯¸ì§€ë¥¼ ë°”ê¾¼ë‹¤
 
 	HBITMAP hbit;
 	HDC odc;

@@ -17,9 +17,9 @@ public:
 public:
 
 	FMOD::System* System;
-	FMOD::Sound* bgmSound[5];	//3´Â ¹è°æºê±İ°¹¼ö
-	FMOD::Sound* effectSound[5];	//2´Â ÀÌÆåÆ®ºê±İ°¹¼ö
-	FMOD::Channel* Channel[2];	//2´Â ¹è°æ+ÀÌÆåÆ® ÇØ¼­ Ã¤³Î
+	FMOD::Sound* bgmSound[5];	//3ëŠ” ë°°ê²½ë¸Œê¸ˆê°¯ìˆ˜
+	FMOD::Sound* effectSound[5];	//2ëŠ” ì´í™íŠ¸ë¸Œê¸ˆê°¯ìˆ˜
+	FMOD::Channel* Channel[2];	//2ëŠ” ë°°ê²½+ì´í™íŠ¸ í•´ì„œ ì±„ë„
 
 public:
 

@@ -5,138 +5,138 @@
 
 //HBITMAP LoadBlack(HBITMAP hbit1, HINSTANCE g_hinst)
 //{
-//	hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/bk_black.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //»ó´ë°æ·Î·Î º¯°æ
+//	hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/bk_black.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //ìƒëŒ€ê²½ë¡œë¡œ ë³€ê²½
 //	return hbit1;
 //
 //}
 
-//¹è°æÈ­¸é
+//ë°°ê²½í™”ë©´
 HBITMAP LoadBK(HBITMAP hbit1, HINSTANCE g_hinst, int mapnum)
 {
-	//°ÔÀÓ½ÃÀÛ ÀÎÅÍÆäÀÌ½º
-	if (mapnum == 9)
+	//ê²Œì„ì‹œì‘ ì¸í„°í˜ì´ìŠ¤
+	if (mapnum == static_cast<int>(EMapId::Title))
 	{
-		hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/start_rayer1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //»ó´ë°æ·Î·Î º¯°æ
+		hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/start_rayer1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //ìƒëŒ€ê²½ë¡œë¡œ ë³€ê²½
 		return hbit1;
 	}
-	//°ÔÀÓ Å¬¸®¾î
-	else if (mapnum == 13)
+	//ê²Œì„ í´ë¦¬ì–´
+	else if (mapnum == static_cast<int>(EMapId::Clear))
 	{
-		hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/clear.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //»ó´ë°æ·Î·Î º¯°æ
+		hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/clear.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //ìƒëŒ€ê²½ë¡œë¡œ ë³€ê²½
 		return hbit1;
 	}
-	//³ª¸ÓÁö °ÔÀÓ¸Ê
+	//ë‚˜ë¨¸ì§€ ê²Œì„ë§µ
 	else {
-		hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/bk.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //»ó´ë°æ·Î·Î º¯°æ
+		hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/bk.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //ìƒëŒ€ê²½ë¡œë¡œ ë³€ê²½
 		return hbit1;
 
 	}
 	
 }
-//»óÅÂ UiÇ¥½Ã
+//ìƒíƒœ Uií‘œì‹œ
 HBITMAP LoadUi(HBITMAP hbit, HINSTANCE g_hinst)
 {
-	hbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/Ui.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //»ó´ë°æ·Î·Î º¯°æ
+	hbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/Ui.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //ìƒëŒ€ê²½ë¡œë¡œ ë³€ê²½
 	return hbit;
 
 }
-//HP Ui Ç¥½Ã
+//HP Ui í‘œì‹œ
 HBITMAP LoadHP(HBITMAP hbit, HINSTANCE g_hinst)
 {
-	hbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/Ui_HP.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //»ó´ë°æ·Î·Î º¯°æ
+	hbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/Ui_HP.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //ìƒëŒ€ê²½ë¡œë¡œ ë³€ê²½
 	return hbit;
 
 }
-//»ç¸Á Ui
+//ì‚¬ë§ Ui
 HBITMAP LoadDieNotice(HINSTANCE g_hinst)
 {
 	HBITMAP hbit;
-	hbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/notice3.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //»ó´ë°æ·Î·Î º¯°æ
+	hbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/notice3.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //ìƒëŒ€ê²½ë¡œë¡œ ë³€ê²½
 	return hbit;
 }
-//»ç¸Á Ui »óÅÂº¯È­
+//ì‚¬ë§ Ui ìƒíƒœë³€í™”
 HBITMAP LoadDieNoticeChange(HINSTANCE g_hinst,int i)
 {
 	HBITMAP hbit=NULL;
 	if(i==0)
-		hbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/notice3.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //»ó´ë°æ·Î·Î º¯°æ
+		hbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/notice3.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //ìƒëŒ€ê²½ë¡œë¡œ ë³€ê²½
 	else if (i == 1)
-		hbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/notice4.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //»ó´ë°æ·Î·Î º¯°æ
+		hbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/notice4.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //ìƒëŒ€ê²½ë¡œë¡œ ë³€ê²½
 	else if (i == 2)
-		hbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/notice5.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //»ó´ë°æ·Î·Î º¯°æ
+		hbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/notice5.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //ìƒëŒ€ê²½ë¡œë¡œ ë³€ê²½
 	return hbit;
 }
 
-//½ÃÀÛ¹öÆ°
+//ì‹œì‘ë²„íŠ¼
 HBITMAP LoadStart(HBITMAP hbit, HINSTANCE g_hinst, int i)
 {
 
 	if (i == 0)
-		hbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/start1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //»ó´ë°æ·Î·Î º¯°æ
+		hbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/start1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //ìƒëŒ€ê²½ë¡œë¡œ ë³€ê²½
 	else if (i == 1)
-		hbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/start2.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //»ó´ë°æ·Î·Î º¯°æ
+		hbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/start2.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //ìƒëŒ€ê²½ë¡œë¡œ ë³€ê²½
 	else if (i == 2)
-		hbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/start3.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //»ó´ë°æ·Î·Î º¯°æ
+		hbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/start3.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //ìƒëŒ€ê²½ë¡œë¡œ ë³€ê²½
 	return hbit;
 }
 
-//Á¶ÀÛ¹ı Ui »óÅÂº¯È­
+//ì¡°ì‘ë²• Ui ìƒíƒœë³€í™”
 HBITMAP LoadHelpChange(HINSTANCE g_hinst, int i)
 {
 	HBITMAP hbit = NULL;
 	if (i == 0)
-		hbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/help1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //»ó´ë°æ·Î·Î º¯°æ
+		hbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/help1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //ìƒëŒ€ê²½ë¡œë¡œ ë³€ê²½
 	else if (i == 1)
-		hbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/help2.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //»ó´ë°æ·Î·Î º¯°æ
+		hbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/help2.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //ìƒëŒ€ê²½ë¡œë¡œ ë³€ê²½
 	return hbit;
 }
-//Á¶ÀÛ¹ı
+//ì¡°ì‘ë²•
 HBITMAP LoadHelp(HBITMAP hbit, HINSTANCE g_hinst,int i)
 {
 	if (i == 0)
-		hbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/help1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //»ó´ë°æ·Î·Î º¯°æ
+		hbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/help1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //ìƒëŒ€ê²½ë¡œë¡œ ë³€ê²½
 	else if (i == 1)
-		hbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/help2.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //»ó´ë°æ·Î·Î º¯°æ
+		hbit = (HBITMAP)LoadImage(g_hinst, TEXT("img/help2.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //ìƒëŒ€ê²½ë¡œë¡œ ë³€ê²½
 	return hbit;
 }
-HBITMAP LoadObj(HBITMAP hbit1, HINSTANCE g_hinst, int type) //¿ÀºêÁ§Æ®ÀÇ ÀÌ¹ÌÁöÆÄÀÏÀ» ºÒ·¯¿È
+HBITMAP LoadObj(HBITMAP hbit1, HINSTANCE g_hinst, int type) //ì˜¤ë¸Œì íŠ¸ì˜ ì´ë¯¸ì§€íŒŒì¼ì„ ë¶ˆëŸ¬ì˜´
 {
-	if (type == 1) // ¹Ù´Ú
+	if (type == 1) // ë°”ë‹¥
 	hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/foothold1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 	else if(type == 0)
 		hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/test1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-	else if(type == 2 || type == 7) // ¹ßÆÇ
-	hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/foothold2.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //»ó´ë°æ·Î·Î º¯°æ
+	else if(type == 2 || type == 7) // ë°œíŒ
+	hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/foothold2.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //ìƒëŒ€ê²½ë¡œë¡œ ë³€ê²½
 	else if(type == 3)
 	hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/foothold3.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-	else if (type == 4) //ÄÁº£ÀÌ¾î º§Æ® ¿À¸¥ÂÊ
+	else if (type == 4) //ì»¨ë² ì´ì–´ ë²¨íŠ¸ ì˜¤ë¥¸ìª½
 		hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/belt.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-	else if (type == 6) //ÄÁº£ÀÌ¾î º§Æ® ¿ŞÂÊ
+	else if (type == 6) //ì»¨ë² ì´ì–´ ë²¨íŠ¸ ì™¼ìª½
 		hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/belt1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-	else if (type == 5) //Åõ¸í
+	else if (type == 5) //íˆ¬ëª…
 		hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/foothold1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-	else if(type==101) //³ª»ç¸ø
+	else if(type==101) //ë‚˜ì‚¬ëª»
 	hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/nasa.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-	else if (type == 102)//±úÁø ÆÄÀÌÇÁ
+	else if (type == 102)//ê¹¨ì§„ íŒŒì´í”„
 	hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/breakpipe1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-	else if(type == 103)//Áõ±â
+	else if(type == 103)//ì¦ê¸°
 	hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/gas.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-	else if (type == 106 || type == 107) //Åé´Ï¹ÙÄû
+	else if (type == 106 || type == 107) //í†±ë‹ˆë°”í€´
 	hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/gear.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-	else if (type == 201) //Æ÷Å»
+	else if (type == 201) //í¬íƒˆ
 	hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/Portal_sprite.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-	else if (type == 301) //·ÎÇÁ
+	else if (type == 301) //ë¡œí”„
 	hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/rope.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 	return hbit1;
 }
 
-HBITMAP LoadWalk(HINSTANCE g_hinst) // Ä³¸¯ÅÍ ÀÌ¹ÌÁö¸¦ ºÒ·¯¿È ÁÂ¿ì °È±â
+HBITMAP LoadWalk(HINSTANCE g_hinst) // ìºë¦­í„° ì´ë¯¸ì§€ë¥¼ ë¶ˆëŸ¬ì˜´ ì¢Œìš° ê±·ê¸°
 {
 	HBITMAP hbit1;
 	hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/char_sprite.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 	return hbit1;
 }
-HBITMAP LoadEx(HINSTANCE g_hinst) // Ä³¸¯ÅÍ ÀÌ¹ÌÁö¸¦ ºÒ·¯¿È ¼÷ÀÌ±â Á¡ÇÁ ÁÙÅ¸±â
+HBITMAP LoadEx(HINSTANCE g_hinst) // ìºë¦­í„° ì´ë¯¸ì§€ë¥¼ ë¶ˆëŸ¬ì˜´ ìˆ™ì´ê¸° ì í”„ ì¤„íƒ€ê¸°
 {
 	HBITMAP hbit1;
 	hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/char_sprite2.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);

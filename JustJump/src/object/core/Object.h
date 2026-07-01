@@ -27,5 +27,5 @@ public:
 	
 protected :
 
-	int x, y, width, height;					//¿ÀºêÁ§Æ®ÀÇ x y ´Â ¿ŞÂÊ»ó´ÜÀÌ ±âÁØÀÌ´Ù.
+	int x, y, width, height;					//ì˜¤ë¸Œì íŠ¸ì˜ x y ëŠ” ì™¼ìª½ìƒë‹¨ì´ ê¸°ì¤€ì´ë‹¤.
 };

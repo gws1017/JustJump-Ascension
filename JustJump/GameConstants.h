@@ -21,6 +21,9 @@ namespace GameConst {
 
     constexpr int kWorldHeight = 4096;       // 맵 전체 세로 크기, 카메라 스크롤 하한
     constexpr int kCameraScrollSpeed = 20;   // 카메라 상/하 스크롤 속도(px/프레임)
+
+    constexpr int kMapBitmapHeight = 4098;   // 맵 배경 비트맵 세로 크기 (kWorldHeight와 2px 차이, 원본 에셋 크기)
+    constexpr int kMapScrollSpeed = 5;       // 타이틀 화면 배경 스크롤 속도
 }
 
 // 맵 ID

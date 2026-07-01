@@ -2,13 +2,13 @@
 
 //HBITMAP LoadBlack(HBITMAP, HINSTANCE);
 HBITMAP LoadBK(HBITMAP, HINSTANCE, int);
-//���� Uiǥ��
+//상태 Ui표시
 HBITMAP LoadUi(HBITMAP, HINSTANCE);
-//HP Ui ǥ��
+//HP Ui 표시
 HBITMAP LoadHP(HBITMAP, HINSTANCE);
-//���۹�ư
+//시작버튼
 HBITMAP LoadStart(HBITMAP , HINSTANCE,int);
-//���۹�
+//조작법
 HBITMAP LoadHelp(HBITMAP, HINSTANCE, int);
 
 HBITMAP LoadObj(HBITMAP, HINSTANCE, int);
@@ -16,11 +16,11 @@ HBITMAP LoadObj(HBITMAP, HINSTANCE, int);
 HBITMAP LoadWalk(HINSTANCE);
 
 HBITMAP LoadEx(HINSTANCE);
-//������ �ߴ� ����â
+//죽으면 뜨는 상태창
 HBITMAP LoadDieNotice(HINSTANCE);
-//Ŭ��,Ȯ�ο� �� �ö󰥶� ��ȭ
+//클릭,확인에 손 올라갈때 변화
 HBITMAP LoadDieNoticeChange(HINSTANCE, int);
 
 
-//Ŭ��,Ȯ�ο� �� �ö󰥶� ��ȭ
+//클릭,확인에 손 올라갈때 변화
 HBITMAP LoadHelpChange(HINSTANCE, int);

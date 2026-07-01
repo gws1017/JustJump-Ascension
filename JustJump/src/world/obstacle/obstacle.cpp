@@ -150,16 +150,16 @@ void Obstacle::Move()
 	
 	if (dir == 0) //Left or Down
 	{
-		if (mx > 150) s = -1;
-		else if (mx < -150) s = 1;
-		mx += s * gearm_rowSpeed;
-		
+		if (mx > ObstacleConst::kGearRangeX) s = -1;
+		else if (mx < -ObstacleConst::kGearRangeX) s = 1;
+		mx += s * ObstacleConst::kGearRowSpeed;
+
 	}
 	else if (dir == 1) //Up or Down
 	{
-		if (my > 100) s = -1;
-		else if (my < -100) s = 1;
-		my += s * gearkColSpeed;
+		if (my > ObstacleConst::kGearRangeY) s = -1;
+		else if (my < -ObstacleConst::kGearRangeY) s = 1;
+		my += s * ObstacleConst::kGearColSpeed;
 
 	}
 	

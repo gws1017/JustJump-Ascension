@@ -1,10 +1,6 @@
 #pragma once
 
 
-#define MAPWIDTH 1024
-#define MAPHEIGHT 4098
-#define MAPSPEED 5
-
 class CAMERA;
 class PLAYER;
 class Sound;
@@ -13,12 +9,12 @@ class MAP
 {
 
 public:
-	//¸Ê¹øÈ£¸¦ ÀĞÀ½ 10~
+	//ë§µë²ˆí˜¸ë¥¼ ì½ìŒ 10~
 	int GetMapNumber() { return mapnum; }
 	//Black Screen Time get
 	int GetBlackTime() { return black_t; }
 
-	//¸Ê¹øÈ£¸¦ ¹Ù²Ş
+	//ë§µë²ˆí˜¸ë¥¼ ë°”ê¿ˆ
 	void SetMapNumber(int i) { mapnum = i; }
 	//Black Screen Time set
 	void SetBlackTime(int i) { black_t = i; }
@@ -34,30 +30,30 @@ public:
 
 	void ChangeDieNotice(HINSTANCE g_hinst, int i);
 
-	//·Îµù Å¸ÀÓ È®ÀÎ
+	//ë¡œë”© íƒ€ì„ í™•ì¸
 	bool BlackTime();
-	//¸Ê ¹è°æ ÀÌµ¿
+	//ë§µ ë°°ê²½ ì´ë™
 	void movemap();
 	void DrawBK(HDC& mem1dc, HDC& mem2dc, RECT& rectview ,const PLAYER& player);
-	//·ÎµùÈ­¸é ¾ËÆÄºí·»µù
+	//ë¡œë”©í™”ë©´ ì•ŒíŒŒë¸”ë Œë”©
 	void DrawLoadBK(HDC& mem1dc, HDC& mem2dc, BLENDFUNCTION bf);
-	//»óÅÂÃ¢
+	//ìƒíƒœì°½
 	void DrawUi(HDC& mem1dc, HDC& mem2dc, CAMERA camera);
-	//HP¹Ù
+	//HPë°”
 	void DrawHP(HDC& mem1dc, HDC& mem2dc, CAMERA camera,PLAYER player);
 	//die ui
 	void DrawDie(HDC& mem1dc, HDC& mem2dc, CAMERA camera, Sound& sound);
-	//½ÃÀÛ ¹öÆ°
+	//ì‹œì‘ ë²„íŠ¼
 	void DrawStart(HDC& mem1dc, HDC& mem2dc, int i);
-	//Á¶ÀÛ¹ı
+	//ì¡°ì‘ë²•
 	void DrawHelp(HDC& mem1dc, HDC& mem2dc,int i);
-	//die »óÅÂº¯È­
+	//die ìƒíƒœë³€í™”
 
 	/*void CreateBlack(HINSTANCE)*/;
 
 private:
 
-	int mapnum = 9;
+	int mapnum = static_cast<int>(EMapId::Title);
 	int black_t = 0;
 	int ms;
 	int index;

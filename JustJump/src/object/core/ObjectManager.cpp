@@ -9,13 +9,13 @@
 #include "world/Map.h"
 
 
-//¿ÀºêÁ§Æ®¿Í ÇÃ·¹ÀÌ¾î Ãæµ¹Ã¼Å© 1ÀÌ¸é ºÎ´ÚÄ§
+//ì˜¤ë¸Œì íŠ¸ì™€ í”Œë ˆì´ì–´ ì¶©ëŒì²´í¬ 1ì´ë©´ ë¶€ë‹¥ì¹¨
 bool ObjectManager::CollP2W(PLAYER player, SPtr<Obstacle> obstacle)
 //----------------------------------------
 {
 	int adjust = 10;
-	//¿Ö 101ÀÌ ¸ÕÀú¿À³Ä¸é ¹ßÆÇº¸´Ù´Â Àå¾Ö¹°ÀÌ ¿ì¼±¼øÀ§±â¶§¹®ÀÓ
-	if (101 <= obstacle->GetType() && obstacle->GetType() < 301) { //Àå¾Ö¹°ÀÏ¶§´Â ÇÃ·¹ÀÌ¾î ³×¸ğºı½º°¡ È÷Æ®¹Ú½º°¡µÈ´Ù
+	//ì™œ 101ì´ ë¨¼ì €ì˜¤ëƒë©´ ë°œíŒë³´ë‹¤ëŠ” ì¥ì• ë¬¼ì´ ìš°ì„ ìˆœìœ„ê¸°ë•Œë¬¸ì„
+	if (101 <= obstacle->GetType() && obstacle->GetType() < 301) { //ì¥ì• ë¬¼ì¼ë•ŒëŠ” í”Œë ˆì´ì–´ ë„¤ëª¨ë¹¡ìŠ¤ê°€ íˆíŠ¸ë°•ìŠ¤ê°€ëœë‹¤
 		if (obstacle->GetType() == 106 || obstacle->GetType() == 107)
 		{
 			if (player.GetX() + player.GetWidth() < obstacle->GetX() + obstacle->GetMX() || player.GetX() - player.GetWidth() > obstacle->GetX() + obstacle->GetMX() + obstacle->GetWidth()) return 0;
@@ -30,17 +30,17 @@ bool ObjectManager::CollP2W(PLAYER player, SPtr<Obstacle> obstacle)
 
 		return 1;
 	}
-	else if (301 <= obstacle->GetType() && obstacle->GetType() < 401)	//·ÎÇÁ,¹åÁÙ°°Àº µüÄÚ ¸ÂÃç¾ßÇÏ´Â ¿ÀºêÁ§ À§·Î´Â ÇÃ·¹ÀÌ¾î ¹ß±îÁö ´ê¾Æ¾ßÇÏ°í ¾Æ·¡·Î´Â ÇÃ·¹ÀÌ¾î ÁßÁ¡¿¡¼­ ³¡³­´Ù ÇÏÁö¸¸ ³»·Á°¥¼öµµ ÀÖ¾î¾ßÇÏ¹Ç·Î Á¶±İ ÈÄÇÏ°Ô ÁØ´Ù
+	else if (301 <= obstacle->GetType() && obstacle->GetType() < 401)	//ë¡œí”„,ë°§ì¤„ê°™ì€ ë”±ì½” ë§ì¶°ì•¼í•˜ëŠ” ì˜¤ë¸Œì  ìœ„ë¡œëŠ” í”Œë ˆì´ì–´ ë°œê¹Œì§€ ë‹¿ì•„ì•¼í•˜ê³  ì•„ë˜ë¡œëŠ” í”Œë ˆì´ì–´ ì¤‘ì ì—ì„œ ëë‚œë‹¤ í•˜ì§€ë§Œ ë‚´ë ¤ê°ˆìˆ˜ë„ ìˆì–´ì•¼í•˜ë¯€ë¡œ ì¡°ê¸ˆ í›„í•˜ê²Œ ì¤€ë‹¤
 	{
 
-		if (player.GetY() + player.GetHeight() < obstacle->GetY() || player.GetY() - player.GetHeight() > obstacle->GetY() + obstacle->GetHeight()) return 0;	//ÀÏ´Ü¸ÕÀú ´ê¾ÒÀ¸¸é µé¾î¿Í
+		if (player.GetY() + player.GetHeight() < obstacle->GetY() || player.GetY() - player.GetHeight() > obstacle->GetY() + obstacle->GetHeight()) return 0;	//ì¼ë‹¨ë¨¼ì € ë‹¿ì•˜ìœ¼ë©´ ë“¤ì–´ì™€
 
-		if (obstacle->GetX() < player.GetX() && player.GetX() < obstacle->GetX() + obstacle->GetWidth())	//ÆÄÀÌÇÁ°¡ ±×·¡µµ Á» µÎ²¨¿ì´Ï ÀÌ¾È¿¡µé¾î¿À¸é cehck
+		if (obstacle->GetX() < player.GetX() && player.GetX() < obstacle->GetX() + obstacle->GetWidth())	//íŒŒì´í”„ê°€ ê·¸ë˜ë„ ì¢€ ë‘êº¼ìš°ë‹ˆ ì´ì•ˆì—ë“¤ì–´ì˜¤ë©´ cehck
 		{
-			if (InputHelper::IsUpDown())//¿©±â´Â Æ¯ÀÌÇÏ°Ô ¿Ã¶ó°¡¸é ¿Ã¶ó°¡´ÂÂÊ Ã¼Å©´Â ³¡ÀÌ³ª¾ßÇÑ´Ù.
+			if (InputHelper::IsUpDown())//ì—¬ê¸°ëŠ” íŠ¹ì´í•˜ê²Œ ì˜¬ë¼ê°€ë©´ ì˜¬ë¼ê°€ëŠ”ìª½ ì²´í¬ëŠ” ëì´ë‚˜ì•¼í•œë‹¤.
 			{
 
-				if (player.GetY() + player.GetHeight() <= obstacle->GetY())	//¿Ã¶ó°¬À»¶§ ¾Æ·§Å°¸¦ ¸¸Á·ÇÏ¸é Ãæµ¹Ã¼Å© x ¾È±×·¯¸é ¹İÀÀÇØ¼­ °è¼Ó ÁÙ¿¡¸Å´Ş¸®´Â ¿À·ù
+				if (player.GetY() + player.GetHeight() <= obstacle->GetY())	//ì˜¬ë¼ê°”ì„ë•Œ ì•„ë«í‚¤ë¥¼ ë§Œì¡±í•˜ë©´ ì¶©ëŒì²´í¬ x ì•ˆê·¸ëŸ¬ë©´ ë°˜ì‘í•´ì„œ ê³„ì† ì¤„ì—ë§¤ë‹¬ë¦¬ëŠ” ì˜¤ë¥˜
 					return 0;
 				if (player.GetY() < obstacle->GetY() + obstacle->GetHeight())
 					return 1;
@@ -58,7 +58,7 @@ bool ObjectManager::CollP2W(PLAYER player, SPtr<Obstacle> obstacle)
 
 		return 0;
 	}
-	else if (obstacle->GetType() == 1)	//¶¥¹Ù´ÚÀÏ¶§
+	else if (obstacle->GetType() == 1)	//ë•…ë°”ë‹¥ì¼ë•Œ
 	{
 		if (obstacle->GetX() <= player.GetX() && player.GetX() <= obstacle->GetX() + obstacle->GetWidth())
 		{
@@ -68,13 +68,13 @@ bool ObjectManager::CollP2W(PLAYER player, SPtr<Obstacle> obstacle)
 			}
 		}
 	}
-	else if (obstacle->GetType() <= 100) {	//ÇÃ·§ÆûÀÏ¶§´Â ÇÃ·¹ÀÌ¾î ÁßÁ¡ÀÌ È÷Æ®¹Ú½º°¡µÈ´Ù
+	else if (obstacle->GetType() <= 100) {	//í”Œë«í¼ì¼ë•ŒëŠ” í”Œë ˆì´ì–´ ì¤‘ì ì´ íˆíŠ¸ë°•ìŠ¤ê°€ëœë‹¤
 		if (obstacle->GetX() <= player.GetX() && player.GetX() <= obstacle->GetX() + obstacle->GetWidth())
 		{
 			if (obstacle->GetY() <= player.GetY() + player.GetHeight() && player.GetY() + player.GetHeight() <= obstacle->GetY() + adjust)
 			{
 				return 1;
-				//¤·¤·
+				//ã…‡ã…‡
 			}
 		}
 	}
@@ -83,11 +83,11 @@ bool ObjectManager::CollP2W(PLAYER player, SPtr<Obstacle> obstacle)
 }
 
 
-//ÇÃ·¹ÀÌ¾î¿Í ¿ÀºêÁ§Æ®°£ »óÈ£ÀÛ¿ë ÆÇ´ÜÇÏ°í ±×¿¡¸Â°Ô ¹Ù²ãÁÜ
+//í”Œë ˆì´ì–´ì™€ ì˜¤ë¸Œì íŠ¸ê°„ ìƒí˜¸ì‘ìš© íŒë‹¨í•˜ê³  ê·¸ì—ë§ê²Œ ë°”ê¿”ì¤Œ
 void ObjectManager::AdjustPlayer(PLAYER& player, MAP& m, int& ocount, HINSTANCE g_hinst, Sound& sound)
 {
 	
-	int check_coll = 0;	//ÇÏ³ª¶óµµ ºÎµúÇû´ÂÁö ÆÇº°ÇÏ±âÀ§ÇÔ
+	int check_coll = 0;	//í•˜ë‚˜ë¼ë„ ë¶€ë”ªí˜”ëŠ”ì§€ íŒë³„í•˜ê¸°ìœ„í•¨
 	if (player.GetX() - player.GetWidth() < 0)
 	{
 		player.SetX(player.GetWidth());
@@ -100,93 +100,93 @@ void ObjectManager::AdjustPlayer(PLAYER& player, MAP& m, int& ocount, HINSTANCE 
 	}
 	for (const auto& obstacle : m_obstacles)
 	{
-		//if (player.getstate() == 2)		//Á¡ÇÁÁßÀÏ¶© Àû¾îµµ ¹Ù´ÚÀÌ¶ûÀº Ãæµ¹ ¾ø°ÔÇÑ´Ù
+		//if (player.getstate() == 2)		//ì í”„ì¤‘ì¼ë• ì ì–´ë„ ë°”ë‹¥ì´ë‘ì€ ì¶©ëŒ ì—†ê²Œí•œë‹¤
 		//	break;
-		//if (player.getstate() == 3)		//¾îÂ÷ÇÇ 7¹ø ¾Æ´Ï¸é ¾Æ·¡·Î ¾È¶³¾îÁö´Ï±î´Â ¤¡¤º ¼÷ÀÌ±â,Á¡ÇÁÁßÀÏ¶§´Â Ãæµ¹Ã³¸® ¾ÈÇØÁí
+		//if (player.getstate() == 3)		//ì–´ì°¨í”¼ 7ë²ˆ ì•„ë‹ˆë©´ ì•„ë˜ë¡œ ì•ˆë–¨ì–´ì§€ë‹ˆê¹ŒëŠ” ã„±ã…Š ìˆ™ì´ê¸°,ì í”„ì¤‘ì¼ë•ŒëŠ” ì¶©ëŒì²˜ë¦¬ ì•ˆí•´ì¥¼
 		//	break;
 		if (CollP2W(player, obstacle))
 		{
-			check_coll++;	//ÇÏ³ª¶óµµ ºÎµúÇûÀ¸¸é collÀÌ ¿Ã¶ó°¨
-			if (obstacle->GetType() < 101 && obstacle->GetType() > 0)			//±Ùµ¥ ±×°Ô ¶¥¹Ù´ÚÀÌ¿´´Ù?
+			check_coll++;	//í•˜ë‚˜ë¼ë„ ë¶€ë”ªí˜”ìœ¼ë©´ collì´ ì˜¬ë¼ê°
+			if (obstacle->GetType() < 101 && obstacle->GetType() > 0)			//ê·¼ë° ê·¸ê²Œ ë•…ë°”ë‹¥ì´ì˜€ë‹¤?
 			{
 
-				if (player.GetState() == EPlayerState::Airborne) //¶³¾îÁö´Â ÁßÀÏ¶§ ºÎµúÇû´Ù ?
+				if (player.GetState() == EPlayerState::Airborne) //ë–¨ì–´ì§€ëŠ” ì¤‘ì¼ë•Œ ë¶€ë”ªí˜”ë‹¤ ?
 				{
-					if (abs(player.GetSaveY() - player.GetY()) > 200)	//³«µ©À»¹Ş¾Æ¾ßÇÑ´Ù¸é
+					if (abs(player.GetSaveY() - player.GetY()) > 200)	//ë‚™ë€ì„ë°›ì•„ì•¼í•œë‹¤ë©´
 					{
-						if (player.GetInvincibleTime() == 0)	//¹«ÀûÀÌ ¾Æ´Ï¶ó¸é
+						if (player.GetInvincibleTime() == 0)	//ë¬´ì ì´ ì•„ë‹ˆë¼ë©´
 						{
-							player.SetMoveCommand(static_cast<EMoveCommand>(player.GetDirection()));	//º¸°íÀÖ´Â¹æÇâÀ¸·Î ¾ÕÀ¸·Î ³ª°¡°Ô, ¶³¾îÁ³´Âµ¥ °¡¸¸È÷ÀÖÁø ¾ÊÁö¿ä
-							player.SetState(EPlayerState::Hurt);		//ÇÇ°İÀ¸·Î°¨
+							player.SetMoveCommand(static_cast<EMoveCommand>(player.GetDirection()));	//ë³´ê³ ìˆëŠ”ë°©í–¥ìœ¼ë¡œ ì•ìœ¼ë¡œ ë‚˜ê°€ê²Œ, ë–¨ì–´ì¡ŒëŠ”ë° ê°€ë§Œíˆìˆì§„ ì•Šì§€ìš”
+							player.SetState(EPlayerState::Hurt);		//í”¼ê²©ìœ¼ë¡œê°
 							player.TakeDamage(sound);
 							return;
 						}
 					}
-					player.SetY(obstacle->GetY() - player.GetHeight());//¹ßÆÇÀ§·Î yÁÂÇ¥ ¼¼ÆÃÇØÁÖ°í
+					player.SetY(obstacle->GetY() - player.GetHeight());//ë°œíŒìœ„ë¡œ yì¢Œí‘œ ì„¸íŒ…í•´ì£¼ê³ 
 
-					if (!InputHelper::IsLeftDown() && !InputHelper::IsRightDown())	//±Ùµ¥ ±×¿ÍÁß¿¡µµ ¾Æ¹«Å°µµ ¾È´©¸£°íÀÖ¾ú´Ù ? 
-						player.SetMoveCommand(EMoveCommand::None);	//±×·³ ÁøÇà¹æÇâÀ¸·Î °¡´Â°É ¸ØÃßµµ·ÏÇØÁØ´Ù.
+					if (!InputHelper::IsLeftDown() && !InputHelper::IsRightDown())	//ê·¼ë° ê·¸ì™€ì¤‘ì—ë„ ì•„ë¬´í‚¤ë„ ì•ˆëˆ„ë¥´ê³ ìˆì—ˆë‹¤ ? 
+						player.SetMoveCommand(EMoveCommand::None);	//ê·¸ëŸ¼ ì§„í–‰ë°©í–¥ìœ¼ë¡œ ê°€ëŠ”ê±¸ ë©ˆì¶”ë„ë¡í•´ì¤€ë‹¤.
 					else if (InputHelper::IsLeftDown() && InputHelper::IsRightDown())
-						player.SetMoveCommand(EMoveCommand::None);	//µ¿½Ã¿¡ ´©¸£°íÀÖ¾ú¾îµµ ¸ØÃçÁØ´Ù
-					else if (InputHelper::IsLeftDown())	//ÇÏÁö¸¸ ¹º°¡¸¦ ´©¸£°íÀÖ¾ú´Ù?
+						player.SetMoveCommand(EMoveCommand::None);	//ë™ì‹œì— ëˆ„ë¥´ê³ ìˆì—ˆì–´ë„ ë©ˆì¶°ì¤€ë‹¤
+					else if (InputHelper::IsLeftDown())	//í•˜ì§€ë§Œ ë­”ê°€ë¥¼ ëˆ„ë¥´ê³ ìˆì—ˆë‹¤?
 						player.SetMoveCommand(EMoveCommand::Left);
-					else if (InputHelper::IsRightDown())			//±×¿¡¸ÂÃç¹Ù²ãÁØ´Ù
+					else if (InputHelper::IsRightDown())			//ê·¸ì—ë§ì¶°ë°”ê¿”ì¤€ë‹¤
 						player.SetMoveCommand(EMoveCommand::Right);
 
 					if (InputHelper::IsDownDown()) {
-						player.SetState(EPlayerState::Crouch);	//¼÷ÀÌ°íÀÖ´ø »óÅÂ¿´´Ù¸é °è¼Ó ¼÷ÀÌ°íÀÖ¾îÁÜ
+						player.SetState(EPlayerState::Crouch);	//ìˆ™ì´ê³ ìˆë˜ ìƒíƒœì˜€ë‹¤ë©´ ê³„ì† ìˆ™ì´ê³ ìˆì–´ì¤Œ
 						player.SetY(player.GetY() + 12);
-						player.SetHeight(player.GetHeight() - 12);	//°è»êÀÌ ³¡³µ´Ù¸é ´Ù½Ã ¼÷ÀÌ±â»óÅÂ·Î µ¹·ÁÁÜ
+						player.SetHeight(player.GetHeight() - 12);	//ê³„ì‚°ì´ ëë‚¬ë‹¤ë©´ ë‹¤ì‹œ ìˆ™ì´ê¸°ìƒíƒœë¡œ ëŒë ¤ì¤Œ
 					}
-					else player.SetState(EPlayerState::Idle);				//¼÷ÀÌ´ø°Ô ¾Æ´Ï¿´À¸¸é ¶¥¿¡ºÎµúÇûÀ¸´Ï Á¤Áö»óÅÂÇØÁÜ
-					player.SetFallSpeed(0);			//¶³¾îÁú¶§°¡¼Óµµ¸¦ À§ÇÑ°Å´Ï ÀÌ°Íµµ Á¤ÁöÇØÁÜ
-					player.SetHurt(0);			//¶¥¿¡ ´ê¾ÒÀ¸¸é ÇÇ°İ¾Æ´Ô
-					player.SetRopeHurt(0);		//¶¥¿¡ ´ê¾ÒÀ¸¸é ÇÇ°İ¾Æ´Ô
+					else player.SetState(EPlayerState::Idle);				//ìˆ™ì´ë˜ê²Œ ì•„ë‹ˆì˜€ìœ¼ë©´ ë•…ì—ë¶€ë”ªí˜”ìœ¼ë‹ˆ ì •ì§€ìƒíƒœí•´ì¤Œ
+					player.SetFallSpeed(0);			//ë–¨ì–´ì§ˆë•Œê°€ì†ë„ë¥¼ ìœ„í•œê±°ë‹ˆ ì´ê²ƒë„ ì •ì§€í•´ì¤Œ
+					player.SetHurt(0);			//ë•…ì— ë‹¿ì•˜ìœ¼ë©´ í”¼ê²©ì•„ë‹˜
+					player.SetRopeHurt(0);		//ë•…ì— ë‹¿ì•˜ìœ¼ë©´ í”¼ê²©ì•„ë‹˜
 
-					if (player.GetRowSpeed() != 3)		//m_rowSpeed¸¦ ÀÓÀÇ·Î ¹Ù²ãÁÖ¾ú´Ù¸é ¶¥¿¡ ´êÀ¸¸é ÃÊ±âÈ­´Ï ¿ø·¡´ë·Î µ¹·ÁÁØ´Ù
+					if (player.GetRowSpeed() != 3)		//m_rowSpeedë¥¼ ì„ì˜ë¡œ ë°”ê¿”ì£¼ì—ˆë‹¤ë©´ ë•…ì— ë‹¿ìœ¼ë©´ ì´ˆê¸°í™”ë‹ˆ ì›ë˜ëŒ€ë¡œ ëŒë ¤ì¤€ë‹¤
 						player.SetRowSpeed(3);
 				}
 
 				if (obstacle->GetType() == 4)
 				{
-					player.SetX(player.GetX() + beltspeed);
+					player.SetX(player.GetX() + ObstacleConst::kBeltSpeed);
 				}
 				if (obstacle->GetType() == 6)
 				{
-					player.SetX(player.GetX() - beltspeed);
+					player.SetX(player.GetX() - ObstacleConst::kBeltSpeed);
 				}
 			}
-			else if (obstacle->GetType() >= 101 && obstacle->GetType() <= 200)	//Àå¾Ö¹°¿¡ ºÎµúÈ÷¸é
+			else if (obstacle->GetType() >= 101 && obstacle->GetType() <= 200)	//ì¥ì• ë¬¼ì— ë¶€ë”ªíˆë©´
 			{
 
-				if (obstacle->GetType() == 101)	//±î½Ã¶ó¸é
+				if (obstacle->GetType() == 101)	//ê¹Œì‹œë¼ë©´
 				{
-					if (player.GetInvincibleTime() == 0)	//¹«ÀûÀÌ ¾Æ´Ï¶ó¸é
+					if (player.GetInvincibleTime() == 0)	//ë¬´ì ì´ ì•„ë‹ˆë¼ë©´
 					{
 						if (player.GetState() == EPlayerState::RopeIdle || player.GetState() == EPlayerState::RopeMove)
 						{
 							player.SetRopeHurt(1);
 						}
-						if (player.GetState() == EPlayerState::Crouch) //¼÷ÀÌ°íÀÖ¾ú´Ù¸é
+						if (player.GetState() == EPlayerState::Crouch) //ìˆ™ì´ê³ ìˆì—ˆë‹¤ë©´
 						{
 							player.SetY(player.GetY() - 12);
-							player.SetHeight(player.GetHeight() + 12);	//°è»êÀü¿¡ µ¹·Á³õ°í ½ÃÀÛÇÑ´Ù. ÀÌ°Ç ¶¥¿¡ ´êÀ»½ÃÁ¡¿¡ ´Ù½Ãµ¹·ÁÁØ´Ù
+							player.SetHeight(player.GetHeight() + 12);	//ê³„ì‚°ì „ì— ëŒë ¤ë†“ê³  ì‹œì‘í•œë‹¤. ì´ê±´ ë•…ì— ë‹¿ì„ì‹œì ì— ë‹¤ì‹œëŒë ¤ì¤€ë‹¤
 						}
-						if (player.GetState() == EPlayerState::Airborne)//ÀÏ¹İÀÏ¶§´Â »ìÂ¦ Á¡ÇÁ ¶ÙµíÀÌ °¡´Âµ¥ ¶³¾îÁö´ÂÁßÀÌ¸é »ìÂ¦¸¸ ÀÌµ¿ÇÑ´Ù
+						if (player.GetState() == EPlayerState::Airborne)//ì¼ë°˜ì¼ë•ŒëŠ” ì‚´ì§ ì í”„ ë›°ë“¯ì´ ê°€ëŠ”ë° ë–¨ì–´ì§€ëŠ”ì¤‘ì´ë©´ ì‚´ì§ë§Œ ì´ë™í•œë‹¤
 						{
 							if (player.GetMoveCommand() == EMoveCommand::Left)
 							{
-								player.SetSpikeHurt(-8);	//8¹ø ¿ŞÂÊÀ¸·Î °¨
+								player.SetSpikeHurt(-8);	//8ë²ˆ ì™¼ìª½ìœ¼ë¡œ ê°
 							}
 							else if (player.GetMoveCommand() == EMoveCommand::Right)
 							{
-								player.SetSpikeHurt(8);	//8¹ø ¿À¸¥ÂÊÀ¸·Î°¨
+								player.SetSpikeHurt(8);	//8ë²ˆ ì˜¤ë¥¸ìª½ìœ¼ë¡œê°
 							}
 
-							player.SetInvicible(100);	//¹«Àû½Ã°£ ³Ö¾îÁÜ (ÀÌµ¿ÇÏ´Â·ÎÁ÷Àº state==7 ÀÏ¶§ ¾Ë¾Æ¼­ ´Ù·ïÁÜ
+							player.SetInvicible(100);	//ë¬´ì ì‹œê°„ ë„£ì–´ì¤Œ (ì´ë™í•˜ëŠ”ë¡œì§ì€ state==7 ì¼ë•Œ ì•Œì•„ì„œ ë‹¤ë¤„ì¤Œ
 						}
 						else {
-							player.SetState(EPlayerState::Hurt);		//ÇÇ°İÀ¸·Î°¨
+							player.SetState(EPlayerState::Hurt);		//í”¼ê²©ìœ¼ë¡œê°
 						}
 						player.TakeDamage(sound);
 					}
@@ -194,25 +194,25 @@ void ObjectManager::AdjustPlayer(PLAYER& player, MAP& m, int& ocount, HINSTANCE 
 				else if (obstacle->GetType() == 102) //Break Pipe Left
 				{
 					//Copy and Paste is very good (Y Collapse)
-					if (player.GetState() == EPlayerState::Airborne) //¶³¾îÁö´Â ÁßÀÏ¶§ ºÎµúÇû´Ù ?
+					if (player.GetState() == EPlayerState::Airborne) //ë–¨ì–´ì§€ëŠ” ì¤‘ì¼ë•Œ ë¶€ë”ªí˜”ë‹¤ ?
 					{
-						player.SetY(obstacle->GetY() - player.GetHeight());//¹ßÆÇÀ§·Î yÁÂÇ¥ ¼¼ÆÃÇØÁÖ°í
+						player.SetY(obstacle->GetY() - player.GetHeight());//ë°œíŒìœ„ë¡œ yì¢Œí‘œ ì„¸íŒ…í•´ì£¼ê³ 
 
-						if (!InputHelper::IsLeftDown() && !InputHelper::IsRightDown())	//±Ùµ¥ ±×¿ÍÁß¿¡µµ ¾Æ¹«Å°µµ ¾È´©¸£°íÀÖ¾ú´Ù ? 
-							player.SetMoveCommand(EMoveCommand::None);	//±×·³ ÁøÇà¹æÇâÀ¸·Î °¡´Â°É ¸ØÃßµµ·ÏÇØÁØ´Ù.
+						if (!InputHelper::IsLeftDown() && !InputHelper::IsRightDown())	//ê·¼ë° ê·¸ì™€ì¤‘ì—ë„ ì•„ë¬´í‚¤ë„ ì•ˆëˆ„ë¥´ê³ ìˆì—ˆë‹¤ ? 
+							player.SetMoveCommand(EMoveCommand::None);	//ê·¸ëŸ¼ ì§„í–‰ë°©í–¥ìœ¼ë¡œ ê°€ëŠ”ê±¸ ë©ˆì¶”ë„ë¡í•´ì¤€ë‹¤.
 						else if (InputHelper::IsLeftDown() && InputHelper::IsRightDown())
-							player.SetMoveCommand(EMoveCommand::None);	//µ¿½Ã¿¡ ´©¸£°íÀÖ¾ú¾îµµ ¸ØÃçÁØ´Ù
-						else if (InputHelper::IsLeftDown())	//ÇÏÁö¸¸ ¹º°¡¸¦ ´©¸£°íÀÖ¾ú´Ù?
+							player.SetMoveCommand(EMoveCommand::None);	//ë™ì‹œì— ëˆ„ë¥´ê³ ìˆì—ˆì–´ë„ ë©ˆì¶°ì¤€ë‹¤
+						else if (InputHelper::IsLeftDown())	//í•˜ì§€ë§Œ ë­”ê°€ë¥¼ ëˆ„ë¥´ê³ ìˆì—ˆë‹¤?
 							player.SetMoveCommand(EMoveCommand::Left);
-						else if (InputHelper::IsRightDown())			//±×¿¡¸ÂÃç¹Ù²ãÁØ´Ù
+						else if (InputHelper::IsRightDown())			//ê·¸ì—ë§ì¶°ë°”ê¿”ì¤€ë‹¤
 							player.SetMoveCommand(EMoveCommand::Right);
 
-						player.SetState(EPlayerState::Idle);				//±×¸®°í ¶¥¿¡ºÎµúÇûÀ¸´Ï Á¤Áö»óÅÂÇØÁÜ
-						player.SetFallSpeed(0);			//¶³¾îÁú¶§°¡¼Óµµ¸¦ À§ÇÑ°Å´Ï ÀÌ°Íµµ Á¤ÁöÇØÁÜ
-						player.SetHurt(0);			//¶¥¿¡ ´ê¾ÒÀ¸¸é ÇÇ°İ¾Æ´Ô
-						player.SetRopeHurt(0);		//¶¥¿¡ ´ê¾ÒÀ¸¸é ÇÇ°İ¾Æ´Ô
+						player.SetState(EPlayerState::Idle);				//ê·¸ë¦¬ê³  ë•…ì—ë¶€ë”ªí˜”ìœ¼ë‹ˆ ì •ì§€ìƒíƒœí•´ì¤Œ
+						player.SetFallSpeed(0);			//ë–¨ì–´ì§ˆë•Œê°€ì†ë„ë¥¼ ìœ„í•œê±°ë‹ˆ ì´ê²ƒë„ ì •ì§€í•´ì¤Œ
+						player.SetHurt(0);			//ë•…ì— ë‹¿ì•˜ìœ¼ë©´ í”¼ê²©ì•„ë‹˜
+						player.SetRopeHurt(0);		//ë•…ì— ë‹¿ì•˜ìœ¼ë©´ í”¼ê²©ì•„ë‹˜
 
-						if (player.GetRowSpeed() != 3)		//m_rowSpeed¸¦ ÀÓÀÇ·Î ¹Ù²ãÁÖ¾ú´Ù¸é ¶¥¿¡ ´êÀ¸¸é ÃÊ±âÈ­´Ï ¿ø·¡´ë·Î µ¹·ÁÁØ´Ù
+						if (player.GetRowSpeed() != 3)		//m_rowSpeedë¥¼ ì„ì˜ë¡œ ë°”ê¿”ì£¼ì—ˆë‹¤ë©´ ë•…ì— ë‹¿ìœ¼ë©´ ì´ˆê¸°í™”ë‹ˆ ì›ë˜ëŒ€ë¡œ ëŒë ¤ì¤€ë‹¤
 							player.SetRowSpeed(3);
 					}
 					//X Collapse
@@ -222,15 +222,15 @@ void ObjectManager::AdjustPlayer(PLAYER& player, MAP& m, int& ocount, HINSTANCE 
 						{
 							if (obstacle->GetX() < player.GetX() + player.GetWidth()) //Left Collpse
 							{
-								player.SetX(obstacle->GetX() - player.GetWidth());// xÁÂÇ¥ ¼¼ÆÃÇØÁÖ°í
+								player.SetX(obstacle->GetX() - player.GetWidth());// xì¢Œí‘œ ì„¸íŒ…í•´ì£¼ê³ 
 								player.SetMoveCommand(EMoveCommand::None);
 							}
 						}
 					}
 				}
-				else if (obstacle->GetType() == 103) //¿ŞÂÊ Áõ±â, °¡½Ã¿Í ºñ½ÁÇÔ ´ë½Å Áõ±â°¡ ¿ÏÀüÈ÷ »Õ¾îÁ®  ³ª¿ÔÀ»¶§ ÇÇ°İÆÇÁ¤ÀÌ ÀÖ´Ù.
+				else if (obstacle->GetType() == 103) //ì™¼ìª½ ì¦ê¸°, ê°€ì‹œì™€ ë¹„ìŠ·í•¨ ëŒ€ì‹  ì¦ê¸°ê°€ ì™„ì „íˆ ë¿œì–´ì ¸  ë‚˜ì™”ì„ë•Œ í”¼ê²©íŒì •ì´ ìˆë‹¤.
 				{
-					if (obstacle->GetSpriteIndex() == 2) //Áõ±â°¡ ¿ÏÀüÈ÷ »Õ¾îÁ³À»¶§¸¸ ÇÇ°İÀÌ ¹ß»ıÇÑ´Ù
+					if (obstacle->GetSpriteIndex() == 2) //ì¦ê¸°ê°€ ì™„ì „íˆ ë¿œì–´ì¡Œì„ë•Œë§Œ í”¼ê²©ì´ ë°œìƒí•œë‹¤
 					{
 						if (player.GetInvincibleTime() == 0)
 						{
@@ -238,14 +238,14 @@ void ObjectManager::AdjustPlayer(PLAYER& player, MAP& m, int& ocount, HINSTANCE 
 							{
 								player.SetRopeHurt(1);
 							}
-							if (player.GetState() == EPlayerState::Crouch) //¼÷ÀÌ°íÀÖ¾ú´Ù¸é
+							if (player.GetState() == EPlayerState::Crouch) //ìˆ™ì´ê³ ìˆì—ˆë‹¤ë©´
 							{
 								player.SetY(player.GetY() - 12);
-								player.SetHeight(player.GetHeight() + 12);	//°è»êÀü¿¡ µ¹·Á³õ°í ½ÃÀÛÇÑ´Ù. ÀÌ°Ç ¶¥¿¡ ´êÀ»½ÃÁ¡¿¡ ´Ù½Ãµ¹·ÁÁØ´Ù
+								player.SetHeight(player.GetHeight() + 12);	//ê³„ì‚°ì „ì— ëŒë ¤ë†“ê³  ì‹œì‘í•œë‹¤. ì´ê±´ ë•…ì— ë‹¿ì„ì‹œì ì— ë‹¤ì‹œëŒë ¤ì¤€ë‹¤
 							}
 							if (player.GetState() == EPlayerState::Airborne)
 							{
-								if (player.GetDirection() == EPlayerDirection::Left || player.GetDirection() == EPlayerDirection::Right) //¹«Á¶°Ç ¿ŞÂÊÀ¸·Î°¨
+								if (player.GetDirection() == EPlayerDirection::Left || player.GetDirection() == EPlayerDirection::Right) //ë¬´ì¡°ê±´ ì™¼ìª½ìœ¼ë¡œê°
 								{
 									player.SetSpikeHurt(-8);
 								}
@@ -253,7 +253,7 @@ void ObjectManager::AdjustPlayer(PLAYER& player, MAP& m, int& ocount, HINSTANCE 
 								player.SetInvicible(100);
 							}
 							else {
-								player.SetMoveCommand(EMoveCommand::Left); //¹«Á¶°Ç ¿ŞÂÊÀÓ
+								player.SetMoveCommand(EMoveCommand::Left); //ë¬´ì¡°ê±´ ì™¼ìª½ì„
 								player.SetState(EPlayerState::Hurt);
 							}
 							player.TakeDamage(sound);
@@ -270,72 +270,72 @@ void ObjectManager::AdjustPlayer(PLAYER& player, MAP& m, int& ocount, HINSTANCE 
 				}
 				else if (obstacle->GetType() == 106)
 				{
-					if (player.GetInvincibleTime() == 0)	//¹«ÀûÀÌ ¾Æ´Ï¶ó¸é
+					if (player.GetInvincibleTime() == 0)	//ë¬´ì ì´ ì•„ë‹ˆë¼ë©´
 					{
 						if (player.GetState() == EPlayerState::RopeIdle || player.GetState() == EPlayerState::RopeMove)
 						{
 							player.SetRopeHurt(1);
 						}
-						if (player.GetState() == EPlayerState::Crouch) //¼÷ÀÌ°íÀÖ¾ú´Ù¸é
+						if (player.GetState() == EPlayerState::Crouch) //ìˆ™ì´ê³ ìˆì—ˆë‹¤ë©´
 						{
 							player.SetY(player.GetY() - 12);
-							player.SetHeight(player.GetHeight() + 12);	//°è»êÀü¿¡ µ¹·Á³õ°í ½ÃÀÛÇÑ´Ù. ÀÌ°Ç ¶¥¿¡ ´êÀ»½ÃÁ¡¿¡ ´Ù½Ãµ¹·ÁÁØ´Ù
+							player.SetHeight(player.GetHeight() + 12);	//ê³„ì‚°ì „ì— ëŒë ¤ë†“ê³  ì‹œì‘í•œë‹¤. ì´ê±´ ë•…ì— ë‹¿ì„ì‹œì ì— ë‹¤ì‹œëŒë ¤ì¤€ë‹¤
 						}
-						if (player.GetState() == EPlayerState::Airborne)//ÀÏ¹İÀÏ¶§´Â »ìÂ¦ Á¡ÇÁ ¶ÙµíÀÌ °¡´Âµ¥ ¶³¾îÁö´ÂÁßÀÌ¸é »ìÂ¦¸¸ ÀÌµ¿ÇÑ´Ù
+						if (player.GetState() == EPlayerState::Airborne)//ì¼ë°˜ì¼ë•ŒëŠ” ì‚´ì§ ì í”„ ë›°ë“¯ì´ ê°€ëŠ”ë° ë–¨ì–´ì§€ëŠ”ì¤‘ì´ë©´ ì‚´ì§ë§Œ ì´ë™í•œë‹¤
 						{
 							if (player.GetDirection() == EPlayerDirection::Left)
 							{
-								player.SetSpikeHurt(-8);	//8¹ø ¿ŞÂÊÀ¸·Î °¨
+								player.SetSpikeHurt(-8);	//8ë²ˆ ì™¼ìª½ìœ¼ë¡œ ê°
 							}
 							else if (player.GetDirection() == EPlayerDirection::Right)
 							{
-								player.SetSpikeHurt(8);	//8¹ø ¿À¸¥ÂÊÀ¸·Î°¨
+								player.SetSpikeHurt(8);	//8ë²ˆ ì˜¤ë¥¸ìª½ìœ¼ë¡œê°
 							}
 
-							player.SetInvicible(100);	//¹«Àû½Ã°£ ³Ö¾îÁÜ (ÀÌµ¿ÇÏ´Â·ÎÁ÷Àº state==7 ÀÏ¶§ ¾Ë¾Æ¼­ ´Ù·ïÁÜ
+							player.SetInvicible(100);	//ë¬´ì ì‹œê°„ ë„£ì–´ì¤Œ (ì´ë™í•˜ëŠ”ë¡œì§ì€ state==7 ì¼ë•Œ ì•Œì•„ì„œ ë‹¤ë¤„ì¤Œ
 						}
 						else {
 							player.SetMoveCommand(static_cast<EMoveCommand>(player.GetDirection()));
-							player.SetState(EPlayerState::Hurt);		//ÇÇ°İÀ¸·Î°¨
+							player.SetState(EPlayerState::Hurt);		//í”¼ê²©ìœ¼ë¡œê°
 						}
 						player.TakeDamage(sound);
 					}
 				}
 				else if (obstacle->GetType() == 107)
 				{
-					if (player.GetInvincibleTime() == 0)	//¹«ÀûÀÌ ¾Æ´Ï¶ó¸é
+					if (player.GetInvincibleTime() == 0)	//ë¬´ì ì´ ì•„ë‹ˆë¼ë©´
 					{
 						if (player.GetState() == EPlayerState::RopeIdle || player.GetState() == EPlayerState::RopeMove)
 						{
 							player.SetRopeHurt(1);
 						}
-						if (player.GetState() == EPlayerState::Crouch) //¼÷ÀÌ°íÀÖ¾ú´Ù¸é
+						if (player.GetState() == EPlayerState::Crouch) //ìˆ™ì´ê³ ìˆì—ˆë‹¤ë©´
 						{
 							player.SetY(player.GetY() - 12);
-							player.SetHeight(player.GetHeight() + 12);	//°è»êÀü¿¡ µ¹·Á³õ°í ½ÃÀÛÇÑ´Ù. ÀÌ°Ç ¶¥¿¡ ´êÀ»½ÃÁ¡¿¡ ´Ù½Ãµ¹·ÁÁØ´Ù
+							player.SetHeight(player.GetHeight() + 12);	//ê³„ì‚°ì „ì— ëŒë ¤ë†“ê³  ì‹œì‘í•œë‹¤. ì´ê±´ ë•…ì— ë‹¿ì„ì‹œì ì— ë‹¤ì‹œëŒë ¤ì¤€ë‹¤
 						}
-						if (player.GetState() == EPlayerState::Airborne)//ÀÏ¹İÀÏ¶§´Â »ìÂ¦ Á¡ÇÁ ¶ÙµíÀÌ °¡´Âµ¥ ¶³¾îÁö´ÂÁßÀÌ¸é »ìÂ¦¸¸ ÀÌµ¿ÇÑ´Ù
+						if (player.GetState() == EPlayerState::Airborne)//ì¼ë°˜ì¼ë•ŒëŠ” ì‚´ì§ ì í”„ ë›°ë“¯ì´ ê°€ëŠ”ë° ë–¨ì–´ì§€ëŠ”ì¤‘ì´ë©´ ì‚´ì§ë§Œ ì´ë™í•œë‹¤
 						{
 							if (player.GetDirection() == EPlayerDirection::Left)
 							{
-								player.SetSpikeHurt(-8);	//8¹ø ¿ŞÂÊÀ¸·Î °¨
+								player.SetSpikeHurt(-8);	//8ë²ˆ ì™¼ìª½ìœ¼ë¡œ ê°
 							}
 							else if (player.GetDirection() == EPlayerDirection::Right)
 							{
-								player.SetSpikeHurt(8);	//8¹ø ¿À¸¥ÂÊÀ¸·Î°¨
+								player.SetSpikeHurt(8);	//8ë²ˆ ì˜¤ë¥¸ìª½ìœ¼ë¡œê°
 							}
 
-							player.SetInvicible(100);	//¹«Àû½Ã°£ ³Ö¾îÁÜ (ÀÌµ¿ÇÏ´Â·ÎÁ÷Àº state==7 ÀÏ¶§ ¾Ë¾Æ¼­ ´Ù·ïÁÜ
+							player.SetInvicible(100);	//ë¬´ì ì‹œê°„ ë„£ì–´ì¤Œ (ì´ë™í•˜ëŠ”ë¡œì§ì€ state==7 ì¼ë•Œ ì•Œì•„ì„œ ë‹¤ë¤„ì¤Œ
 						}
 						else {
 							player.SetMoveCommand(static_cast<EMoveCommand>(player.GetDirection()));
-							player.SetState(EPlayerState::Hurt);		//ÇÇ°İÀ¸·Î°¨
+							player.SetState(EPlayerState::Hurt);		//í”¼ê²©ìœ¼ë¡œê°
 						}
 						player.TakeDamage(sound);
 					}
 				}
 			}
-			else if (obstacle->GetType() >= 201 && obstacle->GetType() <= 300) //ÇÃ·¹ÀÌ¾î¿Í »óÈ£ÀÛ¿ëÇÏ´Â ¿ÀºêÁ§Æ® ex)Æ÷Å»
+			else if (obstacle->GetType() >= 201 && obstacle->GetType() <= 300) //í”Œë ˆì´ì–´ì™€ ìƒí˜¸ì‘ìš©í•˜ëŠ” ì˜¤ë¸Œì íŠ¸ ex)í¬íƒˆ
 			{
 				if (obstacle->GetType() == 201) //Portal
 				{
@@ -345,12 +345,12 @@ void ObjectManager::AdjustPlayer(PLAYER& player, MAP& m, int& ocount, HINSTANCE 
 						/*m.CreateBlack(g_hinst);*/
 						m.SetMapNumber(m.GetMapNumber() + 1);
 						player.Initialzie();
-						if (m.GetMapNumber() == 13) m.CreateMap(g_hinst);
+						if (m.GetMapNumber() == static_cast<int>(EMapId::Clear)) m.CreateMap(g_hinst);
 						for (const auto& resetObstacle : m_obstacles)
 							resetObstacle->ResetObject();
 						ocount = InitObject(m.GetMapNumber(), g_hinst);
 						m.CreateMap(g_hinst);
-						sound.SetIndex(m.GetMapNumber() - 9);
+						sound.SetIndex(m.GetMapNumber() - static_cast<int>(EMapId::Title));
 						sound.System->update();
 						sound.Channel[0]->stop();
 						sound.System->playSound(
@@ -376,14 +376,14 @@ void ObjectManager::AdjustPlayer(PLAYER& player, MAP& m, int& ocount, HINSTANCE 
 			{
 				if (player.GetJumpCooldown() <= 0)
 				{
-					if (player.IsRopeHurt() == 0)	//·ÎÇÁ¿¡¼­ ¸ÂÀ¸¸é ´Ù½Ã ·ÎÇÁ ¸øÅ½
+					if (player.IsRopeHurt() == 0)	//ë¡œí”„ì—ì„œ ë§ìœ¼ë©´ ë‹¤ì‹œ ë¡œí”„ ëª»íƒ
 					{
 						if (InputHelper::IsUpDown() || InputHelper::IsDownDown())
 						{
-							if (InputHelper::IsDownDown() && (player.GetState() == EPlayerState::Jump || player.GetState() == EPlayerState::Airborne))	//°øÁß¿¡ÀÖ°Å³ª Á¡ÇÁÁßÀÏ¶§ ¾Æ·§Å°·Î´Â ÁÙ¿¡ ºÙÀ»¼ö¾ø´Ù
+							if (InputHelper::IsDownDown() && (player.GetState() == EPlayerState::Jump || player.GetState() == EPlayerState::Airborne))	//ê³µì¤‘ì—ìˆê±°ë‚˜ ì í”„ì¤‘ì¼ë•Œ ì•„ë«í‚¤ë¡œëŠ” ì¤„ì— ë¶™ì„ìˆ˜ì—†ë‹¤
 								return;
 
-							if (player.GetState() != EPlayerState::RopeIdle && player.GetState() != EPlayerState::RopeMove)	//ÁÙ¿¡ ¸Å´Ş·ÁÀÖÁö ¾Ê¾Ò´Ù¸é ÁÙ¿¡ ¸Å´Ş¸®´Â »óÅÂ¸¦ ¸¸µé¾îÁØ´Ù. ÀÌ¹ÌºÙ¾îÀÖ´Ù¸é ÇØÁÙÇÊ¿ä¾øÀ½
+							if (player.GetState() != EPlayerState::RopeIdle && player.GetState() != EPlayerState::RopeMove)	//ì¤„ì— ë§¤ë‹¬ë ¤ìˆì§€ ì•Šì•˜ë‹¤ë©´ ì¤„ì— ë§¤ë‹¬ë¦¬ëŠ” ìƒíƒœë¥¼ ë§Œë“¤ì–´ì¤€ë‹¤. ì´ë¯¸ë¶™ì–´ìˆë‹¤ë©´ í•´ì¤„í•„ìš”ì—†ìŒ
 							{
 								player.SetState(EPlayerState::RopeIdle);
 								if (InputHelper::IsUpDown())
@@ -391,7 +391,7 @@ void ObjectManager::AdjustPlayer(PLAYER& player, MAP& m, int& ocount, HINSTANCE 
 								if (InputHelper::IsDownDown())
 									player.SetMoveCommand(EMoveCommand::Down);
 								player.SetX(obstacle->GetX() + (obstacle->GetWidth() / 2));
-								if (InputHelper::IsDownDown())	//ÀÌ¶§´Â ¼ö±×¸®±â¾Æ´Ï¶ó ¹åÁÙ ¾Æ·¡·Î ³»·Á°¡´Â°ÍÀÌ¹Ç·Î ¼ö±×¸®±â·Î ±ïÀÎ°Å µ¹·ÁÁØ´Ù
+								if (InputHelper::IsDownDown())	//ì´ë•ŒëŠ” ìˆ˜ê·¸ë¦¬ê¸°ì•„ë‹ˆë¼ ë°§ì¤„ ì•„ë˜ë¡œ ë‚´ë ¤ê°€ëŠ”ê²ƒì´ë¯€ë¡œ ìˆ˜ê·¸ë¦¬ê¸°ë¡œ ê¹ì¸ê±° ëŒë ¤ì¤€ë‹¤
 								{
 									player.SetY(player.GetY() - 12);
 									player.SetHeight(25);
@@ -407,33 +407,33 @@ void ObjectManager::AdjustPlayer(PLAYER& player, MAP& m, int& ocount, HINSTANCE 
 			{
 
 			}
-			//if (m_rowSpeed != 3)		//m_rowSpeed¸¦ ÀÓÀÇ·Î ¹Ù²ãÁÖ¾ú´Ù¸é ¶¥¿¡ ´êÀ¸¸é ÃÊ±âÈ­´Ï ¿ø·¡´ë·Î µ¹·ÁÁØ´Ù
-			//	m_rowSpeed = 3; Àá±ñ À§·Î ¿Ã·ÁÁáÀ½ ÁÖ¼®Ã³¸®ÇÏ°í ¤·¤· ±Ùµ¥ ÀÌ°Ô ¸ÂÀ»°Å°°±äÇØ
+			//if (m_rowSpeed != 3)		//m_rowSpeedë¥¼ ì„ì˜ë¡œ ë°”ê¿”ì£¼ì—ˆë‹¤ë©´ ë•…ì— ë‹¿ìœ¼ë©´ ì´ˆê¸°í™”ë‹ˆ ì›ë˜ëŒ€ë¡œ ëŒë ¤ì¤€ë‹¤
+			//	m_rowSpeed = 3; ì ê¹ ìœ„ë¡œ ì˜¬ë ¤ì¤¬ìŒ ì£¼ì„ì²˜ë¦¬í•˜ê³  ã…‡ã…‡ ê·¼ë° ì´ê²Œ ë§ì„ê±°ê°™ê¸´í•´
 
-			//return;			//ÇÏ³ª¶óµµ ºÎµúÇû´Ù¸é ±×´ë·Î Å»ÃâÇÑ´Ù
+			//return;			//í•˜ë‚˜ë¼ë„ ë¶€ë”ªí˜”ë‹¤ë©´ ê·¸ëŒ€ë¡œ íƒˆì¶œí•œë‹¤
 		}
 	}
 	if (check_coll != 0)
-		return;	//ÇÏ³ª¶óµµ ºÎµúÇû´Ù¸é ±×´ë·Î Å»Ãâ
+		return;	//í•˜ë‚˜ë¼ë„ ë¶€ë”ªí˜”ë‹¤ë©´ ê·¸ëŒ€ë¡œ íƒˆì¶œ
 	if ((player.GetState() == EPlayerState::Move || player.GetState() == EPlayerState::Idle) 
-		|| (player.GetState() == EPlayerState::RopeIdle || player.GetState() == EPlayerState::RopeMove))	//ÇÏ³ªµµ ¸øºÎµúÇûÀ¸¸é °øÁß¿¡ÀÖ´Â°Å´Ï±î ¶³¾îÁ®¾ßÇÑ´Ù
+		|| (player.GetState() == EPlayerState::RopeIdle || player.GetState() == EPlayerState::RopeMove))	//í•˜ë‚˜ë„ ëª»ë¶€ë”ªí˜”ìœ¼ë©´ ê³µì¤‘ì—ìˆëŠ”ê±°ë‹ˆê¹Œ ë–¨ì–´ì ¸ì•¼í•œë‹¤
 	{
 		player.SetState(EPlayerState::Airborne);
-		player.SavePositionX();		//¶³¾îÁö´Â ¼ø°£ÀÇ xÁÂÇ¥Á¡ ±â¾ï
+		player.SavePositionX();		//ë–¨ì–´ì§€ëŠ” ìˆœê°„ì˜ xì¢Œí‘œì  ê¸°ì–µ
 	}
 
 
 }
 
 
-//int(¸Ê ¹øÈ£) ¿¡ µû¶ó Àå¾Ö¹° À§Ä¡°ª ³Ö¾îÁÖ°í ¸î°³ÀÇ ¿ÀºêÁ§Æ®°¡ µé¾î°¬´ÂÁö ¾Ë·ÁÁÖ´Â ÇÔ¼ö
+//int(ë§µ ë²ˆí˜¸) ì— ë”°ë¼ ì¥ì• ë¬¼ ìœ„ì¹˜ê°’ ë„£ì–´ì£¼ê³  ëª‡ê°œì˜ ì˜¤ë¸Œì íŠ¸ê°€ ë“¤ì–´ê°”ëŠ”ì§€ ì•Œë ¤ì£¼ëŠ” í•¨ìˆ˜
 int ObjectManager::InitObject(int mapnum, HINSTANCE g_hinst)
 {
 	int x, y, w, h, type;
 	int objcount = 0;
 
 	ifstream in;
-	if (mapnum == 9)
+	if (mapnum == static_cast<int>(EMapId::Title))
 	{
 		in.open("map/map_0.txt", ios::in);
 	}
@@ -449,12 +449,12 @@ int ObjectManager::InitObject(int mapnum, HINSTANCE g_hinst)
 	{
 		in.open("map/map_3.txt", ios::in);
 	}
-	else if (mapnum == 13)
+	else if (mapnum == static_cast<int>(EMapId::Clear))
 	{
 		in.open("map/map_4.txt", ios::in);
 	}
 	else {
-		return 0;		//¸Ê °ªÀÌ Àß¸øÀÔ·ÂµÇ¾úÀ¸¸é ±×´ë·Î Å»Ãâ
+		return 0;		//ë§µ ê°’ì´ ì˜ëª»ì…ë ¥ë˜ì—ˆìœ¼ë©´ ê·¸ëŒ€ë¡œ íƒˆì¶œ
 	}
 
 
@@ -480,39 +480,39 @@ int ObjectManager::InitObject(int mapnum, HINSTANCE g_hinst)
 	return objcount;
 }
 
-//Ä«¸Ş¶ó ¹«ºù¿öÅ©
+//ì¹´ë©”ë¼ ë¬´ë¹™ì›Œí¬
 void ObjectManager::AdjustCamera(CAMERA& camera, PLAYER player)
 {
-	//ÇÃ·¹ÀÌ¾îÀÇ ¸Ó¸®ºÎºĞÀÌ Ä«¸Ş¶óÀÇ ²À´ë±âÁ¡À» ³Ñ¾î°¡¸é ¹Ù·Î µû¶óºÙ°ÔÇÑ´Ù
+	//í”Œë ˆì´ì–´ì˜ ë¨¸ë¦¬ë¶€ë¶„ì´ ì¹´ë©”ë¼ì˜ ê¼­ëŒ€ê¸°ì ì„ ë„˜ì–´ê°€ë©´ ë°”ë¡œ ë”°ë¼ë¶™ê²Œí•œë‹¤
 	if (player.GetY() - player.GetHeight() < camera.GetY())
 	{
-		if (camera.GetY() <= 0)	//ÃÖ»óÁ¡ÀÏ¶© ÀÌµ¿ÇØÁÖÁö¾ÊÀ½
+		if (camera.GetY() <= 0)	//ìµœìƒì ì¼ë• ì´ë™í•´ì£¼ì§€ì•ŠìŒ
 		{
 
 		}
 		else {
-			camera.SetY(player.GetY() - player.GetHeight());		//384´Â ¸Ê Å©±â 768ÀÇ Àı¹İ
+			camera.SetY(player.GetY() - player.GetHeight());		//384ëŠ” ë§µ í¬ê¸° 768ì˜ ì ˆë°˜
 		}
 	}
-	else if (player.GetY() + player.GetHeight() > camera.GetY() + 768)	//Ä³¸¯ÅÍÀÇ ¹ß¹Ù´ÚÀÌ Ä«¸Ş¶ó¹ÛÀ» ³Ñ¾î¼­¸é
+	else if (player.GetY() + player.GetHeight() > camera.GetY() + 768)	//ìºë¦­í„°ì˜ ë°œë°”ë‹¥ì´ ì¹´ë©”ë¼ë°–ì„ ë„˜ì–´ì„œë©´
 	{
-		if (camera.GetY() >= 3232)	//ÃÖÇÏÁ¡ÀÏ¶© ÀÌµ¿ÇØÁÖÁö¾ÊÀ½
+		if (camera.GetY() >= 3232)	//ìµœí•˜ì ì¼ë• ì´ë™í•´ì£¼ì§€ì•ŠìŒ
 		{
 
 		}
 		else {
-			camera.SetY(player.GetY() + player.GetHeight() - 768);	//µû¶ó°¡ÁØ´Ù
+			camera.SetY(player.GetY() + player.GetHeight() - 768);	//ë”°ë¼ê°€ì¤€ë‹¤
 		}
 	}
-	else if (camera.GetY() + 600 != player.GetY())		//Ä«¸Ş¶ó°¡ Á¤ÇØÁø À§Ä¡¿¡ ÀÖÁö¾Ê´Ù¸é
+	else if (camera.GetY() + 600 != player.GetY())		//ì¹´ë©”ë¼ê°€ ì •í•´ì§„ ìœ„ì¹˜ì— ìˆì§€ì•Šë‹¤ë©´
 	{
-		if (player.GetState() != EPlayerState::Airborne)							//±×¸®°í ¶³¾îÁú¶§±îÁö Ä«¸Ş¶ó¸¦ ¹Ù²ãÁÖ¸é ³Ê¹« Èçµé·Á¼­ ÀÌ¶§´Â ¹«½ÃÇÔ
+		if (player.GetState() != EPlayerState::Airborne)							//ê·¸ë¦¬ê³  ë–¨ì–´ì§ˆë•Œê¹Œì§€ ì¹´ë©”ë¼ë¥¼ ë°”ê¿”ì£¼ë©´ ë„ˆë¬´ í”ë“¤ë ¤ì„œ ì´ë•ŒëŠ” ë¬´ì‹œí•¨
 		{
-			if (camera.GetY() <= 0)	//ÃÖ»óÁ¡ÀÏ¶© ÀÌµ¿ÇØÁÖÁö¾ÊÀ½
+			if (camera.GetY() <= 0)	//ìµœìƒì ì¼ë• ì´ë™í•´ì£¼ì§€ì•ŠìŒ
 			{
 				camera.SetY(0);
 			}
-			else if (camera.GetY() + 540 > player.GetY())		//¾ó¸¶³ª ¸Ö¸®ÀÖ´À³Ä¿¡ µû¶ó ¼Óµµºñ¸¦ ´Ù¸£°ÔÇØ¼­ Ä«¸Ş¶ó¸¦ µû¶ó¿À°ÔÇÑ´Ù
+			else if (camera.GetY() + 540 > player.GetY())		//ì–¼ë§ˆë‚˜ ë©€ë¦¬ìˆëŠëƒì— ë”°ë¼ ì†ë„ë¹„ë¥¼ ë‹¤ë¥´ê²Œí•´ì„œ ì¹´ë©”ë¼ë¥¼ ë”°ë¼ì˜¤ê²Œí•œë‹¤
 			{
 				camera.SetY(camera.GetY() - 4);
 			}

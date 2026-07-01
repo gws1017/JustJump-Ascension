@@ -36,12 +36,12 @@ void Sound::Sound_Setup()
 		result = System->createSound(string, FMOD_LOOP_NORMAL, nullptr, &bgmSound[i]);
 		if (result != FMOD_OK)
 		{
-			std::cout << "¹è°æÀ½ »ý¼º ½ÇÆÐ: " << FMOD_ErrorString(result) << std::endl;
+			std::cout << "ë°°ê²½ìŒ ìƒì„± ì‹¤íŒ¨: " << FMOD_ErrorString(result) << std::endl;
 		}
 		result = System->createSound(effectPaths[i], FMOD_DEFAULT, nullptr, &effectSound[i]);
 		if (result != FMOD_OK)
 		{
-			std::cout << "È¿°úÀ½ »ý¼º ½ÇÆÐ (" << effectPaths[i] << "): " << FMOD_ErrorString(result) << std::endl;
+			std::cout << "íš¨ê³¼ìŒ ìƒì„± ì‹¤íŒ¨ (" << effectPaths[i] << "): " << FMOD_ErrorString(result) << std::endl;
 		}
 	}
 	

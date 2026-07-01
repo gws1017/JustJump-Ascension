@@ -13,7 +13,7 @@
 void MAP::CreateMap(HINSTANCE g_hinst)
 {
 	hbitbk = LoadBK(hbitbk,g_hinst, mapnum);
-	if (mapnum == 9) ms = 0;
+	if (mapnum == static_cast<int>(EMapId::Title)) ms = 0;
 }
 
 void MAP::CreateUi(HINSTANCE g_hinst)
@@ -62,7 +62,7 @@ bool MAP::BlackTime()
 
 void MAP::movemap()
 {
-	ms += MAPSPEED;
+	ms += GameConst::kMapScrollSpeed;
 	if (ms >= 3021) ms = 0;
 }
 
@@ -73,27 +73,27 @@ void MAP :: DrawBK(HDC& mem1dc, HDC& mem2dc, RECT& rectview, const PLAYER& playe
 	SelectObject(mem2dc, hbitbk);
 	HBRUSH blackBrush = CreateSolidBrush(RGB(0, 0, 0));
 	FillRect(mem1dc, &rectview, blackBrush);
-	if (mapnum == 9)
+	if (mapnum == static_cast<int>(EMapId::Title))
 	{
 		BitBlt(mem1dc, 0, 0, 3021, 768, mem2dc, ms, 0, SRCCOPY);
 		if (ms >= 1997)
 		BitBlt(mem1dc, (3021 - ms), 0, rectview.right, 768, mem2dc, 0, 0, SRCCOPY);
 	}
-	else	//ÀÏ¹İ
+	else	//ì¼ë°˜
 	{
-		BitBlt(mem1dc, 0, 0, MAPWIDTH, MAPHEIGHT, mem2dc, 0, 0, SRCCOPY);	//¸Ê ÀüÃ¼ »õ·Î°íÄ§
+		BitBlt(mem1dc, 0, 0, GameConst::kViewportWidth, GameConst::kMapBitmapHeight, mem2dc, 0, 0, SRCCOPY);	//ë§µ ì „ì²´ ìƒˆë¡œê³ ì¹¨
 	}
 
-	if (mapnum == 13)
+	if (mapnum == static_cast<int>(EMapId::Clear))
 	{
-		HFONT hfont = CreateFont(50, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("¸ŞÀÌÇÃ½ºÅä¸® light"));
+		HFONT hfont = CreateFont(50, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("ë©”ì´í”ŒìŠ¤í† ë¦¬ light"));
 		HFONT oldfont = (HFONT)SelectObject(mem1dc, hfont);
 		TCHAR count[100];
-		TextOut(mem1dc, 100, 3400, L"Á¡ÇÁ È½¼ö : ", lstrlenW(L"Á¡ÇÁ È½¼ö : "));
+		TextOut(mem1dc, 100, 3400, L"ì í”„ íšŸìˆ˜ : ", lstrlenW(L"ì í”„ íšŸìˆ˜ : "));
 		_itow_s(player.GetJumpCount(), count, 10);
 		TextOut(mem1dc, 300, 3400, count, lstrlenW(count));
 
-		TextOut(mem1dc, 500, 3400, L"Á×Àº È½¼ö : ", lstrlenW(L"Á×Àº È½¼ö : "));
+		TextOut(mem1dc, 500, 3400, L"ì£½ì€ íšŸìˆ˜ : ", lstrlenW(L"ì£½ì€ íšŸìˆ˜ : "));
 		_itow_s(player.GetDieCount(), count, 10);
 		TextOut(mem1dc, 700, 3400, count, lstrlenW(count));
 		SelectObject(mem1dc, oldfont);
@@ -107,38 +107,38 @@ void MAP :: DrawBK(HDC& mem1dc, HDC& mem2dc, RECT& rectview, const PLAYER& playe
 void MAP::DrawLoadBK(HDC& mem1dc, HDC& mem2dc, BLENDFUNCTION bf)
 {
 	HDC gdidc = CreateCompatibleDC(mem1dc);
-	//mem1dcÀÇ Ä³¸¯ÅÍ±×¸±°ø°£¸¸Å­¸¸ ¾ò¾î¿Â´Ù(½ÇÁ¦ mem1dc¿¡´Â ¹è°æÀÌÀÖÀ¸¹Ç·Î 0,0 ºÎÅÍ MAPWIDTH,MAPHEIGHT ±îÁöÀÇ ºñÆ®¸ÊÀÌ µé¾î°¨)
-	HBITMAP tmpdc = CreateCompatibleBitmap(mem1dc, MAPWIDTH, MAPHEIGHT);
+	//mem1dcì˜ ìºë¦­í„°ê·¸ë¦´ê³µê°„ë§Œí¼ë§Œ ì–»ì–´ì˜¨ë‹¤(ì‹¤ì œ mem1dcì—ëŠ” ë°°ê²½ì´ìˆìœ¼ë¯€ë¡œ 0,0 ë¶€í„° GameConst::kViewportWidth,GameConst::kMapBitmapHeight ê¹Œì§€ì˜ ë¹„íŠ¸ë§µì´ ë“¤ì–´ê°)
+	HBITMAP tmpdc = CreateCompatibleBitmap(mem1dc, GameConst::kViewportWidth, GameConst::kMapBitmapHeight);
 	HBITMAP oldtmpdc = (HBITMAP)SelectObject(gdidc, tmpdc);
-	//¿©±â¼­ 0,0 ~62,50 ±îÁöÀÇ ºñÆ®¸ÊÀ» Ä³¸¯ÅÍ±âÁØÀ¸·Î ¹Ù²ãÁØ´Ù (ÇÃ·¹ÀÌ¾î°¡ ÀÖ´Â À§Ä¡ÀÇ ºñÆ®¸ÊÀ» º¹»çÇÔ)
-	BitBlt(gdidc, 0, 0, MAPWIDTH, MAPHEIGHT, mem2dc, 0, 0, BLACKNESS);
+	//ì—¬ê¸°ì„œ 0,0 ~62,50 ê¹Œì§€ì˜ ë¹„íŠ¸ë§µì„ ìºë¦­í„°ê¸°ì¤€ìœ¼ë¡œ ë°”ê¿”ì¤€ë‹¤ (í”Œë ˆì´ì–´ê°€ ìˆëŠ” ìœ„ì¹˜ì˜ ë¹„íŠ¸ë§µì„ ë³µì‚¬í•¨)
+	BitBlt(gdidc, 0, 0, GameConst::kViewportWidth, GameConst::kMapBitmapHeight, mem2dc, 0, 0, BLACKNESS);
 
-	if (black_t > 0)	//¸Ê ÀÌµ¿ÇÒ¶§
+	if (black_t > 0)	//ë§µ ì´ë™í• ë•Œ
 	{
-		GdiAlphaBlend(mem1dc, 0, 0, MAPWIDTH, MAPHEIGHT, gdidc, 0, 0, MAPWIDTH, MAPHEIGHT, bf);
-		//BitBlt(mem1dc, 0, 0, MAPWIDTH, MAPHEIGHT, mem2dc, 0, 0, BLACKNESS);
+		GdiAlphaBlend(mem1dc, 0, 0, GameConst::kViewportWidth, GameConst::kMapBitmapHeight, gdidc, 0, 0, GameConst::kViewportWidth, GameConst::kMapBitmapHeight, bf);
+		//BitBlt(mem1dc, 0, 0, GameConst::kViewportWidth, GameConst::kMapBitmapHeight, mem2dc, 0, 0, BLACKNESS);
 	}
 
 	SelectObject(gdidc, oldtmpdc);
 	DeleteObject(tmpdc);
 	DeleteObject(gdidc);
 }
-//»óÅÂÃ¢
+//ìƒíƒœì°½
 void MAP::DrawUi(HDC& mem1dc, HDC& mem2dc,CAMERA camera)
 {
 	mem2dc = CreateCompatibleDC(mem1dc);
 	SelectObject(mem2dc, hbitui);
 	TransparentBlt(mem1dc, camera.GetX()+400, camera.GetY()+700, 199, 65, mem2dc, 0, 0, 199, 65, RGB(0, 255, 0));
-	//BitBlt(mem1dc, 0, 0, MAPWIDTH, MAPHEIGHT, mem2dc, 0, 0, SRCCOPY);	//Ui ÀüÃ¼ »õ·Î°íÄ§
+	//BitBlt(mem1dc, 0, 0, GameConst::kViewportWidth, GameConst::kMapBitmapHeight, mem2dc, 0, 0, SRCCOPY);	//Ui ì „ì²´ ìƒˆë¡œê³ ì¹¨
 	DeleteObject(mem2dc);
 }
-//HP¹Ù
+//HPë°”
 void MAP::DrawHP(HDC& mem1dc, HDC& mem2dc, CAMERA camera,PLAYER player)
 {
 	int hp = player.GetCurrentHP() * 171 / 100;
 	TCHAR hpname[100];
 	_itow_s(player.GetCurrentHP(), hpname, 10);
-	HFONT hfont = CreateFont(14, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("¸ŞÀÌÇÃ½ºÅä¸® light"));
+	HFONT hfont = CreateFont(14, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("ë©”ì´í”ŒìŠ¤í† ë¦¬ light"));
 	HFONT oldfont =(HFONT)SelectObject(mem1dc, hfont);
 	mem2dc = CreateCompatibleDC(mem1dc);
 	SelectObject(mem2dc, hbithp);
@@ -159,7 +159,7 @@ void MAP::DrawHP(HDC& mem1dc, HDC& mem2dc, CAMERA camera,PLAYER player)
 	SetTextColor(mem1dc, RGB(255, 255, 255));					 
 	TextOut(mem1dc, camera.GetX() + 505, camera.GetY() + 728, L"/100", lstrlenW(L"/100"));
 	//StretchBlt(mem1dc, camera.GetX() + 421, camera.GetY() + 728, hp, 65, mem2dc, 0, 0,hp, 65,SRCCOPY);
-	//BitBlt(mem1dc, 0, 0, MAPWIDTH, MAPHEIGHT, mem2dc, 0, 0, SRCCOPY);	//HP ÀüÃ¼ »õ·Î°íÄ§
+	//BitBlt(mem1dc, 0, 0, GameConst::kViewportWidth, GameConst::kMapBitmapHeight, mem2dc, 0, 0, SRCCOPY);	//HP ì „ì²´ ìƒˆë¡œê³ ì¹¨
 	SelectObject(mem1dc, oldfont);
 	DeleteObject(hfont);
 	DeleteObject(mem2dc);
@@ -170,24 +170,24 @@ void MAP::DrawDie(HDC& mem1dc, HDC& mem2dc, CAMERA camera, Sound& sound)
 	mem2dc = CreateCompatibleDC(mem1dc);
 	SelectObject(mem2dc, hbitdie);
 	TransparentBlt(mem1dc, camera.GetX() + 380, camera.GetY() + 240, 260, 130, mem2dc, 0, 0, 260, 130, RGB(255, 0, 0));
-	HFONT hfont = CreateFont(14, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("¸ŞÀÌÇÃ½ºÅä¸® bold"));
+	HFONT hfont = CreateFont(14, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("ë©”ì´í”ŒìŠ¤í† ë¦¬ bold"));
 	HFONT oldfont = (HFONT)SelectObject(mem1dc, hfont);
 
 	SetTextColor(mem1dc, RGB(32, 108, 168));
-	TextOut(mem1dc, camera.GetX() + 459, camera.GetY() + 260, L"È®ÀÎÀ» ´©¸£½Ã¸é ºÎÈ°ÇÏ°Ô µË´Ï´Ù.", lstrlenW(L"È®ÀÎÀ» ´©¸£½Ã¸é ºÎÈ°ÇÏ°Ô µË´Ï´Ù."));
-	TextOut(mem1dc, camera.GetX() + 461, camera.GetY() + 260, L"È®ÀÎÀ» ´©¸£½Ã¸é ºÎÈ°ÇÏ°Ô µË´Ï´Ù.", lstrlenW(L"È®ÀÎÀ» ´©¸£½Ã¸é ºÎÈ°ÇÏ°Ô µË´Ï´Ù."));
-	TextOut(mem1dc, camera.GetX() + 460, camera.GetY() + 259, L"È®ÀÎÀ» ´©¸£½Ã¸é ºÎÈ°ÇÏ°Ô µË´Ï´Ù.", lstrlenW(L"È®ÀÎÀ» ´©¸£½Ã¸é ºÎÈ°ÇÏ°Ô µË´Ï´Ù."));
-	TextOut(mem1dc, camera.GetX() + 460, camera.GetY() + 261, L"È®ÀÎÀ» ´©¸£½Ã¸é ºÎÈ°ÇÏ°Ô µË´Ï´Ù.", lstrlenW(L"È®ÀÎÀ» ´©¸£½Ã¸é ºÎÈ°ÇÏ°Ô µË´Ï´Ù."));
+	TextOut(mem1dc, camera.GetX() + 459, camera.GetY() + 260, L"í™•ì¸ì„ ëˆ„ë¥´ì‹œë©´ ë¶€í™œí•˜ê²Œ ë©ë‹ˆë‹¤.", lstrlenW(L"í™•ì¸ì„ ëˆ„ë¥´ì‹œë©´ ë¶€í™œí•˜ê²Œ ë©ë‹ˆë‹¤."));
+	TextOut(mem1dc, camera.GetX() + 461, camera.GetY() + 260, L"í™•ì¸ì„ ëˆ„ë¥´ì‹œë©´ ë¶€í™œí•˜ê²Œ ë©ë‹ˆë‹¤.", lstrlenW(L"í™•ì¸ì„ ëˆ„ë¥´ì‹œë©´ ë¶€í™œí•˜ê²Œ ë©ë‹ˆë‹¤."));
+	TextOut(mem1dc, camera.GetX() + 460, camera.GetY() + 259, L"í™•ì¸ì„ ëˆ„ë¥´ì‹œë©´ ë¶€í™œí•˜ê²Œ ë©ë‹ˆë‹¤.", lstrlenW(L"í™•ì¸ì„ ëˆ„ë¥´ì‹œë©´ ë¶€í™œí•˜ê²Œ ë©ë‹ˆë‹¤."));
+	TextOut(mem1dc, camera.GetX() + 460, camera.GetY() + 261, L"í™•ì¸ì„ ëˆ„ë¥´ì‹œë©´ ë¶€í™œí•˜ê²Œ ë©ë‹ˆë‹¤.", lstrlenW(L"í™•ì¸ì„ ëˆ„ë¥´ì‹œë©´ ë¶€í™œí•˜ê²Œ ë©ë‹ˆë‹¤."));
 
 	SetTextColor(mem1dc, RGB(255, 255, 255));
-	TextOut(mem1dc, camera.GetX() + 460, camera.GetY() + 260, L"È®ÀÎÀ» ´©¸£½Ã¸é ºÎÈ°ÇÏ°Ô µË´Ï´Ù.", lstrlenW(L"È®ÀÎÀ» ´©¸£½Ã¸é ºÎÈ°ÇÏ°Ô µË´Ï´Ù."));
+	TextOut(mem1dc, camera.GetX() + 460, camera.GetY() + 260, L"í™•ì¸ì„ ëˆ„ë¥´ì‹œë©´ ë¶€í™œí•˜ê²Œ ë©ë‹ˆë‹¤.", lstrlenW(L"í™•ì¸ì„ ëˆ„ë¥´ì‹œë©´ ë¶€í™œí•˜ê²Œ ë©ë‹ˆë‹¤."));
 	SelectObject(mem1dc, oldfont);
 	DeleteObject(hfont);
 
-	hfont = CreateFont(12, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("¸ŞÀÌÇÃ½ºÅä¸® light"));
+	hfont = CreateFont(12, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("ë©”ì´í”ŒìŠ¤í† ë¦¬ light"));
 	oldfont = (HFONT)SelectObject(mem1dc, hfont);
-	TextOut(mem1dc, camera.GetX() + 460, camera.GetY() + 285, L"¾Æ½±Áö¸¸ È®ÀÎÀ» ´©¸£½Ã¸é ¸ÊÀÇ ¸Ç Ã³À½", lstrlenW(L"¾Æ½±Áö¸¸ È®ÀÎÀ» ´©¸£½Ã¸é ¸ÊÀÇ ¸Ç Ã³À½."));
-	TextOut(mem1dc, camera.GetX() + 460, camera.GetY() + 297, L"À§Ä¡·Î µ¹¾Æ°¡°Ô µË´Ï´Ù. Æ÷±âÇÏÁö ¸¶¼¼¿ä!", lstrlenW(L"À§Ä¡·Î µ¹¾Æ°¡°Ô µË´Ï´Ù. Æ÷±âÇÏÁö ¸¶¼¼¿ä!"));
+	TextOut(mem1dc, camera.GetX() + 460, camera.GetY() + 285, L"ì•„ì‰½ì§€ë§Œ í™•ì¸ì„ ëˆ„ë¥´ì‹œë©´ ë§µì˜ ë§¨ ì²˜ìŒ", lstrlenW(L"ì•„ì‰½ì§€ë§Œ í™•ì¸ì„ ëˆ„ë¥´ì‹œë©´ ë§µì˜ ë§¨ ì²˜ìŒ."));
+	TextOut(mem1dc, camera.GetX() + 460, camera.GetY() + 297, L"ìœ„ì¹˜ë¡œ ëŒì•„ê°€ê²Œ ë©ë‹ˆë‹¤. í¬ê¸°í•˜ì§€ ë§ˆì„¸ìš”!", lstrlenW(L"ìœ„ì¹˜ë¡œ ëŒì•„ê°€ê²Œ ë©ë‹ˆë‹¤. í¬ê¸°í•˜ì§€ ë§ˆì„¸ìš”!"));
 
 	DeleteObject(mem2dc);
 
