@@ -48,11 +48,3 @@ private:
 	HDC* mem1dc;
 	std::vector<SPtr<Obstacle>> m_obstacles;
 };
-
-namespace AnimPeriod {
-	constexpr int kType0 = 10;
-	constexpr int kType4 = 8;
-	constexpr int kType103 = 30;
-	constexpr int kGear = 5;
-	constexpr int kPortal = 20;
-}
