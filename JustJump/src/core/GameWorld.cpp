@@ -76,8 +76,8 @@ IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 
 void GameWorld::Update(float dt)
 {
-    TickAnimation(dt);
-    UpdateGameplay();
+    dt = std::min(dt, GameConst::kMaxDeltaTime);
+    UpdateGameplay(dt);
     UpdateFadeAndCamera();
 }
 
@@ -155,21 +155,7 @@ void GameWorld::RenderScene(HDC hdc)
     if (help_dc) DeleteDC(help_dc);
 }
 
-void GameWorld::TickAnimation(float dt)
-{
-    dt = std::min(dt, GameConst::kMaxDeltaTime);
-    m_anim_accum += dt;
-
-    while (m_anim_accum >= GameConst::kAnimTickSeconds)
-    {
-        m_anim_accum -= GameConst::kAnimTickSeconds;
-        ++m_obj_t;
-        if (m_obj_t >= GameConst::kAnimCounterMax)
-            m_obj_t = 0;
-    }
-}
-
-void GameWorld::UpdateGameplay()
+void GameWorld::UpdateGameplay(float dt)
 {
     if (InputManager::IsRegistered())
     {
@@ -179,14 +165,10 @@ void GameWorld::UpdateGameplay()
             m_camera.ProcessInput();
     }
 
-    m_player.UpdateMovement(m_obj_t);
+    m_player.Update(dt);
     m_object_manager.AdjustPlayer(m_player, m_map, m_ocount, m_hinstance, m_sound);
     m_map.movemap();
-
-    m_player.SelectBitmap();
-    m_player.UpdateInvincibilityTimer();
-    m_player.UpdateSpikeKnockback();
-    m_object_manager.IndexChange(m_obj_t);
+    m_object_manager.UpdateAll(dt);
 }
 
 void GameWorld::UpdateFadeAndCamera()

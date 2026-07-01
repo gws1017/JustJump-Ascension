@@ -152,6 +152,36 @@ void Obstacle::DrawObj(HDC& mem1dc)
 	DeleteDC(odc);
 }
 
+void Obstacle::Update(float dt)
+{
+	if (type == EObstacleType::GearRow || type == EObstacleType::GearCol)
+		Move();
+
+	const float period = GetAnimPeriodSec();
+	if (period <= 0.f) return;
+	m_animAccum += dt;
+	if (m_animAccum >= period)
+	{
+		m_animAccum -= period;
+		IndexChange();
+	}
+}
+
+float Obstacle::GetAnimPeriodSec() const
+{
+	switch (type)
+	{
+	case EObstacleType::AnimatedBg: return AnimPeriod::kAnimatedBg * GameConst::kAnimTickSeconds;
+	case EObstacleType::BeltRight:
+	case EObstacleType::BeltLeft:   return AnimPeriod::kBelt       * GameConst::kAnimTickSeconds;
+	case EObstacleType::Gas:        return AnimPeriod::kGas        * GameConst::kAnimTickSeconds;
+	case EObstacleType::GearRow:
+	case EObstacleType::GearCol:    return AnimPeriod::kGear       * GameConst::kAnimTickSeconds;
+	case EObstacleType::Portal:     return AnimPeriod::kPortal     * GameConst::kAnimTickSeconds;
+	default: return 0.f;
+	}
+}
+
 void Obstacle::Move()
 {
 	

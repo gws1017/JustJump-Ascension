@@ -556,8 +556,34 @@ void PLAYER::OnKeyReleased(WPARAM key)
 	}
 }
 
+void PLAYER::Update(float dt)
+{
+	if (PlayerState == EPlayerState::Move && !InputHelper::IsLRConflict())
+	{
+		m_walkAnimAccum += dt;
+		if (m_walkAnimAccum >= kWalkAnimPeriod)
+		{
+			m_walkAnimAccum -= kWalkAnimPeriod;
+			PlayAnim();
+		}
+	}
+	if (PlayerState == EPlayerState::RopeMove)
+	{
+		m_ropeAnimAccum += dt;
+		if (m_ropeAnimAccum >= kRopeAnimPeriod)
+		{
+			m_ropeAnimAccum -= kRopeAnimPeriod;
+			PlayAnim();
+		}
+	}
+	UpdateMovement();
+	SelectBitmap();
+	UpdateInvincibilityTimer();
+	UpdateSpikeKnockback();
+}
+
 //플레이어 움직임
-void PLAYER::UpdateMovement(int delta_time)
+void PLAYER::UpdateMovement()
 {
 	switch(PlayerState)
 	{
@@ -622,8 +648,6 @@ void PLAYER::UpdateMovement(int delta_time)
 	case EPlayerState::Move:
 		if (!InputHelper::IsLRConflict())
 		{
-			if (delta_time % 5 == 0)
-				PlayAnim();
 			if (MoveCommand == EMoveCommand::Left)
 				x -= m_rowSpeed;
 			else if (MoveCommand == EMoveCommand::Right)
@@ -703,8 +727,6 @@ void PLAYER::UpdateMovement(int delta_time)
 
 	case EPlayerState::RopeMove:
 		SavedY = y;	//줄에매달렸을때는 그자리가 저장지점이다
-		if (delta_time % 10 == 0)	//10번 타이머 돌아갈때 한번 움직이게해준다
-			PlayAnim();
 		if (!InputHelper::IsUDConflict())
 		{
 			if (MoveCommand == EMoveCommand::Up)

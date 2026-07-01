@@ -7,7 +7,6 @@ namespace GameConst {
 
     constexpr float kMaxDeltaTime = 0.05f;
     constexpr float kAnimTickSeconds = 1.0f / 60.0f;
-    constexpr int   kAnimCounterMax = 27000;
 
     constexpr int kAlphaMax = 255;
     constexpr int kFadeStep = 40;

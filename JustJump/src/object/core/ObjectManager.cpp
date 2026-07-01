@@ -517,32 +517,10 @@ void ObjectManager::DrawObjects()
 	}
 }
 
-void ObjectManager::IndexChange(const int obj_t)
+void ObjectManager::UpdateAll(float dt)
 {
 	for (auto& obstacle : m_obstacles)
-	{
-		if (obstacle->GetType() == EObstacleType::AnimatedBg)
-		{
-			if (obj_t % AnimPeriod::kAnimatedBg == 0) obstacle->IndexChange();
-		}
-		if (obstacle->GetType() == EObstacleType::BeltRight || obstacle->GetType() == EObstacleType::BeltLeft)
-		{
-			if (obj_t % AnimPeriod::kBelt == 0) obstacle->IndexChange();
-		}
-		if (obstacle->GetType() == EObstacleType::Gas)
-		{
-			if (obj_t % AnimPeriod::kGas == 0) obstacle->IndexChange();
-		}
-		if (obstacle->GetType() == EObstacleType::GearRow || obstacle->GetType() == EObstacleType::GearCol)
-		{
-			if (obj_t % AnimPeriod::kGear == 0) obstacle->IndexChange();
-			obstacle->Move();
-		}
-		else if (obstacle->GetType() == EObstacleType::Portal)
-		{
-			if (obj_t % AnimPeriod::kPortal == 0) obstacle->IndexChange();
-		}
-	}
+		obstacle->Update(dt);
 }
 
 void ObjectManager::ResetObstacle()

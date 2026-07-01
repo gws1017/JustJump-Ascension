@@ -109,14 +109,16 @@ public:
 
 	void ProcessInput(Sound& sound);
 
+	void Update(float dt) override;
+
 	//방향키 눌렀을때 플레이어 세팅
 	void OnKeyPressed(WPARAM key, Sound& sound);
 	//방향키 땠을때 플레이어 세팅풀기
 	void OnKeyReleased(WPARAM key);
-	
+
 	void SavePositionX() {	SavedX = x;	}
 	//플레이어 무브
-	void UpdateMovement(int delta_time);
+	void UpdateMovement();
 	//플레이어 스프라이트선택
 	void SelectBitmap();
 	//애니메이션
@@ -170,6 +172,12 @@ private:
 	static constexpr int kDefaultRowSpeed = 3;
 	static constexpr int kJumpRowSpeed = 1;
 	int m_rowSpeed = kDefaultRowSpeed;
+
+	// 애니메이션 누적 시간 (5/60s = 걷기, 10/60s = 로프)
+	static constexpr float kWalkAnimPeriod = 5.f / 60.f;
+	static constexpr float kRopeAnimPeriod = 10.f / 60.f;
+	float m_walkAnimAccum = 0.f;
+	float m_ropeAnimAccum = 0.f;
 
 	int m_jumpCount = 0;
 	int m_dieCount = 0;

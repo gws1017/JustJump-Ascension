@@ -36,7 +36,7 @@ public:
 
 	void DrawObjects();
 
-	void IndexChange(const int obj_t);
+	void UpdateAll(float dt);
 
 	void ResetObstacle();
 

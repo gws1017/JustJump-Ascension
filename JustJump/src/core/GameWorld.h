@@ -49,10 +49,6 @@ private:
 	RECT m_rectview{};
 	BLENDFUNCTION m_blendfunction{};
 
-	// animation / ui state
-	float m_anim_accum = 0.0f;
-	
-	int m_obj_t = 0;
 	int m_ocount = 0;
 	int m_help_button = 0;
 	int m_start_button = 0;
@@ -69,8 +65,7 @@ private:
 	HBITMAP m_help_bit = nullptr;
 
 private:
-	void TickAnimation(float dt);
-	void UpdateGameplay();
+	void UpdateGameplay(float dt);
 	void UpdateFadeAndCamera();
 
 	void RenderScene(HDC hdc);
