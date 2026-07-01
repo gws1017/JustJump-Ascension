@@ -5,7 +5,7 @@
 
 
 PLAYER::PLAYER()
-	: Object(80,655,14,25), SavedY(3700),
+	: Object(GameConst::kPlayerSpawnX, GameConst::kPlayerTitleY, GameConst::kPlayerWidth, GameConst::kPlayerHeight), SavedY(GameConst::kPlayerSpawnY),
 	SpriteWidth(31), SpriteHeight(25),
 	CurrentHP(100), PlayerState(EPlayerState::Idle), PlayerDirection(EPlayerDirection::Right),
 	FallAdjustSpeed(0), MoveCommand(EMoveCommand::Left),
@@ -24,11 +24,11 @@ PLAYER::~PLAYER()
 
 void PLAYER::Initialzie()
 {
-	x = 80;
-	y = 3700;
-	SavedY = 3700;
-	width = 14;
-	height = 25;
+	x = GameConst::kPlayerSpawnX;
+	y = GameConst::kPlayerSpawnY;
+	SavedY = GameConst::kPlayerSpawnY;
+	width = GameConst::kPlayerWidth;
+	height = GameConst::kPlayerHeight;
 	PlayerState = EPlayerState::Airborne;
 	PlayerDirection = EPlayerDirection::Right;
 	FallAdjustSpeed = 0;
@@ -288,8 +288,8 @@ void PLAYER::HandleLeftPressed()
 			m_rowSpeed = 1;	//점프했을때 방향을 바꾸려하면 드라마틱하게 다시 오는경우는 없지만 그래도 원했던것보단 조금 나감
 		break;
 	case EPlayerState::Crouch:
-		height += 12;
-		y -= 12;
+		height += GameConst::kCrouchHeightDelta;
+		y -= GameConst::kCrouchHeightDelta;
 		PlayerState = EPlayerState::Move;
 		break;
 	default:
@@ -320,8 +320,8 @@ void PLAYER::HandleRightPressed()
 			m_rowSpeed = kJumpRowSpeed;	//점프했을때 방향을 바꾸려하면 드라마틱하게 다시 오는경우는 없지만 그래도 원했던것보단 조금 나감
 		break;
 	case EPlayerState::Crouch:
-		height += 12;
-		y -= 12;
+		height += GameConst::kCrouchHeightDelta;
+		y -= GameConst::kCrouchHeightDelta;
 		PlayerState = EPlayerState::Move;
 		break;
 	}
@@ -364,8 +364,8 @@ void PLAYER::HandleDownPressed()
 	else if (PlayerState == EPlayerState::Idle) {
 
 		PlayerState = EPlayerState::Crouch;	//숙이는거는 가만히 있을때만 가능하다
-		height -= 12;		//숙이면 키도 줄어들어야한다.
-		y += 12;
+		height -= GameConst::kCrouchHeightDelta;		//숙이면 키도 줄어들어야한다.
+		y += GameConst::kCrouchHeightDelta;
 	}
 }
 
@@ -382,7 +382,7 @@ void PLAYER::HandleSpacePressed(Sound& sound)
 			if (InputHelper::IsLeftDown() || InputHelper::IsRightDown())	//둘중에 하나의 키라도 누르고있었다면 점프뜀 하지만 아니면 못뜀
 			{
 				MoveCommand = static_cast<EMoveCommand>(PlayerDirection);	//그리고 이때 어디로뛸건지 강제로 정함
-				RopeJumpCooldown = 2;	//점프시 다시못잡게도 바꿔줌
+				RopeJumpCooldown = GameConst::kRopeJumpCooldown;
 			}
 			else return;//아니면못뜀
 		}
@@ -430,8 +430,8 @@ void PLAYER::HandleLeftReleased()
 			if (PlayerState == EPlayerState::Idle)	//수그리기의 원래 알고리즘인 state==1 일때만 수그리도록 한다
 			{
 				PlayerState = EPlayerState::Crouch;
-				height -= 12;
-				y += 12;//원래대로 돌려놔주자
+				height -= GameConst::kCrouchHeightDelta;
+				y += GameConst::kCrouchHeightDelta;//원래대로 돌려놔주자
 			}
 		}
 	}
@@ -461,8 +461,8 @@ void PLAYER::HandleRightReleased()
 			if (PlayerState == EPlayerState::Idle)	//수그리기의 원래 알고리즘인 state==1 일때만 수그리도록 한다
 			{
 				PlayerState = EPlayerState::Crouch;
-				height -= 12;
-				y += 12;//원래대로 돌려놔주자
+				height -= GameConst::kCrouchHeightDelta;
+				y += GameConst::kCrouchHeightDelta;//원래대로 돌려놔주자
 			}
 		}
 	}
@@ -508,8 +508,8 @@ void PLAYER::HandleDownReleased()
 
 		if (PlayerState == EPlayerState::Crouch)
 		{
-			height += 12;
-			y -= 12;	//다시 키 늘려줌
+			height += GameConst::kCrouchHeightDelta;
+			y -= GameConst::kCrouchHeightDelta;	//다시 키 늘려줌
 			PlayerState = EPlayerState::Idle;
 		}
 	
@@ -642,7 +642,7 @@ void PLAYER::UpdateMovement(int delta_time)
 
 	case EPlayerState::Hurt:
 		m_rowSpeed *= 3;
-		InvincibleTime = 100;		//무적시간 2초
+		InvincibleTime = GameConst::kInvincibleFrames;
 		SavedY = y;			//피격과 동시에 y좌표저장(적당히 내려오기 위해)
 		bIsHurt = true;	//피격함수 on
 		PlayerState = EPlayerState::Jump;				//피격하면 공중으로 한번 붕 뜬다
@@ -793,7 +793,7 @@ void PLAYER::Die(Sound& sound)
 	bIsDead = true;
 	MoveCommand = EMoveCommand::None;
 	PlayerState = EPlayerState::Crouch;
-	y += 12;
+	y += GameConst::kCrouchHeightDelta;
 	height = 13;
 	InvincibleTime = 1;
 

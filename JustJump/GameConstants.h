@@ -24,6 +24,30 @@ namespace GameConst {
 
     constexpr int kMapBitmapHeight = 4098;   // 맵 배경 비트맵 세로 크기 (kWorldHeight와 2px 차이, 원본 에셋 크기)
     constexpr int kMapScrollSpeed = 5;       // 타이틀 화면 배경 스크롤 속도
+
+    // 플레이어
+    constexpr int kPlayerSpawnX       = 80;   // 플레이어 스폰 X (타이틀/게임 공통)
+    constexpr int kPlayerTitleY       = 655;  // 타이틀 화면 플레이어 Y
+    constexpr int kPlayerSpawnY       = 3700; // 게임 스폰 Y
+    constexpr int kPlayerWidth        = 14;   // 플레이어 기본 너비
+    constexpr int kPlayerHeight       = 25;   // 플레이어 기본 높이
+    constexpr int kCrouchHeightDelta  = 12;   // 웅크리기 시 높이/y 변화량
+    constexpr int kRopeJumpCooldown   = 2;    // 로프 점프 후 재탑승 방지 프레임
+    constexpr int kInvincibleFrames   = 100;  // 피격 무적 시간(프레임)
+    constexpr int kFallDamageThreshold = 200; // 낙뎀 발생 최소 낙하 거리(px)
+
+    // 월드/게임플레이
+    constexpr int kPlatformCollisionAdjust = 10;  // 발판 충돌 판정 여유값
+    constexpr int kMaxObstaclesPerMap      = 150; // 맵당 최대 오브젝트 수
+}
+
+// 오브젝트 애니메이션 주기 (obj_t % N == 0)
+namespace AnimPeriod {
+    constexpr int kAnimatedBg = 10;
+    constexpr int kBelt       = 8;
+    constexpr int kGas        = 30;
+    constexpr int kGear       = 5;
+    constexpr int kPortal     = 20;
 }
 
 // 맵 ID

@@ -13,7 +13,7 @@
 bool ObjectManager::CollP2W(PLAYER player, SPtr<Obstacle> obstacle)
 //----------------------------------------
 {
-	int adjust = 10;
+	const int adjust = GameConst::kPlatformCollisionAdjust;
 	//왜 101이 먼저오냐면 발판보다는 장애물이 우선순위기때문임
 	if (ObstacleTypeUtil::IsBoxHitbox(obstacle->GetType())) { //장애물일때는 플레이어 네모빡스가 히트박스가된다
 		if (obstacle->GetType() == EObstacleType::GearRow || obstacle->GetType() == EObstacleType::GearCol)
@@ -93,9 +93,9 @@ void ObjectManager::AdjustPlayer(PLAYER& player, MAP& m, int& ocount, HINSTANCE 
 		player.SetX(player.GetWidth());
 		player.SetMoveCommand(EMoveCommand::None);
 	}
-	else if (player.GetX() + player.GetWidth() > 1023)
+	else if (player.GetX() + player.GetWidth() > GameConst::kWorldMaxX)
 	{
-		player.SetX(1023 - player.GetWidth());
+		player.SetX(GameConst::kWorldMaxX - player.GetWidth());
 		player.SetMoveCommand(EMoveCommand::None);
 	}
 	for (const auto& obstacle : m_obstacles)
@@ -112,7 +112,7 @@ void ObjectManager::AdjustPlayer(PLAYER& player, MAP& m, int& ocount, HINSTANCE 
 
 				if (player.GetState() == EPlayerState::Airborne) //떨어지는 중일때 부딪혔다 ?
 				{
-					if (abs(player.GetSaveY() - player.GetY()) > 200)	//낙뎀을받아야한다면
+					if (abs(player.GetSaveY() - player.GetY()) > GameConst::kFallDamageThreshold)	//낙뎀을받아야한다면
 					{
 						if (player.GetInvincibleTime() == 0)	//무적이 아니라면
 						{
@@ -135,8 +135,8 @@ void ObjectManager::AdjustPlayer(PLAYER& player, MAP& m, int& ocount, HINSTANCE 
 
 					if (InputHelper::IsDownDown()) {
 						player.SetState(EPlayerState::Crouch);	//숙이고있던 상태였다면 계속 숙이고있어줌
-						player.SetY(player.GetY() + 12);
-						player.SetHeight(player.GetHeight() - 12);	//계산이 끝났다면 다시 숙이기상태로 돌려줌
+						player.SetY(player.GetY() + GameConst::kCrouchHeightDelta);
+						player.SetHeight(player.GetHeight() - GameConst::kCrouchHeightDelta);	//계산이 끝났다면 다시 숙이기상태로 돌려줌
 					}
 					else player.SetState(EPlayerState::Idle);				//숙이던게 아니였으면 땅에부딪혔으니 정지상태해줌
 					player.SetFallSpeed(0);			//떨어질때가속도를 위한거니 이것도 정지해줌
@@ -165,8 +165,8 @@ void ObjectManager::AdjustPlayer(PLAYER& player, MAP& m, int& ocount, HINSTANCE 
 						}
 						if (player.GetState() == EPlayerState::Crouch) //숙이고있었다면
 						{
-							player.SetY(player.GetY() - 12);
-							player.SetHeight(player.GetHeight() + 12);	//계산전에 돌려놓고 시작한다. 이건 땅에 닿을시점에 다시돌려준다
+							player.SetY(player.GetY() - GameConst::kCrouchHeightDelta);
+							player.SetHeight(player.GetHeight() + GameConst::kCrouchHeightDelta);	//계산전에 돌려놓고 시작한다. 이건 땅에 닿을시점에 다시돌려준다
 						}
 						if (player.GetState() == EPlayerState::Airborne)//일반일때는 살짝 점프 뛰듯이 가는데 떨어지는중이면 살짝만 이동한다
 						{
@@ -179,7 +179,7 @@ void ObjectManager::AdjustPlayer(PLAYER& player, MAP& m, int& ocount, HINSTANCE 
 								player.SetSpikeHurt(8);	//8번 오른쪽으로감
 							}
 
-							player.SetInvicible(100);	//무적시간 넣어줌 (이동하는로직은 state==7 일때 알아서 다뤄줌
+							player.SetInvicible(GameConst::kInvincibleFrames);	//무적시간 넣어줌 (이동하는로직은 state==7 일때 알아서 다뤄줌
 						}
 						else {
 							player.SetState(EPlayerState::Hurt);		//피격으로감
@@ -236,8 +236,8 @@ void ObjectManager::AdjustPlayer(PLAYER& player, MAP& m, int& ocount, HINSTANCE 
 							}
 							if (player.GetState() == EPlayerState::Crouch) //숙이고있었다면
 							{
-								player.SetY(player.GetY() - 12);
-								player.SetHeight(player.GetHeight() + 12);	//계산전에 돌려놓고 시작한다. 이건 땅에 닿을시점에 다시돌려준다
+								player.SetY(player.GetY() - GameConst::kCrouchHeightDelta);
+								player.SetHeight(player.GetHeight() + GameConst::kCrouchHeightDelta);	//계산전에 돌려놓고 시작한다. 이건 땅에 닿을시점에 다시돌려준다
 							}
 							if (player.GetState() == EPlayerState::Airborne)
 							{
@@ -246,7 +246,7 @@ void ObjectManager::AdjustPlayer(PLAYER& player, MAP& m, int& ocount, HINSTANCE 
 									player.SetSpikeHurt(-8);
 								}
 
-								player.SetInvicible(100);
+								player.SetInvicible(GameConst::kInvincibleFrames);
 							}
 							else {
 								player.SetMoveCommand(EMoveCommand::Left); //무조건 왼쪽임
@@ -266,8 +266,8 @@ void ObjectManager::AdjustPlayer(PLAYER& player, MAP& m, int& ocount, HINSTANCE 
 						}
 						if (player.GetState() == EPlayerState::Crouch) //숙이고있었다면
 						{
-							player.SetY(player.GetY() - 12);
-							player.SetHeight(player.GetHeight() + 12);	//계산전에 돌려놓고 시작한다. 이건 땅에 닿을시점에 다시돌려준다
+							player.SetY(player.GetY() - GameConst::kCrouchHeightDelta);
+							player.SetHeight(player.GetHeight() + GameConst::kCrouchHeightDelta);	//계산전에 돌려놓고 시작한다. 이건 땅에 닿을시점에 다시돌려준다
 						}
 						if (player.GetState() == EPlayerState::Airborne)//일반일때는 살짝 점프 뛰듯이 가는데 떨어지는중이면 살짝만 이동한다
 						{
@@ -280,7 +280,7 @@ void ObjectManager::AdjustPlayer(PLAYER& player, MAP& m, int& ocount, HINSTANCE 
 								player.SetSpikeHurt(8);	//8번 오른쪽으로감
 							}
 
-							player.SetInvicible(100);	//무적시간 넣어줌 (이동하는로직은 state==7 일때 알아서 다뤄줌
+							player.SetInvicible(GameConst::kInvincibleFrames);	//무적시간 넣어줌 (이동하는로직은 state==7 일때 알아서 다뤄줌
 						}
 						else {
 							player.SetMoveCommand(static_cast<EMoveCommand>(player.GetDirection()));
@@ -348,7 +348,7 @@ void ObjectManager::AdjustPlayer(PLAYER& player, MAP& m, int& ocount, HINSTANCE 
 								player.SetX(obstacle->GetX() + (obstacle->GetWidth() / 2));
 								if (InputHelper::IsDownDown())	//이때는 수그리기아니라 밧줄 아래로 내려가는것이므로 수그리기로 깍인거 돌려준다
 								{
-									player.SetY(player.GetY() - 12);
+									player.SetY(player.GetY() - GameConst::kCrouchHeightDelta);
 									player.SetHeight(25);
 								}
 							}
@@ -417,7 +417,7 @@ int ObjectManager::InitObject(int mapnum, HINSTANCE g_hinst)
 
 	if (in.is_open())
 	{
-		for (int i = 0; i < 150; ++i)
+		for (int i = 0; i < GameConst::kMaxObstaclesPerMap; ++i)
 		{
 			if (in.eof())
 			{
@@ -449,9 +449,9 @@ void ObjectManager::AdjustCamera(CAMERA& camera, PLAYER player)
 			camera.SetY(player.GetY() - player.GetHeight());		//384는 맵 크기 768의 절반
 		}
 	}
-	else if (player.GetY() + player.GetHeight() > camera.GetY() + 768)	//캐릭터의 발바닥이 카메라밖을 넘어서면
+	else if (player.GetY() + player.GetHeight() > camera.GetY() + GameConst::kViewportHeight)	//캐릭터의 발바닥이 카메라밖을 넘어서면
 	{
-		if (camera.GetY() >= 3232)	//최하점일땐 이동해주지않음
+		if (camera.GetY() >= GameConst::kDefaultCameraY)	//최하점일땐 이동해주지않음
 		{
 
 		}
@@ -523,24 +523,24 @@ void ObjectManager::IndexChange(const int obj_t)
 	{
 		if (obstacle->GetType() == EObstacleType::AnimatedBg)
 		{
-			if (obj_t % 10 == 0) obstacle->IndexChange();
+			if (obj_t % AnimPeriod::kAnimatedBg == 0) obstacle->IndexChange();
 		}
 		if (obstacle->GetType() == EObstacleType::BeltRight || obstacle->GetType() == EObstacleType::BeltLeft)
 		{
-			if (obj_t % 8 == 0) obstacle->IndexChange();
+			if (obj_t % AnimPeriod::kBelt == 0) obstacle->IndexChange();
 		}
 		if (obstacle->GetType() == EObstacleType::Gas)
 		{
-			if (obj_t % 30 == 0) obstacle->IndexChange();
+			if (obj_t % AnimPeriod::kGas == 0) obstacle->IndexChange();
 		}
 		if (obstacle->GetType() == EObstacleType::GearRow || obstacle->GetType() == EObstacleType::GearCol)
 		{
-			if (obj_t % 5 == 0) obstacle->IndexChange();
+			if (obj_t % AnimPeriod::kGear == 0) obstacle->IndexChange();
 			obstacle->Move();
 		}
 		else if (obstacle->GetType() == EObstacleType::Portal)
 		{
-			if (obj_t % 20 == 0) obstacle->IndexChange();
+			if (obj_t % AnimPeriod::kPortal == 0) obstacle->IndexChange();
 		}
 	}
 }
