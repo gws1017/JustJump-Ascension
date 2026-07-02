@@ -1,4 +1,4 @@
-#include "Global.h"
+﻿#include "Global.h"
 #include "world/Map.h"
 
 #include "object/view/Camera.h"
