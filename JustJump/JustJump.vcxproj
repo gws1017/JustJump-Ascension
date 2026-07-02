@@ -169,6 +169,8 @@
     <ClCompile Include="src\object\view\Camera.cpp" />
     <ClCompile Include="src\system\Load.cpp" />
     <ClCompile Include="src\system\Sound.cpp" />
+    <ClCompile Include="src\ui\DeadScreenUI.cpp" />
+    <ClCompile Include="src\ui\TitleMenuUI.cpp" />
     <ClCompile Include="src\world\Map.cpp" />
     <ClCompile Include="src\world\obstacle\obstacle.cpp" />
   </ItemGroup>
@@ -190,6 +192,8 @@
     <ClInclude Include="src\resource.h" />
     <ClInclude Include="src\system\Load.h" />
     <ClInclude Include="src\system\Sound.h" />
+    <ClInclude Include="src\ui\DeadScreenUI.h" />
+    <ClInclude Include="src\ui\TitleMenuUI.h" />
     <ClInclude Include="src\world\Map.h" />
     <ClInclude Include="src\world\obstacle\obstacle.h" />
   </ItemGroup>

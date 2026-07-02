@@ -25,9 +25,10 @@ bool GameWorld::Initialize(HINSTANCE hinstance)
     m_map.CreateMap(m_hinstance);
     m_map.CreateUi(m_hinstance);
     m_map.CreateHP(m_hinstance);
-    m_map.CreateDie(m_hinstance);
-    m_map.CreateStart(m_hinstance);
-    m_map.CreateHelp(m_hinstance);
+
+    //UI 초기화
+    m_titleUI.Load(m_hinstance);
+    m_deadUI.Load(m_hinstance);
 
     //플레이어 초기화
     m_player.SetBitMap(m_hinstance);
@@ -49,7 +50,7 @@ bool GameWorld::Initialize(HINSTANCE hinstance)
 
     //사운드 초기화
     m_sound.Sound_Setup();
-    
+
     if (m_sound.Channel[0])
     {
         m_sound.Channel[0]->stop();
@@ -57,18 +58,12 @@ bool GameWorld::Initialize(HINSTANCE hinstance)
     m_sound.System->playSound(m_sound.bgmSound[0], nullptr, false, &m_sound.Channel[0]);
 
     if (m_map.GetMapNumber() == static_cast<int>(EMapId::Title))
-    m_hbit1 = (HBITMAP)LoadImage(m_hinstance, TEXT("img/start_rayer1.bmp"), 
-IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+        m_hbit1 = (HBITMAP)LoadImage(m_hinstance, TEXT("img/start_rayer1.bmp"),
+            IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
     else if (m_map.GetMapNumber() == static_cast<int>(EMapId::Clear))
-        m_hbit1 = (HBITMAP)LoadImage(m_hinstance, TEXT("img/clear.bmp"), 
-    IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+        m_hbit1 = (HBITMAP)LoadImage(m_hinstance, TEXT("img/clear.bmp"),
+            IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 
-    m_help_bit = (HBITMAP)LoadImage(m_hinstance, TEXT("img/help1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-    m_start_bit = (HBITMAP)LoadImage(m_hinstance, TEXT("img/start1.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-    m_ui_bit = (HBITMAP)LoadImage(m_hinstance, TEXT("img/Ui.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-    m_hp_bit = (HBITMAP)LoadImage(m_hinstance, TEXT("img/Ui_HP.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-    m_die_bit = (HBITMAP)LoadImage(m_hinstance, TEXT("img/Notice3.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-    
     m_ocount = m_object_manager.InitObject(static_cast<int>(EMapId::Title), m_hinstance);
 
     return true;
@@ -91,22 +86,11 @@ void GameWorld::RenderScene(HDC hdc)
 {
     HDC mem1dc = CreateCompatibleDC(hdc);
     HDC mem2dc = CreateCompatibleDC(hdc);
-    HDC ui_dc = CreateCompatibleDC(hdc);
-    HDC hp_dc = CreateCompatibleDC(hdc);
-    HDC die_dc = CreateCompatibleDC(hdc);
-    HDC start_dc = CreateCompatibleDC(hdc);
-    HDC help_dc = CreateCompatibleDC(hdc);
 
-    if (!mem1dc || !mem2dc || !ui_dc || !hp_dc || !die_dc || !start_dc || !help_dc )
+    if (!mem1dc || !mem2dc)
     {
-        // 생성 실패 시 정리 후 리턴
         if (mem1dc) DeleteDC(mem1dc);
         if (mem2dc) DeleteDC(mem2dc);
-        if (ui_dc) DeleteDC(ui_dc);
-        if (hp_dc) DeleteDC(hp_dc);
-        if (die_dc) DeleteDC(die_dc);
-        if (start_dc) DeleteDC(start_dc);
-        if (help_dc) DeleteDC(help_dc);
         return;
     }
 
@@ -116,15 +100,10 @@ void GameWorld::RenderScene(HDC hdc)
     }
 
     SelectObject(mem1dc, m_hbit1);
-    SelectObject(ui_dc, m_ui_bit);
-    SelectObject(hp_dc, m_hp_bit);
-    SelectObject(die_dc, m_die_bit);
-    SelectObject(start_dc, m_start_bit);
-    SelectObject(help_dc, m_help_bit);
 
     if (0 >= m_map.GetBlackTime())
     {
-        m_map.DrawBK(mem1dc, mem2dc, m_rectview,m_player);
+        m_map.DrawBK(mem1dc, mem2dc, m_rectview, m_player);
     }
 
     m_object_manager.SetMem1DC(&mem1dc);
@@ -132,27 +111,22 @@ void GameWorld::RenderScene(HDC hdc)
 
     if (m_map.GetMapNumber() == static_cast<int>(EMapId::Title))
     {
-        RenderStartMenu(mem1dc, start_dc, help_dc);
+        RenderStartMenu(mem1dc);
     }
 
     m_player.Render(mem1dc);
 
     if (m_map.GetMapNumber() >= static_cast<int>(EMapId::GameplayMin))
     {
-        RenderInGameUI(mem1dc, ui_dc, hp_dc, die_dc);
+        RenderInGameUI(mem1dc);
     }
 
     if (m_map.GetBlackTime() > 0) m_map.DrawLoadBK(mem1dc, mem2dc, m_blendfunction);
 
     BitBlt(hdc, 0, 0, GameConst::kViewportWidth, GameConst::kViewportHeight, mem1dc, m_camera.GetX(), m_camera.GetY(), SRCCOPY);
-    
-    if (mem1dc) DeleteDC(mem1dc);
-    if (mem2dc) DeleteDC(mem2dc);
-    if (ui_dc) DeleteDC(ui_dc);
-    if (hp_dc) DeleteDC(hp_dc);
-    if (die_dc) DeleteDC(die_dc);
-    if (start_dc) DeleteDC(start_dc);
-    if (help_dc) DeleteDC(help_dc);
+
+    DeleteDC(mem1dc);
+    DeleteDC(mem2dc);
 }
 
 void GameWorld::UpdateGameplay(float dt)
@@ -186,55 +160,25 @@ void GameWorld::UpdateFadeAndCamera()
         m_object_manager.AdjustCamera(m_camera, m_player);
 }
 
-void GameWorld::RenderStartMenu(HDC mem1dc, HDC start_dc, HDC help_dc)
+void GameWorld::RenderStartMenu(HDC mem1dc)
 {
-    m_map.DrawStart(mem1dc, start_dc, m_start_button);
-    m_map.DrawHelp(mem1dc, help_dc, m_help_button);
+    m_titleUI.Render(mem1dc);
 }
 
-void GameWorld::RenderInGameUI(HDC mem1dc, HDC ui_dc, HDC hp_dc, HDC die_dc)
+void GameWorld::RenderInGameUI(HDC mem1dc)
 {
-    m_map.DrawUi(mem1dc, ui_dc, m_camera);
-    m_map.DrawHP(mem1dc, hp_dc, m_camera, m_player);
+    HDC dc = nullptr;
+    m_map.DrawUi(mem1dc, dc, m_camera);
+    m_map.DrawHP(mem1dc, dc, m_camera, m_player);
     if (m_player.IsDead() == 1)
-        m_map.DrawDie(mem1dc, die_dc, m_camera, m_sound);
-}
-
-bool GameWorld::IsInRect(LPARAM mouse, int left, int top, int right, int bottom) const
-{
-    const int x = LOWORD(mouse);
-    const int y = HIWORD(mouse);
-    return left < x && x < right && top < y && y < bottom;
-}
-
-bool GameWorld::IsInRect(LPARAM mouse, const UiRect& r) const {
-    return IsInRect(mouse, r.left, r.top, r.right, r.bottom);
-}
-
-bool GameWorld::IsReviveButtonArea(LPARAM mouse) const
-{
-    return IsInRect(mouse, UiHitbox::kRevive);
-}
-
-bool GameWorld::IsStartButtonArea(LPARAM mouse) const
-{
-    return IsInRect(mouse, UiHitbox::kStart);
-}
-
-bool GameWorld::IsHelpButtonArea(LPARAM mouse) const
-{
-    return IsInRect(mouse, UiHitbox::kHelp);
-}
-
-void GameWorld::ResetMenuButtons()
-{
-    m_start_button = 0;
-    m_help_button = 0;
-    m_occur_button = false;
+        m_deadUI.Render(mem1dc, m_camera);
 }
 
 void GameWorld::Shutdown()
 {
+    m_titleUI.Unload();
+    m_deadUI.Unload();
+
     // FMOD
 	for (int i = 0; i < 5; ++i)
 	{
@@ -257,17 +201,10 @@ void GameWorld::Shutdown()
 		m_sound.System->release();
 		m_sound.System = nullptr;
 	}
-	// GDI 비트맵 (GameWorld가 LoadImage로 들고 있는 것들)
-	auto del_bitmap = [](HBITMAP& b) {
-		if (b) { DeleteObject(b); b = nullptr; }
-	};
-	del_bitmap(m_hbit1);
-	del_bitmap(m_help_bit);
-	del_bitmap(m_start_bit);
-	del_bitmap(m_ui_bit);
-	del_bitmap(m_hp_bit);
-	del_bitmap(m_die_bit);
-	// AddFontResourceA 제거
+	// GDI 비트맵
+	if (m_hbit1) { DeleteObject(m_hbit1); m_hbit1 = nullptr; }
+
+	// 폰트 제거
 	RemoveFontResourceA("font/Maplestory Bold.ttf");
 	RemoveFontResourceA("font/Maplestory Light.ttf");
 
@@ -283,7 +220,7 @@ void GameWorld::OnChar(WPARAM ch)
 			if (obs->GetType() == EObstacleType::Portal)
             {
 				m_player.SetX(obs->GetX() + offset);
-				m_player.SetY(obs->GetY() + offset); // 발 위치 맞추기
+				m_player.SetY(obs->GetY() + offset);
 				break;
 			}
 		}
@@ -303,111 +240,41 @@ void GameWorld::OnChar(WPARAM ch)
 void GameWorld::OnMouseMove(LPARAM mouse)
 {
     if (m_player.IsDead() == 1)
-	{
-        if (IsReviveButtonArea(mouse))
-        {
-            m_map.ChangeDieNotice(m_hinstance, 1);
-            if (!m_occur_button)
-            {
-                if (m_sound.Channel[1])
-                    m_sound.Channel[1]->stop();
-                m_sound.System->playSound(
-                    m_sound.effectSound[4],
-                    nullptr,
-                    false,
-                    &m_sound.Channel[1]);
-                m_occur_button = true;
-            }
-            return;
-        }
-		m_map.ChangeDieNotice(m_hinstance, 0);
-		m_occur_button = false;
-	}
-	if (m_map.GetMapNumber() == static_cast<int>(EMapId::Title))
-	{
-        if (IsStartButtonArea(mouse))
-        {
-            if (m_start_button == 0)
-            {
-                if (m_sound.Channel[1])
-                    m_sound.Channel[1]->stop();
-                m_sound.System->playSound(
-                    m_sound.effectSound[4],
-                    nullptr,
-                    false,
-                    &m_sound.Channel[1]);
-                m_start_button = 1;
-            }
-            return;
-        }
-        if (IsHelpButtonArea(mouse))
-        {
-            if (m_help_button == 0)
-            {
-                if (m_sound.Channel[1])
-                    m_sound.Channel[1]->stop();
-                m_sound.System->playSound(
-                    m_sound.effectSound[4],
-                    nullptr,
-                    false,
-                    &m_sound.Channel[1]);
-                m_help_button = 1;
-            }
-            return;
-        }
-		ResetMenuButtons();
-	}
+    {
+        m_deadUI.OnMouseMove(mouse, m_sound);
+        return;
+    }
+    if (m_map.GetMapNumber() == static_cast<int>(EMapId::Title))
+        m_titleUI.OnMouseMove(mouse, m_sound);
 }
-void GameWorld::OnMouseDown(LPARAM mouse) 
+
+void GameWorld::OnMouseDown(LPARAM mouse)
 {
     SetCursor(LoadCursorFromFile(TEXT("cursor/cursor4.cur")));
-	if (m_player.IsDead() == 1)
-	{
-        if (IsReviveButtonArea(mouse))
-        {
-            m_map.ChangeDieNotice(m_hinstance, 2);
-            if (m_sound.Channel[1])
-                m_sound.Channel[1]->stop();
-            m_sound.System->playSound(
-                m_sound.effectSound[3],
-                nullptr,
-                false,
-                &m_sound.Channel[1]);
-            return;
-        }
-	}
-	if (m_map.GetMapNumber() == static_cast<int>(EMapId::Title))
-	{
-        if (IsStartButtonArea(mouse) && m_start_button == 1)
-        {
-            if (m_sound.Channel[1])
-                m_sound.Channel[1]->stop();
-            m_sound.System->playSound(
-                m_sound.effectSound[3],
-                nullptr,
-                false,
-                &m_sound.Channel[1]);
-            m_start_button = 2;
-            return;
-        }
+    if (m_player.IsDead() == 1)
+    {
+        m_deadUI.OnMouseDown(mouse, m_sound);
+        return;
     }
+    if (m_map.GetMapNumber() == static_cast<int>(EMapId::Title))
+        m_titleUI.OnMouseDown(mouse, m_sound);
 }
-void GameWorld::OnMouseUp(LPARAM mouse) 
+
+void GameWorld::OnMouseUp(LPARAM mouse)
 {
     if (m_player.IsDead() == 1)
     {
-        if (IsReviveButtonArea(mouse))
+        if (m_deadUI.OnMouseUp(mouse))
         {
-            m_map.ChangeDieNotice(m_hinstance, 0);
             m_player.Initialzie();
             m_player.SetCurrentHP(100);
         }
+        return;
     }
     if (m_map.GetMapNumber() == static_cast<int>(EMapId::Title))
     {
-        if (IsStartButtonArea(mouse))
+        if (m_titleUI.OnMouseUp(mouse))
         {
-            m_occur_button = 0;
             m_map.SetBlackTime(50);
             m_map.SetMapNumber(m_map.GetMapNumber() + 1);
             m_player.Initialzie();
@@ -418,27 +285,12 @@ void GameWorld::OnMouseUp(LPARAM mouse)
             m_hbit1 = (HBITMAP)LoadImage(m_hinstance, TEXT("img/bk.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
             m_sound.SetIndex(m_sound.GetIndex() + 1);
 
-            if (m_sound.Channel[1]) {
-                m_sound.Channel[1]->stop();
-            }
+            if (m_sound.Channel[1]) m_sound.Channel[1]->stop();
+            m_sound.System->playSound(m_sound.effectSound[1], nullptr, false, &m_sound.Channel[1]);
 
-            FMOD_RESULT result = m_sound.System->playSound(
-                m_sound.effectSound[1],
-                nullptr,
-                false,
-                &m_sound.Channel[1]
-            );
+            if (m_sound.Channel[0]) m_sound.Channel[0]->stop();
+            m_sound.System->playSound(m_sound.bgmSound[1], nullptr, false, &m_sound.Channel[0]);
 
-            if (m_sound.Channel[0]) {
-                m_sound.Channel[0]->stop();
-            }
-
-            result = m_sound.System->playSound(
-                m_sound.bgmSound[1],
-                nullptr,
-                false,
-                &m_sound.Channel[0]
-            );
             m_player.SetCurrentHP(100);
             m_camera.SetX(0);
             m_camera.SetY(GameConst::kDefaultCameraY);

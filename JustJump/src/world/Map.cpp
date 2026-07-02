@@ -26,30 +26,6 @@ void MAP::CreateHP(HINSTANCE g_hinst)
 	hbithp = LoadHP(hbithp, g_hinst);
 }
 
-void MAP::CreateDie(HINSTANCE g_hinst)
-{
-	hbitdie = LoadDieNotice(g_hinst);
-}
-
-void MAP::CreateStart(HINSTANCE g_hinst)
-{
-	hbitstart[0] = LoadStart(hbitstart[0],g_hinst,0);
-	hbitstart[1] = LoadStart(hbitstart[1], g_hinst,1);
-	hbitstart[2] = LoadStart(hbitstart[2], g_hinst,2);
-}
-
-void MAP::CreateHelp(HINSTANCE g_hinst)
-{
-	hbithelp[0] = LoadHelp(hbithelp[0],g_hinst,0);
-	hbithelp[1] = LoadHelp(hbithelp[1], g_hinst,1);
-}
-
-
-void MAP::ChangeDieNotice(HINSTANCE g_hinst,int i)
-{
-	hbitdie = LoadDieNoticeChange(g_hinst, i);
-}
-
 
 bool MAP::BlackTime()
 {
@@ -165,54 +141,3 @@ void MAP::DrawHP(HDC& mem1dc, HDC& mem2dc, CAMERA camera,PLAYER player)
 	DeleteObject(mem2dc);
 }
 
-void MAP::DrawDie(HDC& mem1dc, HDC& mem2dc, CAMERA camera, Sound& sound)
-{
-	mem2dc = CreateCompatibleDC(mem1dc);
-	SelectObject(mem2dc, hbitdie);
-	TransparentBlt(mem1dc, camera.GetX() + 380, camera.GetY() + 240, 260, 130, mem2dc, 0, 0, 260, 130, RGB(255, 0, 0));
-	HFONT hfont = CreateFont(14, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("메이플스토리 bold"));
-	HFONT oldfont = (HFONT)SelectObject(mem1dc, hfont);
-
-	SetTextColor(mem1dc, RGB(32, 108, 168));
-	TextOut(mem1dc, camera.GetX() + 459, camera.GetY() + 260, L"확인을 누르시면 부활하게 됩니다.", lstrlenW(L"확인을 누르시면 부활하게 됩니다."));
-	TextOut(mem1dc, camera.GetX() + 461, camera.GetY() + 260, L"확인을 누르시면 부활하게 됩니다.", lstrlenW(L"확인을 누르시면 부활하게 됩니다."));
-	TextOut(mem1dc, camera.GetX() + 460, camera.GetY() + 259, L"확인을 누르시면 부활하게 됩니다.", lstrlenW(L"확인을 누르시면 부활하게 됩니다."));
-	TextOut(mem1dc, camera.GetX() + 460, camera.GetY() + 261, L"확인을 누르시면 부활하게 됩니다.", lstrlenW(L"확인을 누르시면 부활하게 됩니다."));
-
-	SetTextColor(mem1dc, RGB(255, 255, 255));
-	TextOut(mem1dc, camera.GetX() + 460, camera.GetY() + 260, L"확인을 누르시면 부활하게 됩니다.", lstrlenW(L"확인을 누르시면 부활하게 됩니다."));
-	SelectObject(mem1dc, oldfont);
-	DeleteObject(hfont);
-
-	hfont = CreateFont(12, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("메이플스토리 light"));
-	oldfont = (HFONT)SelectObject(mem1dc, hfont);
-	TextOut(mem1dc, camera.GetX() + 460, camera.GetY() + 285, L"아쉽지만 확인을 누르시면 맵의 맨 처음", lstrlenW(L"아쉽지만 확인을 누르시면 맵의 맨 처음."));
-	TextOut(mem1dc, camera.GetX() + 460, camera.GetY() + 297, L"위치로 돌아가게 됩니다. 포기하지 마세요!", lstrlenW(L"위치로 돌아가게 됩니다. 포기하지 마세요!"));
-
-	DeleteObject(mem2dc);
-
-}
-
-void MAP::DrawStart(HDC& mem1dc, HDC& mem2dc,int i)
-{
-	mem2dc = CreateCompatibleDC(mem1dc);
-	SelectObject(mem2dc, hbitstart[i]);
-	TransparentBlt(mem1dc, 292, 490, 138, 82, mem2dc, 0, 0,138,82,RGB(255,0,0));
-	
-
-	DeleteObject(mem2dc);
-}
-void MAP::DrawHelp(HDC& mem1dc, HDC& mem2dc, int i)
-{
-	mem2dc = CreateCompatibleDC(mem1dc);
-	SelectObject(mem2dc, hbithelp[i]);
-	if (i == 0)
-	{
-		TransparentBlt(mem1dc, 290, 345, 138,82, mem2dc, 0, 0, 138, 82, RGB(60, 60, 60));
-	}
-	
-	else if(i == 1) TransparentBlt(mem1dc, 215,300, 400, 200, mem2dc, 0, 0, 400, 200, RGB(0, 0, 0));
-
-	DeleteObject(mem2dc);
-
-}

@@ -24,11 +24,6 @@ public:
 	void CreateMap(HINSTANCE g_hinst);
 	void CreateUi(HINSTANCE g_hinst);
 	void CreateHP(HINSTANCE g_hinst);
-	void CreateDie(HINSTANCE g_hinst);
-	void CreateStart(HINSTANCE g_hinst);
-	void CreateHelp(HINSTANCE g_hinst);
-
-	void ChangeDieNotice(HINSTANCE g_hinst, int i);
 
 	//로딩 타임 확인
 	bool BlackTime();
@@ -41,15 +36,6 @@ public:
 	void DrawUi(HDC& mem1dc, HDC& mem2dc, CAMERA camera);
 	//HP바
 	void DrawHP(HDC& mem1dc, HDC& mem2dc, CAMERA camera,PLAYER player);
-	//die ui
-	void DrawDie(HDC& mem1dc, HDC& mem2dc, CAMERA camera, Sound& sound);
-	//시작 버튼
-	void DrawStart(HDC& mem1dc, HDC& mem2dc, int i);
-	//조작법
-	void DrawHelp(HDC& mem1dc, HDC& mem2dc,int i);
-	//die 상태변화
-
-	/*void CreateBlack(HINSTANCE)*/;
 
 private:
 
@@ -61,8 +47,5 @@ private:
 	HBITMAP hbitbk;
 	HBITMAP hbitui;
 	HBITMAP hbithp;
-	HBITMAP hbitdie;
-	HBITMAP hbitstart[3];
-	HBITMAP hbithelp[2];
 
 };
