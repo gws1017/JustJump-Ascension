@@ -4,6 +4,14 @@
 void Sound::Sound_Setup()
 {
 	index = 0;
+	Channel[0] = nullptr;
+	Channel[1] = nullptr;
+	for (int i = 0; i < 5; ++i)
+	{
+		bgmSound[i] = nullptr;
+		effectSound[i] = nullptr;
+	}
+
 	char string[100];
 
 	const char* effectPaths[5] = {

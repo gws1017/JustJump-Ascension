@@ -77,7 +77,7 @@ void MAP :: DrawBK(HDC& mem1dc, HDC& mem2dc, RECT& rectview, const PLAYER& playe
 	}
 
 	DeleteObject(blackBrush);
-	DeleteObject(mem2dc);
+	DeleteDC(mem2dc);
 }
 
 void MAP::DrawLoadBK(HDC& mem1dc, HDC& mem2dc, BLENDFUNCTION bf)
@@ -97,7 +97,7 @@ void MAP::DrawLoadBK(HDC& mem1dc, HDC& mem2dc, BLENDFUNCTION bf)
 
 	SelectObject(gdidc, oldtmpdc);
 	DeleteObject(tmpdc);
-	DeleteObject(gdidc);
+	DeleteDC(gdidc);
 }
 //상태창
 void MAP::DrawUi(HDC& mem1dc, HDC& mem2dc,CAMERA camera)
@@ -106,7 +106,7 @@ void MAP::DrawUi(HDC& mem1dc, HDC& mem2dc,CAMERA camera)
 	SelectObject(mem2dc, hbitui);
 	TransparentBlt(mem1dc, camera.GetX()+400, camera.GetY()+700, 199, 65, mem2dc, 0, 0, 199, 65, RGB(0, 255, 0));
 	//BitBlt(mem1dc, 0, 0, GameConst::kViewportWidth, GameConst::kMapBitmapHeight, mem2dc, 0, 0, SRCCOPY);	//Ui 전체 새로고침
-	DeleteObject(mem2dc);
+	DeleteDC(mem2dc);
 }
 //HP바
 void MAP::DrawHP(HDC& mem1dc, HDC& mem2dc, CAMERA camera,PLAYER player)
@@ -138,6 +138,6 @@ void MAP::DrawHP(HDC& mem1dc, HDC& mem2dc, CAMERA camera,PLAYER player)
 	//BitBlt(mem1dc, 0, 0, GameConst::kViewportWidth, GameConst::kMapBitmapHeight, mem2dc, 0, 0, SRCCOPY);	//HP 전체 새로고침
 	SelectObject(mem1dc, oldfont);
 	DeleteObject(hfont);
-	DeleteObject(mem2dc);
+	DeleteDC(mem2dc);
 }
 

@@ -26,14 +26,14 @@ bool GameWorld::Initialize(HINSTANCE hinstance)
     m_map.CreateUi(m_hinstance);
     m_map.CreateHP(m_hinstance);
 
-    //UI 초기화
-    m_titleUI.Load(m_hinstance);
-    m_deadUI.Load(m_hinstance);
-
-    //플레이어 초기화
+    //플레이어 스프라이트는 UI 비트맵보다 먼저 로드 (GDI 핸들 우선 확보)
     m_player.SetBitMap(m_hinstance);
     m_player.InitializeAnimPosition();
     m_player.SelectBitmap();
+
+    //UI 초기화
+    m_titleUI.Load(m_hinstance);
+    m_deadUI.Load(m_hinstance);
 
     //카메라 초기화
     if (m_map.GetMapNumber() == static_cast<int>(EMapId::Title))
@@ -51,11 +51,12 @@ bool GameWorld::Initialize(HINSTANCE hinstance)
     //사운드 초기화
     m_sound.Sound_Setup();
 
-    if (m_sound.Channel[0])
+    if (m_sound.System && m_sound.bgmSound[0])
     {
-        m_sound.Channel[0]->stop();
+        if (m_sound.Channel[0])
+            m_sound.Channel[0]->stop();
+        m_sound.System->playSound(m_sound.bgmSound[0], nullptr, false, &m_sound.Channel[0]);
     }
-    m_sound.System->playSound(m_sound.bgmSound[0], nullptr, false, &m_sound.Channel[0]);
 
     if (m_map.GetMapNumber() == static_cast<int>(EMapId::Title))
         m_hbit1 = (HBITMAP)LoadImage(m_hinstance, TEXT("img/start_rayer1.bmp"),
