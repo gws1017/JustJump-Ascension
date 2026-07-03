@@ -104,7 +104,7 @@ void MAP::DrawUi(HDC& mem1dc, HDC& mem2dc,CAMERA camera)
 {
 	mem2dc = CreateCompatibleDC(mem1dc);
 	SelectObject(mem2dc, hbitui);
-	TransparentBlt(mem1dc, camera.GetX()+400, camera.GetY()+700, 199, 65, mem2dc, 0, 0, 199, 65, RGB(0, 255, 0));
+	TransparentBlt(mem1dc, camera.GetX()+400, camera.GetY()+660, 199, 65, mem2dc, 0, 0, 199, 65, RGB(0, 255, 0));
 	//BitBlt(mem1dc, 0, 0, GameConst::kViewportWidth, GameConst::kMapBitmapHeight, mem2dc, 0, 0, SRCCOPY);	//Ui 전체 새로고침
 	DeleteDC(mem2dc);
 }
@@ -118,23 +118,23 @@ void MAP::DrawHP(HDC& mem1dc, HDC& mem2dc, CAMERA camera,PLAYER player)
 	HFONT oldfont =(HFONT)SelectObject(mem1dc, hfont);
 	mem2dc = CreateCompatibleDC(mem1dc);
 	SelectObject(mem2dc, hbithp);
-	BitBlt(mem1dc, camera.GetX() + 421, camera.GetY() + 728, hp, 65, mem2dc, 0, 0, SRCCOPY);
+	BitBlt(mem1dc, camera.GetX() + 421, camera.GetY() + 688, hp, 13, mem2dc, 0, 0, SRCCOPY);
 	SetBkMode(mem1dc, 1);
 	SetTextColor(mem1dc, RGB(0, 0, 0));
-	TextOut(mem1dc, camera.GetX() + 481, camera.GetY() + 728, hpname, lstrlenW(hpname));
-	TextOut(mem1dc, camera.GetX() + 483, camera.GetY() + 728, hpname, lstrlenW(hpname));
-	TextOut(mem1dc, camera.GetX() + 482, camera.GetY() + 727, hpname, lstrlenW(hpname));
-	TextOut(mem1dc, camera.GetX() + 482, camera.GetY() + 729, hpname, lstrlenW(hpname));
-	SetTextColor(mem1dc, RGB(255, 255, 255));			  
-	TextOut(mem1dc, camera.GetX() + 482, camera.GetY() + 728, hpname, lstrlenW(hpname));
-	SetTextColor(mem1dc, RGB(0, 0, 0));					  
-	TextOut(mem1dc, camera.GetX() + 504, camera.GetY() + 728, L"/100", lstrlenW(L"/100"));
-	TextOut(mem1dc, camera.GetX() + 506, camera.GetY() + 728, L"/100", lstrlenW(L"/100"));
-	TextOut(mem1dc, camera.GetX() + 505, camera.GetY() + 727, L"/100", lstrlenW(L"/100"));
-	TextOut(mem1dc, camera.GetX() + 505, camera.GetY() + 729, L"/100", lstrlenW(L"/100"));
-	SetTextColor(mem1dc, RGB(255, 255, 255));					 
-	TextOut(mem1dc, camera.GetX() + 505, camera.GetY() + 728, L"/100", lstrlenW(L"/100"));
-	//StretchBlt(mem1dc, camera.GetX() + 421, camera.GetY() + 728, hp, 65, mem2dc, 0, 0,hp, 65,SRCCOPY);
+	TextOut(mem1dc, camera.GetX() + 481, camera.GetY() + 688, hpname, lstrlenW(hpname));
+	TextOut(mem1dc, camera.GetX() + 483, camera.GetY() + 688, hpname, lstrlenW(hpname));
+	TextOut(mem1dc, camera.GetX() + 482, camera.GetY() + 687, hpname, lstrlenW(hpname));
+	TextOut(mem1dc, camera.GetX() + 482, camera.GetY() + 689, hpname, lstrlenW(hpname));
+	SetTextColor(mem1dc, RGB(255, 255, 255));
+	TextOut(mem1dc, camera.GetX() + 482, camera.GetY() + 688, hpname, lstrlenW(hpname));
+	SetTextColor(mem1dc, RGB(0, 0, 0));
+	TextOut(mem1dc, camera.GetX() + 504, camera.GetY() + 688, L"/100", lstrlenW(L"/100"));
+	TextOut(mem1dc, camera.GetX() + 506, camera.GetY() + 688, L"/100", lstrlenW(L"/100"));
+	TextOut(mem1dc, camera.GetX() + 505, camera.GetY() + 687, L"/100", lstrlenW(L"/100"));
+	TextOut(mem1dc, camera.GetX() + 505, camera.GetY() + 689, L"/100", lstrlenW(L"/100"));
+	SetTextColor(mem1dc, RGB(255, 255, 255));
+	TextOut(mem1dc, camera.GetX() + 505, camera.GetY() + 688, L"/100", lstrlenW(L"/100"));
+	//StretchBlt(mem1dc, camera.GetX() + 421, camera.GetY() + 688, hp, 13, mem2dc, 0, 0,hp, 13,SRCCOPY);
 	//BitBlt(mem1dc, 0, 0, GameConst::kViewportWidth, GameConst::kMapBitmapHeight, mem2dc, 0, 0, SRCCOPY);	//HP 전체 새로고침
 	SelectObject(mem1dc, oldfont);
 	DeleteObject(hfont);
