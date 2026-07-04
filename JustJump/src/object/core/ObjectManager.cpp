@@ -4,6 +4,7 @@
 #include <nlohmann/json.hpp>
 
 #include "ObjectManager.h"
+#include "core/LevelConfig.h"
 #include "object/character/player.h"
 #include "world/obstacle/obstacle.h"
 #include "world/obstacle/GroundObstacle.h"
@@ -302,7 +303,7 @@ void ObjectManager::AdjustPlayer(const UPtr<PLAYER>& player, MAP& m, int& ocount
 						/*m.CreateBlack(g_hinst);*/
 						m.SetMapNumber(m.GetMapNumber() + 1);
 						player->Initialzie();
-						if (m.GetMapNumber() == static_cast<int>(EMapId::Clear)) m.CreateMap(g_hinst);
+						if (m.GetMapNumber() == LevelConfig::GetClearMapNumber()) m.CreateMap(g_hinst);
 						for (const auto& resetObstacle : m_obstacles)
 							resetObstacle->ResetObject();
 						ocount = InitObject(m.GetMapNumber(), g_hinst);
@@ -426,13 +427,11 @@ namespace
 //int(맵 번호) 에 따라 장애물 위치값 넣어주고 몇개의 오브젝트가 들어갔는지 알려주는 함수
 int ObjectManager::InitObject(int mapnum, HINSTANCE g_hinst)
 {
-	std::string path;
-	if (mapnum == static_cast<int>(EMapId::Title))      path = "map/map_0.json";
-	else if (mapnum == 10)                              path = "map/map_1.json";
-	else if (mapnum == 11)                              path = "map/map_2.json";
-	else if (mapnum == 12)                              path = "map/map_3.json";
-	else if (mapnum == static_cast<int>(EMapId::Clear)) path = "map/map_4.json";
-	else return 0;		//맵 값이 잘못입력되었으면 그대로 탈출
+	//맵 파일명은 (Title 기준 오프셋)으로 정해짐: Title=map_0, GameplayMin=map_1, ..., Clear=map_(마지막)
+	//맵을 추가할 땐 이 공식을 안 건드리고 map_N.json 파일과 manifest.json의 개수만 늘리면 된다
+	if (mapnum < static_cast<int>(EMapId::Title))
+		return 0;		//맵 값이 잘못입력되었으면 그대로 탈출
+	const std::string path = "map/map_" + std::to_string(mapnum - static_cast<int>(EMapId::Title)) + ".json";
 
 	int objcount = 0;
 	try

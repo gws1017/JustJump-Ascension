@@ -1,6 +1,7 @@
 #include "Global.h"
 #include "Load.h"
 #include "../resource.h"
+#include "core/LevelConfig.h"
 
 
 //HBITMAP LoadBlack(HBITMAP hbit1, HINSTANCE g_hinst)
@@ -20,7 +21,7 @@ HBITMAP LoadBK(HBITMAP hbit1, HINSTANCE g_hinst, int mapnum)
 		return hbit1;
 	}
 	//게임 클리어
-	else if (mapnum == static_cast<int>(EMapId::Clear))
+	else if (mapnum == LevelConfig::GetClearMapNumber())
 	{
 		hbit1 = (HBITMAP)LoadImage(g_hinst, TEXT("img/clear.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION); //상대경로로 변경
 		return hbit1;

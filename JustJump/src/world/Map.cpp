@@ -1,6 +1,7 @@
 ﻿#include "Global.h"
 #include "world/Map.h"
 
+#include "core/LevelConfig.h"
 #include "object/view/Camera.h"
 #include "object/character/player.h"
 
@@ -60,7 +61,7 @@ void MAP :: DrawBK(HDC& mem1dc, HDC& mem2dc, RECT& rectview, const UPtr<PLAYER>&
 		BitBlt(mem1dc, 0, 0, GameConst::kViewportWidth, GameConst::kMapBitmapHeight, mem2dc, 0, 0, SRCCOPY);	//맵 전체 새로고침
 	}
 
-	if (mapnum == static_cast<int>(EMapId::Clear))
+	if (mapnum == LevelConfig::GetClearMapNumber())
 	{
 		HFONT hfont = CreateFont(50, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("메이플스토리 light"));
 		HFONT oldfont = (HFONT)SelectObject(mem1dc, hfont);

@@ -1,6 +1,7 @@
 #include "Global.h"
 #include "core/GameWorld.h"
 #include "core/InputManager.h"
+#include "core/LevelConfig.h"
 
 #include "world/Map.h"
 #include "system/SoundManager.h"
@@ -61,7 +62,7 @@ bool GameWorld::Initialize(HINSTANCE hinstance)
     if (m_map.GetMapNumber() == static_cast<int>(EMapId::Title))
         m_hbit1 = (HBITMAP)LoadImage(m_hinstance, TEXT("img/start_rayer1.bmp"),
             IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-    else if (m_map.GetMapNumber() == static_cast<int>(EMapId::Clear))
+    else if (m_map.GetMapNumber() == LevelConfig::GetClearMapNumber())
         m_hbit1 = (HBITMAP)LoadImage(m_hinstance, TEXT("img/clear.bmp"),
             IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 
