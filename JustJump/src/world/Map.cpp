@@ -12,18 +12,18 @@
 
 void MAP::CreateMap(HINSTANCE g_hinst)
 {
-	hbitbk = LoadBK(hbitbk,g_hinst, mapnum);
+	hbitbk = CreateBmpPtr(LoadBK(hbitbk.get(), g_hinst, mapnum));
 	if (mapnum == static_cast<int>(EMapId::Title)) ms = 0;
 }
 
 void MAP::CreateUi(HINSTANCE g_hinst)
 {
-	hbitui = LoadUi(hbitui, g_hinst);
+	hbitui = CreateBmpPtr(LoadUi(hbitui.get(), g_hinst));
 }
 
 void MAP::CreateHP(HINSTANCE g_hinst)
 {
-	hbithp = LoadHP(hbithp, g_hinst);
+	hbithp = CreateBmpPtr(LoadHP(hbithp.get(), g_hinst));
 }
 
 
@@ -46,7 +46,7 @@ void MAP :: DrawBK(HDC& mem1dc, HDC& mem2dc, RECT& rectview, const PLAYER& playe
 {
 	
 	mem2dc = CreateCompatibleDC(mem1dc);
-	SelectObject(mem2dc, hbitbk);
+	SelectObject(mem2dc, hbitbk.get());
 	HBRUSH blackBrush = CreateSolidBrush(RGB(0, 0, 0));
 	FillRect(mem1dc, &rectview, blackBrush);
 	if (mapnum == static_cast<int>(EMapId::Title))
@@ -103,13 +103,13 @@ void MAP::DrawLoadBK(HDC& mem1dc, HDC& mem2dc, BLENDFUNCTION bf)
 void MAP::DrawUi(HDC& mem1dc, HDC& mem2dc,CAMERA camera)
 {
 	mem2dc = CreateCompatibleDC(mem1dc);
-	SelectObject(mem2dc, hbitui);
+	SelectObject(mem2dc, hbitui.get());
 	TransparentBlt(mem1dc, camera.GetX()+400, camera.GetY()+660, 199, 65, mem2dc, 0, 0, 199, 65, RGB(0, 255, 0));
 	//BitBlt(mem1dc, 0, 0, GameConst::kViewportWidth, GameConst::kMapBitmapHeight, mem2dc, 0, 0, SRCCOPY);	//Ui 전체 새로고침
 	DeleteDC(mem2dc);
 }
 //HP바
-void MAP::DrawHP(HDC& mem1dc, HDC& mem2dc, CAMERA camera,PLAYER player)
+void MAP::DrawHP(HDC& mem1dc, HDC& mem2dc, CAMERA camera, PLAYER& player)
 {
 	int hp = player.GetCurrentHP() * 171 / 100;
 	TCHAR hpname[100];
@@ -117,7 +117,7 @@ void MAP::DrawHP(HDC& mem1dc, HDC& mem2dc, CAMERA camera,PLAYER player)
 	HFONT hfont = CreateFont(14, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("메이플스토리 light"));
 	HFONT oldfont =(HFONT)SelectObject(mem1dc, hfont);
 	mem2dc = CreateCompatibleDC(mem1dc);
-	SelectObject(mem2dc, hbithp);
+	SelectObject(mem2dc, hbithp.get());
 	BitBlt(mem1dc, camera.GetX() + 421, camera.GetY() + 688, hp, 13, mem2dc, 0, 0, SRCCOPY);
 	SetBkMode(mem1dc, 1);
 	SetTextColor(mem1dc, RGB(0, 0, 0));

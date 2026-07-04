@@ -18,7 +18,7 @@ public:
 private:
 	static bool IsInRect(LPARAM mouse, int l, int t, int r, int b);
 
-	bool    m_occurButton = false;
-	int     m_state       = 0;		// 0=기본, 1=hover, 2=press
-	HBITMAP m_dieBit[3]   = {};
+	bool      m_occurButton = false;
+	int       m_state       = 0;		// 0=기본, 1=hover, 2=press
+	BmpPtr    m_dieBit[3];
 };

@@ -1,6 +1,5 @@
 #pragma once
 
-
 class CAMERA;
 class PLAYER;
 class Sound;
@@ -35,7 +34,7 @@ public:
 	//상태창
 	void DrawUi(HDC& mem1dc, HDC& mem2dc, CAMERA camera);
 	//HP바
-	void DrawHP(HDC& mem1dc, HDC& mem2dc, CAMERA camera,PLAYER player);
+	void DrawHP(HDC& mem1dc, HDC& mem2dc, CAMERA camera, PLAYER& player);
 
 private:
 
@@ -44,8 +43,8 @@ private:
 	int ms;
 	int index;
 
-	HBITMAP hbitbk;
-	HBITMAP hbitui;
-	HBITMAP hbithp;
+	BmpPtr hbitbk;
+	BmpPtr hbitui;
+	BmpPtr hbithp;
 
 };

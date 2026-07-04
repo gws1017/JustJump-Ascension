@@ -6,15 +6,15 @@ void TitleMenuUI::Load(HINSTANCE hInst)
 	const wchar_t* startFiles[] = { L"img/start1.bmp", L"img/start2.bmp", L"img/start3.bmp" };
 	const wchar_t* helpFiles[]  = { L"img/help1.bmp",  L"img/help2.bmp" };
 	for (int i = 0; i < 3; ++i)
-		m_startBit[i] = (HBITMAP)LoadImage(hInst, startFiles[i], IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+		m_startBit[i] = CreateBmpPtr((HBITMAP)LoadImage(hInst, startFiles[i], IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION));
 	for (int i = 0; i < 2; ++i)
-		m_helpBit[i]  = (HBITMAP)LoadImage(hInst, helpFiles[i],  IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+		m_helpBit[i] = CreateBmpPtr((HBITMAP)LoadImage(hInst, helpFiles[i],  IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION));
 }
 
 void TitleMenuUI::Unload()
 {
-	for (auto& b : m_startBit) { if (b) { DeleteObject(b); b = nullptr; } }
-	for (auto& b : m_helpBit)  { if (b) { DeleteObject(b); b = nullptr; } }
+	for (auto& b : m_startBit) b.reset();
+	for (auto& b : m_helpBit)  b.reset();
 }
 
 void TitleMenuUI::Reset()
@@ -84,10 +84,10 @@ void TitleMenuUI::Render(HDC mem1dc)
 {
 	HDC dc = CreateCompatibleDC(mem1dc);
 
-	SelectObject(dc, m_startBit[m_startButton]);
+	SelectObject(dc, m_startBit[m_startButton].get());
 	TransparentBlt(mem1dc, 292, 490, 138, 82, dc, 0, 0, 138, 82, RGB(255, 0, 0));
 
-	SelectObject(dc, m_helpBit[m_helpButton]);
+	SelectObject(dc, m_helpBit[m_helpButton].get());
 	if (m_helpButton == 0)
 		TransparentBlt(mem1dc, 290, 345, 138, 82, dc, 0, 0, 138, 82, RGB(60, 60, 60));
 	else

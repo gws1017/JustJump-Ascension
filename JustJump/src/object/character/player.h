@@ -183,8 +183,8 @@ private:
 	int m_dieCount = 0;
 
 	HBITMAP m_oldplayerBitmap = nullptr;
-	HBITMAP CurrentBitmap;    //현재 사용중인 비트맵
-	HBITMAP WalkBitmap;   //걸을때 비트맵
-	HBITMAP ActionBitmap;		//점프,숙이기 줄타기 비트맵
+	HBITMAP CurrentBitmap;    //현재 사용중인 비트맵 (WalkBitmap/ActionBitmap 중 하나를 가리키는 비소유 별칭)
+	BmpPtr WalkBitmap;   //걸을때 비트맵
+	BmpPtr ActionBitmap;		//점프,숙이기 줄타기 비트맵
 	int AnimX, AnimY, AnimWidth, AnimHeight; //비트맵의 스프라이트위치를 바꾸기위한 좌표 변수
 };

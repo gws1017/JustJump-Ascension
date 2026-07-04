@@ -22,6 +22,6 @@ private:
 	int  m_helpButton  = 0;		// 0=기본, 1=열림
 	bool m_occurButton = false;
 
-	HBITMAP m_startBit[3] = {};
-	HBITMAP m_helpBit[2]  = {};
+	BmpPtr m_startBit[3];
+	BmpPtr m_helpBit[2];
 };

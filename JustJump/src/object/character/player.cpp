@@ -236,8 +236,8 @@ void PLAYER::Render(HDC& backDC)
 
 void PLAYER::SetBitMap(HINSTANCE hInstance)
 {
-	WalkBitmap = LoadWalk(hInstance);
-	ActionBitmap = LoadEx(hInstance);
+	WalkBitmap = CreateBmpPtr(LoadWalk(hInstance));
+	ActionBitmap = CreateBmpPtr(LoadEx(hInstance));
 }
 
 void PLAYER::InitializeAnimPosition()
@@ -749,12 +749,12 @@ void PLAYER::SelectBitmap()
 {
 	if (PlayerState == EPlayerState::Idle || PlayerState == EPlayerState::Move)
 	{
-		CurrentBitmap = WalkBitmap;
+		CurrentBitmap = WalkBitmap.get();
 		AnimWidth = PlayerSprite::kFrameW;
 		AnimHeight = PlayerSprite::kFrameH;
 	}
 	else
-		CurrentBitmap = ActionBitmap;
+		CurrentBitmap = ActionBitmap.get();
 }
 
 //비트맵을 바꿔주는함수 (애니메이션)

@@ -38,15 +38,24 @@
 - **Getter/Setter 정리 및 헤더 최적화**
   - Public 멤버 함수는 헤더 상단에, Private 멤버 변수는 하단에 배치하여 가독성 향상
 - **헤더 전방 선언 적용**
-  
+- **입력 시스템 분리**
+  - `InputManager` 클래스로 키/마우스 상태 추적 및 `EInputAction` 액션 매핑 계층 도입
+- **하드코딩 제거 및 상수화**
+  - 매직 넘버 제거, constexpr 및 enum class 사용으로 가독성 및 안정성 강화
+  - UI 버튼 좌표를 `UiHitbox` 네임스페이스의 `constexpr` 구조체 테이블로 이전
+- **애니메이션/이동 dt 기반화**
+  - 기존 obj_t(프레임/스텝 카운터) 기반 → `Update(float dt)` 가상 함수 아키텍처로 전환, 오브젝트별 누적 타이머로 캡슐화
+- **UI 컴포넌트 분리**
+  - `TitleMenuUI`, `DeadScreenUI` 클래스로 마우스 히트테스트 및 렌더링 로직을 GameWorld에서 분리
+
 ### 진행중
 - **언리얼 코딩 표준을 참고하여 변수명, 함수명 등 수정**
 - **게임 루프 구조 분리**
   - Update, Render, Input 로직을 Win32 메시지 루프에서 분리 → 유지보수성과 확장성 향상
-- **하드코딩 제거 및 상수화**
-  - 매직 넘버 제거, constexpr 및 enum class 사용으로 가독성 및 안정성 강화
 - **스마트 포인터/캡슐화 적용**
   - unique_ptr, shared_ptr 등을 사용하여 전역 변수 제거 및 메모리 안전성 강화
+  - App 계층(`m_game_world`, `m_input_manager`, `m_timer`, `m_window`)과 `ObjectManager::m_obstacles`에는 적용 완료
+  - `HBITMAP`(Map, TitleMenuUI, DeadScreenUI, PLAYER 등)과 FMOD 리소스는 아직 raw 핸들 + 수동 Load/Unload 패턴
 
 
 ### 진행 예정
@@ -57,8 +66,8 @@
   - 기존 텍스트 기반 배치(txt) → JSON 형식으로 구조화 예정 (맵에 따라 객체 로드)
 - **클래스 상속 구조 재정립 예정**
   - Obstacle 클래스, Player 클래스, Camera 클래스를 중심으로 상속/다형성 설계 강화
-- **애니메이션/이동 dt 기반화**
-  - 기존 obj_t(프레임/스텝 카운터) 기반 → dt 누적 기반으로 전환, 오브젝트별 타이머로 캡슐화 예정
+- **GDI/FMOD 리소스 RAII 래퍼 도입**
+  - `HBITMAP` 등 raw 핸들을 커스텀 삭제자 기반 스마트 포인터로 감싸 수동 Load/Unload 짝 맞춤 실수 방지
 ---
 
 ## 스크린샷
@@ -84,25 +93,21 @@
 ### 최근 반영 내용
 
 - **GameWorld 구조 정리 (월드 오케스트레이션 유지)**
-  - `GameWorld::Update()`를 월드 단위 흐름 제어 중심으로 유지
-  - 내부 로직을 `TickAnimation`, `UpdateGameplay`, `UpdateFadeAndCamera`로 분리해 가독성과 유지보수성 개선
+  - `GameWorld::Update(dt)`를 월드 단위 흐름 제어 중심으로 유지
+  - 내부 로직을 `UpdateGameplay(dt)`, `UpdateFadeAndCamera`로 분리해 가독성과 유지보수성 개선
 - **Render 단계 분리**
   - 렌더 진입점은 `Render()`로 유지하고, 내부를 `RenderScene`, `RenderStartMenu`, `RenderInGameUI`로 분리
   - 기능 단위 분리로 렌더 파이프라인 파악이 쉬워짐
-- **입력 hit-test 가독성 개선**
-  - 마우스 좌표 판정을 `IsInRect`, `IsReviveButtonArea`, `IsStartButtonArea`, `IsHelpButtonArea`로 분리
-  - 중첩 if 블록을 줄여 입력 처리 흐름 확인이 쉬워짐
+- **UI 컴포넌트 분리**
+  - 마우스 hit-test와 렌더링을 `IsInRect` 계열 멤버 함수 대신 `TitleMenuUI`, `DeadScreenUI` 클래스로 위임
+  - `GameWorld`는 상태 판단 후 위임만 수행, 중첩 if 블록과 버튼 상태 변수를 GameWorld에서 제거
 - **임시 실험 구조 정리**
   - 과도한 컨텍스트/외부 위임(`GameWorldContext`, `m_update`, `m_render`) 방식은 현재 프로젝트 단계에서 복잡도 증가로 판단하여 제거
   - `GameWorld` 중심 구조를 유지한 채, 내부 함수 분리 방식으로 정리
 
 ### 다음 작업 계획
 
-- **입력 시스템 분리**
-  - `GameWorldInputSystem`(가칭) 도입해 `OnKey/OnMouse` 로직 분리
-- **하드코딩 상수화**
-  - UI 버튼 좌표를 `constexpr`/구조체 테이블로 이전
-- **렌더 컨텍스트 도입**
-  - 다수의 `HDC` 인자를 `RenderContext`로 묶어 함수 시그니처 단순화
 - **UI 렌더링 통합**
   - `RenderStartMenu`, `RenderInGameUI`를 상태 기반 `RenderUI`로 통합 검토
+- **GDI/FMOD 리소스 RAII 래퍼 도입**
+  - `HBITMAP` 등 raw 핸들을 커스텀 삭제자 기반 스마트 포인터로 감싸 수동 Load/Unload 짝 맞춤 실수 방지

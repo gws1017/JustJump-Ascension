@@ -10,7 +10,7 @@
 
 
 //오브젝트와 플레이어 충돌체크 1이면 부닥침
-bool ObjectManager::CollP2W(PLAYER player, SPtr<Obstacle> obstacle)
+bool ObjectManager::CollP2W(PLAYER& player, SPtr<Obstacle> obstacle)
 //----------------------------------------
 {
 	const int adjust = GameConst::kPlatformCollisionAdjust;
@@ -436,7 +436,7 @@ int ObjectManager::InitObject(int mapnum, HINSTANCE g_hinst)
 }
 
 //카메라 무빙워크
-void ObjectManager::AdjustCamera(CAMERA& camera, PLAYER player)
+void ObjectManager::AdjustCamera(CAMERA& camera, PLAYER& player)
 {
 	//플레이어의 머리부분이 카메라의 꼭대기점을 넘어가면 바로 따라붙게한다
 	if (player.GetY() - player.GetHeight() < camera.GetY())

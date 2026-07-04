@@ -6,12 +6,12 @@ void DeadScreenUI::Load(HINSTANCE hInst)
 {
 	const wchar_t* files[] = { L"img/notice3.bmp", L"img/notice4.bmp", L"img/notice5.bmp" };
 	for (int i = 0; i < 3; ++i)
-		m_dieBit[i] = (HBITMAP)LoadImage(hInst, files[i], IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+		m_dieBit[i] = CreateBmpPtr((HBITMAP)LoadImage(hInst, files[i], IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION));
 }
 
 void DeadScreenUI::Unload()
 {
-	for (auto& b : m_dieBit) { if (b) { DeleteObject(b); b = nullptr; } }
+	for (auto& b : m_dieBit) b.reset();
 }
 
 bool DeadScreenUI::IsInRect(LPARAM mouse, int l, int t, int r, int b)
@@ -63,7 +63,7 @@ bool DeadScreenUI::OnMouseUp(LPARAM mouse)
 void DeadScreenUI::Render(HDC mem1dc, const CAMERA& camera)
 {
 	HDC dc = CreateCompatibleDC(mem1dc);
-	SelectObject(dc, m_dieBit[m_state]);
+	SelectObject(dc, m_dieBit[m_state].get());
 	TransparentBlt(mem1dc, camera.GetX() + 380, camera.GetY() + 240, 260, 130, dc, 0, 0, 260, 130, RGB(255, 0, 0));
 	DeleteDC(dc);
 
