@@ -27,32 +27,22 @@ bool ObjectManager::CollP2W(const UPtr<PLAYER>& player, const SPtr<Obstacle>& ob
 //----------------------------------------
 {
 	const int adjust = GameConst::kPlatformCollisionAdjust;
-	//왜 101이 먼저오냐면 발판보다는 장애물이 우선순위기때문임
-	if (ObstacleTypeUtil::IsBoxHitbox(obstacle->GetType())) { //장애물일때는 플레이어 네모빡스가 히트박스가된다
-		if (obstacle->GetType() == EObstacleType::GearRow || obstacle->GetType() == EObstacleType::GearCol)
-		{
-			if (player->GetX() + player->GetWidth() < obstacle->GetX() + obstacle->GetMX() || player->GetX() - player->GetWidth() > obstacle->GetX() + obstacle->GetMX() + obstacle->GetWidth()) return 0;
-			if (player->GetY() + player->GetHeight() < obstacle->GetY() + obstacle->GetMY() || player->GetY() - player->GetHeight() > obstacle->GetY() + obstacle->GetMY() + obstacle->GetHeight()) return 0;
-		}
-		else
-		{
-			if (player->GetX() + player->GetWidth() < obstacle->GetX() || player->GetX() - player->GetWidth() > obstacle->GetX() + obstacle->GetWidth()) return 0;
-			if (player->GetY() + player->GetHeight() < obstacle->GetY() || player->GetY() - player->GetHeight() > obstacle->GetY() + obstacle->GetHeight()) return 0;
-		}
-
-
+	switch (obstacle->GetHitboxKind())
+	{
+	case EHitboxKind::Box:	//장애물일때는 플레이어 네모박스가 히트박스가된다 (mx,my는 GearObstacle 아니면 항상 0)
+	{
+		if (player->GetX() + player->GetWidth() < obstacle->GetX() + obstacle->GetMX() || player->GetX() - player->GetWidth() > obstacle->GetX() + obstacle->GetMX() + obstacle->GetWidth()) return 0;
+		if (player->GetY() + player->GetHeight() < obstacle->GetY() + obstacle->GetMY() || player->GetY() - player->GetHeight() > obstacle->GetY() + obstacle->GetMY() + obstacle->GetHeight()) return 0;
 		return 1;
 	}
-	else if (ObstacleTypeUtil::IsRope(obstacle->GetType()))	//로프,밧줄같은 딱코 맞춰야하는 오브젝 위로는 플레이어 발까지 닿아야하고 아래로는 플레이어 중점에서 끝난다 하지만 내려갈수도 있어야하므로 조금 후하게 준다
+	case EHitboxKind::Rope:	//로프,밧줄같은 딱코 맞춰야하는 오브젝 위로는 플레이어 발까지 닿아야하고 아래로는 플레이어 중점에서 끝난다 하지만 내려갈수도 있어야하므로 조금 후하게 준다
 	{
-
 		if (player->GetY() + player->GetHeight() < obstacle->GetY() || player->GetY() - player->GetHeight() > obstacle->GetY() + obstacle->GetHeight()) return 0;	//일단먼저 닿았으면 들어와
 
 		if (obstacle->GetX() < player->GetX() && player->GetX() < obstacle->GetX() + obstacle->GetWidth())	//파이프가 그래도 좀 두꺼우니 이안에들어오면 cehck
 		{
 			if (InputHelper::IsUpDown())//여기는 특이하게 올라가면 올라가는쪽 체크는 끝이나야한다.
 			{
-
 				if (player->GetY() + player->GetHeight() <= obstacle->GetY())	//올라갔을때 아랫키를 만족하면 충돌체크 x 안그러면 반응해서 계속 줄에매달리는 오류
 					return 0;
 				if (player->GetY() < obstacle->GetY() + obstacle->GetHeight())
@@ -60,7 +50,6 @@ bool ObjectManager::CollP2W(const UPtr<PLAYER>& player, const SPtr<Obstacle>& ob
 			}
 			else if (InputHelper::IsDownDown())
 			{
-
 				if (player->GetY() + player->GetHeight() <= obstacle->GetY())
 					return 1;
 			}
@@ -68,31 +57,29 @@ bool ObjectManager::CollP2W(const UPtr<PLAYER>& player, const SPtr<Obstacle>& ob
 			if (player->GetY() + player->GetHeight() <= obstacle->GetY() || player->GetY() < obstacle->GetY() + obstacle->GetHeight())
 				return 1;
 		}
-
 		return 0;
 	}
-	else if (obstacle->GetType() == EObstacleType::Ground)	//땅바닥일때
+	case EHitboxKind::Ground:	//땅바닥일때
 	{
 		if (obstacle->GetX() <= player->GetX() && player->GetX() <= obstacle->GetX() + obstacle->GetWidth())
 		{
 			if (obstacle->GetY() <= player->GetY() + player->GetHeight())
-			{
 				return 1;
-			}
 		}
+		return 0;
 	}
-	else if (ObstacleTypeUtil::IsPlatform(obstacle->GetType())) {	//플랫폼일때는 플레이어 중점이 히트박스가된다
+	case EHitboxKind::Platform:	//플랫폼일때는 플레이어 중점이 히트박스가된다
+	{
 		if (obstacle->GetX() <= player->GetX() && player->GetX() <= obstacle->GetX() + obstacle->GetWidth())
 		{
 			if (obstacle->GetY() <= player->GetY() + player->GetHeight() && player->GetY() + player->GetHeight() <= obstacle->GetY() + adjust)
-			{
 				return 1;
-				//ㅇㅇ
-			}
 		}
+		return 0;
 	}
-
-	return 0;
+	default:	//None: 충돌 자체를 안 함 (장식용 배경 등)
+		return 0;
+	}
 }
 
 

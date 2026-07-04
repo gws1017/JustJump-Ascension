@@ -1,6 +1,16 @@
 #pragma once
 #include "object/core/Object.h"
 
+//CollP2W 충돌판정용 히트박스 모양 분류. None은 충돌 자체를 안 함(장식용 배경 등)
+enum class EHitboxKind
+{
+	None,
+	Ground,
+	Platform,
+	Box,
+	Rope,
+};
+
 namespace ObstacleConst {
 	constexpr int kBeltSpeed = 2;     // 벨트 이동 속도
 	constexpr int kGearRowSpeed = 5;  // 가로 기어 속도
@@ -76,6 +86,8 @@ public:
 	virtual void IndexChange() {}
 
 	virtual void DrawObj(HDC& mem1dc) = 0;
+	//CollP2W가 히트박스 모양을 물어볼 때 쓰는 함수
+	virtual EHitboxKind GetHitboxKind() const = 0;
 
 protected:
 

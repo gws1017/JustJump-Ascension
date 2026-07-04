@@ -84,8 +84,6 @@ namespace ObstacleTypeUtil {
     inline bool IsPlatform(EObstacleType t)    { auto v = static_cast<int>(t); return v > 0   && v <= 100; }
     // 피격 반응이 있는 장애물 (101~200)
     inline bool IsHazard(EObstacleType t)      { auto v = static_cast<int>(t); return v >= 101 && v <= 200; }
-    // CollP2W에서 히트박스 형태 결정용 (장애물+인터랙티브, 101~300)
-    inline bool IsBoxHitbox(EObstacleType t)   { auto v = static_cast<int>(t); return v >= 101 && v <  301; }
     inline bool IsInteractive(EObstacleType t) { auto v = static_cast<int>(t); return v >= 201 && v <= 300; }
     inline bool IsRope(EObstacleType t)        { auto v = static_cast<int>(t); return v >= 301 && v <  401; }
 }
