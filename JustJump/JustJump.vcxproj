@@ -173,6 +173,8 @@
     <ClCompile Include="src\ui\TitleMenuUI.cpp" />
     <ClCompile Include="src\world\Map.cpp" />
     <ClCompile Include="src\world\obstacle\obstacle.cpp" />
+    <ClCompile Include="src\world\obstacle\GearObstacle.cpp" />
+    <ClCompile Include="src\world\obstacle\PortalObstacle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameConstants.h" />
@@ -196,6 +198,8 @@
     <ClInclude Include="src\ui\TitleMenuUI.h" />
     <ClInclude Include="src\world\Map.h" />
     <ClInclude Include="src\world\obstacle\obstacle.h" />
+    <ClInclude Include="src\world\obstacle\GearObstacle.h" />
+    <ClInclude Include="src\world\obstacle\PortalObstacle.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />

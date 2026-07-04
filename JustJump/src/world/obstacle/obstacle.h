@@ -70,28 +70,31 @@ public:
 	void Create(int x, int y, int width, int height, int type);
 	// All objects reset
 	void ResetObject();
-	//Move gear object
-	void Move();
+	//Move gear object (기본은 안 움직임, GearObstacle이 오버라이드)
+	virtual void Move() {}
 	//오브젝트 애니메이션 쓸때 사용하는함수
-	void IndexChange();
+	virtual void IndexChange();
 	//오브젝트를 그려줌
-	void DrawObj(HDC& mem1dc);
+	virtual void DrawObj(HDC& mem1dc);
 
-private:
+protected:
+
+	virtual float GetAnimPeriodSec() const;
 
 	int mx, my;					// x,y 축기준 증감량
 
 	int dir;					//오브젝트 이동방향n 0 == left , right / 1 == up , down
 	int s;						//부호
 
-	float m_animAccum = 0.f;	// 애니메이션 누적 시간
-	float GetAnimPeriodSec() const;
-
 	EObstacleType type;
 	int index;					//애니메이션 돌릴때 배열의 인덱스를 바꿔주어 이미지를 바꾼다
 
 	HBITMAP hbit;
 	HDC odc;
+
+private:
+
+	float m_animAccum = 0.f;	// 애니메이션 누적 시간
 };
 
 //bool collp2w(PLAYER, OBJECT);

@@ -69,14 +69,6 @@ void Obstacle::IndexChange()
 	{
 		if (index >= 4) index = 0;
 	}
-	else if (type == EObstacleType::GearRow || type == EObstacleType::GearCol) //톱니바퀴 회전하는 이미지 2개
-	{
-		if (index >= 2) index = 0;
-	}
-	else if (type == EObstacleType::Portal) //포탈 이미지 7개
-	{
-		if (index >= 7) index = 0;
-	}
 }
 
 void Obstacle::DrawObj(HDC& mem1dc)
@@ -125,16 +117,6 @@ void Obstacle::DrawObj(HDC& mem1dc)
 		else tx = 0;
 		TransparentBlt(mem1dc, tx, y, gas[index].right, gas[index].bottom, odc, gas[index].left, gas[index].top, gas[index].right, gas[index].bottom, RGB(255, 255, 255));
 	}
-	else if (type == EObstacleType::GearRow || type == EObstacleType::GearCol)
-	{
-		const auto& g = ObstacleSprite::kGear;
-		TransparentBlt(mem1dc, x+mx, y+my, width, height, odc, g.x0 + index * g.stride, g.y, g.w, g.h, RGB(255, 255, 255));
-	}
-	else if (type == EObstacleType::Portal)
-	{
-		const auto& p = ObstacleSprite::kPortal;
-		TransparentBlt(mem1dc, x, y, width, height, odc, p.x0 + index * p.stride, p.y, p.w, p.h, RGB(0, 0, 0));
-	}
 	else if (type == EObstacleType::Rope)
 	{
 		//머리+ 꼬리 53 몸통 41 전체 94 기본 길이 94 더긴거는 135 176 217 258 299 340 381 422 463
@@ -154,8 +136,7 @@ void Obstacle::DrawObj(HDC& mem1dc)
 
 void Obstacle::Update(float dt)
 {
-	if (type == EObstacleType::GearRow || type == EObstacleType::GearCol)
-		Move();
+	Move();	// 오버라이드해서 움직임
 
 	const float period = GetAnimPeriodSec();
 	if (period <= 0.f) return;
@@ -175,31 +156,8 @@ float Obstacle::GetAnimPeriodSec() const
 	case EObstacleType::BeltRight:
 	case EObstacleType::BeltLeft:   return AnimPeriod::kBelt       * GameConst::kAnimTickSeconds;
 	case EObstacleType::Gas:        return AnimPeriod::kGas        * GameConst::kAnimTickSeconds;
-	case EObstacleType::GearRow:
-	case EObstacleType::GearCol:    return AnimPeriod::kGear       * GameConst::kAnimTickSeconds;
-	case EObstacleType::Portal:     return AnimPeriod::kPortal     * GameConst::kAnimTickSeconds;
 	default: return 0.f;
 	}
-}
-
-void Obstacle::Move()
-{
-	
-	if (dir == 0) //Left or Down
-	{
-		if (mx > ObstacleConst::kGearRangeX) s = -1;
-		else if (mx < -ObstacleConst::kGearRangeX) s = 1;
-		mx += s * ObstacleConst::kGearRowSpeed;
-
-	}
-	else if (dir == 1) //Up or Down
-	{
-		if (my > ObstacleConst::kGearRangeY) s = -1;
-		else if (my < -ObstacleConst::kGearRangeY) s = 1;
-		my += s * ObstacleConst::kGearColSpeed;
-
-	}
-	
 }
 //땅바닥과 플레이어 충돌체크 1이면 부닥침
 //

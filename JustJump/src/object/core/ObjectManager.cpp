@@ -4,6 +4,8 @@
 #include "ObjectManager.h"
 #include "object/character/player.h"
 #include "world/obstacle/obstacle.h"
+#include "world/obstacle/GearObstacle.h"
+#include "world/obstacle/PortalObstacle.h"
 #include "object/view/Camera.h"
 #include "core/InputManager.h"
 #include "world/Map.h"
@@ -413,7 +415,14 @@ int ObjectManager::InitObject(int mapnum, HINSTANCE g_hinst)
 				break;
 			}
 			in >> x >> y >> w >> h >> type;
-			SPtr<Obstacle> obs = CreateSPtr<Obstacle>();
+			const EObstacleType obsType = static_cast<EObstacleType>(type);
+			SPtr<Obstacle> obs;
+			if (obsType == EObstacleType::Portal)
+				obs = CreateSPtr<PortalObstacle>();
+			else if (obsType == EObstacleType::GearRow || obsType == EObstacleType::GearCol)
+				obs = CreateSPtr<GearObstacle>();
+			else
+				obs = CreateSPtr<Obstacle>();
 			obs->Create(x, y, w, h, type);
 			obs->SetHbit(g_hinst);
 			RegisterObstacle(obs);
