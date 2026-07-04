@@ -1,4 +1,4 @@
-#include "Global.h"
+﻿#include "Global.h"
 #include "object/character/player.h"
 #include "core/InputManager.h"
 #pragma comment (lib, "Msimg32.lib")

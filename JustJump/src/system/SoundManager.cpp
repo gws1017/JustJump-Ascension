@@ -1,4 +1,4 @@
-#include "Global.h"
+﻿#include "Global.h"
 #include "system/SoundManager.h"
 #include <cassert>
 

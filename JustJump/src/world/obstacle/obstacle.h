@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "object/core/Object.h"
 
 //CollP2W 충돌판정용 히트박스 모양 분류. None은 충돌 자체를 안 함(장식용 배경 등)

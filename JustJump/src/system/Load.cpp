@@ -1,4 +1,4 @@
-#include "Global.h"
+﻿#include "Global.h"
 #include "Load.h"
 #include "../resource.h"
 #include "core/LevelConfig.h"

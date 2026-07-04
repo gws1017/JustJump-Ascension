@@ -1,4 +1,4 @@
-#include "Global.h"
+﻿#include "Global.h"
 #include "core/App.h"
 #include "core/window.h"
 #include "core/Timer.h"

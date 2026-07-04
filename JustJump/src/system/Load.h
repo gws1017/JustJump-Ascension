@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 //HBITMAP LoadBlack(HBITMAP, HINSTANCE);
 HBITMAP LoadBK(HBITMAP, HINSTANCE, int);
