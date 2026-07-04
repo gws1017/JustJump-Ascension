@@ -15,7 +15,7 @@ float PortalObstacle::GetAnimPeriodSec() const
 void PortalObstacle::DrawObj(HDC& mem1dc)
 {
 	odc = CreateCompatibleDC(mem1dc);
-	SelectObject(odc, hbit);
+	SelectObject(odc, hbit.get());
 	const auto& p = ObstacleSprite::kPortal;
 	TransparentBlt(mem1dc, x, y, width, height, odc, p.x0 + index * p.stride, p.y, p.w, p.h, RGB(0, 0, 0));
 	DeleteDC(odc);

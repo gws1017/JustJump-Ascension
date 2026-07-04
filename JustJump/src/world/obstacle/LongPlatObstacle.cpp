@@ -4,7 +4,7 @@
 void LongPlatObstacle::DrawObj(HDC& mem1dc)
 {
 	odc = CreateCompatibleDC(mem1dc);
-	SelectObject(odc, hbit);
+	SelectObject(odc, hbit.get());
 
 	const auto& ph = ObstacleSprite::Platform7::kHead;
 	const auto& pb = ObstacleSprite::Platform7::kBody;

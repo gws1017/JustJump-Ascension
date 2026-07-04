@@ -90,6 +90,8 @@ void SoundManager::Shutdown()
 void SoundManager::PlayBgm(EBgm bgm)
 {
 	const int index = static_cast<int>(bgm);
+	//맵을 계속 추가하면 bgm 트랙(5개) 범위를 넘는 인덱스가 들어올 수 있어서 방어
+	if (index < 0 || index >= static_cast<int>(EBgm::Count)) return;
 	if (!m_system || !m_bgmSound[index]) return;
 	if (m_channel[0]) m_channel[0]->stop();
 	m_system->playSound(m_bgmSound[index].get(), nullptr, false, &m_channel[0]);

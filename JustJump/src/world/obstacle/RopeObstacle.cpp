@@ -4,7 +4,7 @@
 void RopeObstacle::DrawObj(HDC& mem1dc)
 {
 	odc = CreateCompatibleDC(mem1dc);
-	SelectObject(odc, hbit);
+	SelectObject(odc, hbit.get());
 
 	const auto& rh = ObstacleSprite::Rope::kHead;
 	const auto& rb = ObstacleSprite::Rope::kBody;

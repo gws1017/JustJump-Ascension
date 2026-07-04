@@ -31,7 +31,7 @@ float GearObstacle::GetAnimPeriodSec() const
 void GearObstacle::DrawObj(HDC& mem1dc)
 {
 	odc = CreateCompatibleDC(mem1dc);
-	SelectObject(odc, hbit);
+	SelectObject(odc, hbit.get());
 	const auto& g = ObstacleSprite::kGear;
 	TransparentBlt(mem1dc, x + mx, y + my, width, height, odc, g.x0 + index * g.stride, g.y, g.w, g.h, RGB(255, 255, 255));
 	DeleteDC(odc);

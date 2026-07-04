@@ -1,6 +1,7 @@
-#include "Global.h"
+﻿#include "Global.h"
 #include <fstream>
 #include <map>
+#include <algorithm>
 #include <nlohmann/json.hpp>
 
 #include "ObjectManager.h"
@@ -304,13 +305,27 @@ void ObjectManager::AdjustPlayer(const UPtr<PLAYER>& player, MAP& m, int& ocount
 						m.SetMapNumber(m.GetMapNumber() + 1);
 						player->Initialzie();
 						if (m.GetMapNumber() == LevelConfig::GetClearMapNumber()) m.CreateMap(g_hinst);
-						for (const auto& resetObstacle : m_obstacles)
-							resetObstacle->ResetObject();
+						//주의: 지금 m_obstacles를 순회하는 중이지만, 아래에서 벡터를 비우고
+						//새로 채운 뒤 바로 return하므로 순회 참조(obstacle)를 더 쓰지 않아 안전하다
+						ResetObstacle();
 						ocount = InitObject(m.GetMapNumber(), g_hinst);
 						m.CreateMap(g_hinst);
-						SoundManager::Get().SetIndex(m.GetMapNumber() - static_cast<int>(EMapId::Title));
+						//클리어맵이면 클리어 음악, 게임맵이면 Level1~3(EBgm 1~3)을 순환시킨다.
+						//(예전엔 맵번호 % 5로 해서 stage가 5,10...일 때 Title/Clear 음악으로 새는 버그가 있었음)
+						EBgm bgm;
+						if (m.GetMapNumber() == LevelConfig::GetClearMapNumber())
+						{
+							bgm = EBgm::Clear;
+						}
+						else
+						{
+							const int stage = m.GetMapNumber() - static_cast<int>(EMapId::GameplayMin);	//맵10 → 0
+							const int levelBgmCount = static_cast<int>(EBgm::Clear) - static_cast<int>(EBgm::Level1);	//Level1~3 = 3개
+							bgm = static_cast<EBgm>(static_cast<int>(EBgm::Level1) + stage % levelBgmCount);
+						}
+						SoundManager::Get().SetIndex(static_cast<int>(bgm));
 						SoundManager::Get().Update();
-						SoundManager::Get().PlayBgm(static_cast<EBgm>(SoundManager::Get().GetIndex()));
+						SoundManager::Get().PlayBgm(bgm);
 						SoundManager::Get().PlayEffect(EEffect::Portal);
 
 
@@ -374,6 +389,17 @@ void ObjectManager::AdjustPlayer(const UPtr<PLAYER>& player, MAP& m, int& ocount
 
 namespace
 {
+	//맵 파일명 규칙:
+	//  Title(9)=map_0, GameplayMin(10)=map_1, map_2, ...  (게임맵은 번호 그대로)
+	//  클리어맵만은 번호(gameplayMapCount에 따라 움직임)와 무관하게 map_clear.json 고정.
+	//  이렇게 안 하면 게임맵을 추가할 때마다 클리어맵 번호가 밀려서 클리어 콘텐츠가 어긋난다.
+	std::string MapFilePath(int mapnum)
+	{
+		if (mapnum == LevelConfig::GetClearMapNumber())
+			return "map/map_clear.json";
+		return "map/map_" + std::to_string(mapnum - static_cast<int>(EMapId::Title)) + ".json";
+	}
+
 	//JSON의 문자열 type 필드 <-> EObstacleType 매핑
 	EObstacleType ObstacleTypeFromName(const std::string& name)
 	{
@@ -398,6 +424,30 @@ namespace
 		if (it == kNameTable.end())
 			throw std::runtime_error("맵 JSON: 알 수 없는 오브젝트 타입 '" + name + "'");
 		return it->second;
+	}
+
+	//ObstacleTypeFromName의 역방향 (저장할 때 사용)
+	std::string ObstacleTypeToName(EObstacleType type)
+	{
+		switch (type)
+		{
+		case EObstacleType::AnimatedBg:  return "AnimatedBg";
+		case EObstacleType::Ground:      return "Ground";
+		case EObstacleType::Platform:    return "Platform";
+		case EObstacleType::SmallPlat:   return "SmallPlat";
+		case EObstacleType::BeltRight:   return "BeltRight";
+		case EObstacleType::Transparent: return "Transparent";
+		case EObstacleType::BeltLeft:    return "BeltLeft";
+		case EObstacleType::LongPlat:    return "LongPlat";
+		case EObstacleType::Nail:        return "Nail";
+		case EObstacleType::BrokenPipe:  return "BrokenPipe";
+		case EObstacleType::Gas:         return "Gas";
+		case EObstacleType::GearRow:     return "GearRow";
+		case EObstacleType::GearCol:     return "GearCol";
+		case EObstacleType::Portal:      return "Portal";
+		case EObstacleType::Rope:        return "Rope";
+		default:                         return "Ground";
+		}
 	}
 
 	SPtr<Obstacle> CreateObstacleByType(EObstacleType obsType)
@@ -427,11 +477,9 @@ namespace
 //int(맵 번호) 에 따라 장애물 위치값 넣어주고 몇개의 오브젝트가 들어갔는지 알려주는 함수
 int ObjectManager::InitObject(int mapnum, HINSTANCE g_hinst)
 {
-	//맵 파일명은 (Title 기준 오프셋)으로 정해짐: Title=map_0, GameplayMin=map_1, ..., Clear=map_(마지막)
-	//맵을 추가할 땐 이 공식을 안 건드리고 map_N.json 파일과 manifest.json의 개수만 늘리면 된다
 	if (mapnum < static_cast<int>(EMapId::Title))
 		return 0;		//맵 값이 잘못입력되었으면 그대로 탈출
-	const std::string path = "map/map_" + std::to_string(mapnum - static_cast<int>(EMapId::Title)) + ".json";
+	const std::string path = MapFilePath(mapnum);
 
 	int objcount = 0;
 	try
@@ -474,6 +522,61 @@ int ObjectManager::InitObject(int mapnum, HINSTANCE g_hinst)
 void ObjectManager::RegisterObstacle(const SPtr<Obstacle>& obstacle)
 {
 	m_obstacles.push_back(obstacle);
+}
+
+SPtr<Obstacle> ObjectManager::CreateObstacle(EObstacleType type, int x, int y, int w, int h, HINSTANCE g_hinst)
+{
+	SPtr<Obstacle> obs = CreateObstacleByType(type);
+	obs->Create(x, y, w, h, static_cast<int>(type));
+	obs->SetHbit(g_hinst);
+	return obs;
+}
+
+SPtr<Obstacle> ObjectManager::CreateAndRegisterObstacle(EObstacleType type, int x, int y, int w, int h, HINSTANCE g_hinst)
+{
+	SPtr<Obstacle> obs = CreateObstacle(type, x, y, w, h, g_hinst);
+	RegisterObstacle(obs);
+	return obs;
+}
+
+void ObjectManager::RemoveObstacle(const SPtr<Obstacle>& obstacle)
+{
+	m_obstacles.erase(std::remove(m_obstacles.begin(), m_obstacles.end(), obstacle), m_obstacles.end());
+}
+
+bool ObjectManager::MapFileExists(int mapnum)
+{
+	if (mapnum < static_cast<int>(EMapId::Title))
+		return false;
+	std::ifstream in(MapFilePath(mapnum));
+	return in.is_open();
+}
+
+bool ObjectManager::SaveObstaclesToJson(int mapnum) const
+{
+	if (mapnum < static_cast<int>(EMapId::Title))
+		return false;
+	const std::string path = MapFilePath(mapnum);
+
+	nlohmann::json root;
+	nlohmann::json arr = nlohmann::json::array();
+	for (const auto& obs : m_obstacles)
+	{
+		nlohmann::json item;
+		item["x"] = obs->GetX();
+		item["y"] = obs->GetY();
+		item["w"] = obs->GetWidth();
+		item["h"] = obs->GetHeight();
+		item["type"] = ObstacleTypeToName(obs->GetType());
+		arr.push_back(item);
+	}
+	root["obstacles"] = arr;
+
+	std::ofstream out(path);
+	if (!out.is_open())
+		return false;
+	out << root.dump(2);
+	return true;
 }
 
 //카메라 무빙워크
@@ -566,8 +669,12 @@ void ObjectManager::UpdateAll(float dt)
 
 void ObjectManager::ResetObstacle()
 {
+	//각 오브젝트의 GDI 비트맵을 해제한 뒤 벡터 자체를 비운다.
+	//(예전엔 내용만 초기화하고 벡터는 남겨뒀는데, 맵마다 오브젝트 수가 다르면
+	// 이전 맵의 유령 오브젝트가 벡터에 계속 남아 InitObject 때 덧붙는 버그가 있었음)
 	for (auto& obstacle : m_obstacles)
 	{
 		obstacle->ResetObject();
 	}
+	m_obstacles.clear();
 }

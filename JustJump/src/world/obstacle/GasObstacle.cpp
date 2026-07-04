@@ -15,7 +15,7 @@ float GasObstacle::GetAnimPeriodSec() const
 void GasObstacle::DrawObj(HDC& mem1dc)
 {
 	odc = CreateCompatibleDC(mem1dc);
-	SelectObject(odc, hbit);
+	SelectObject(odc, hbit.get());
 
 	RECT gas[4] = { {0,2,7,7},{10,2,18,7},{31,0,33,9},{0,0,0,0} };
 	int tx;

@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "object/core/Object.h"
+#include "core/util/ptr_template.h"
 
 //CollP2W 충돌판정용 히트박스 모양 분류. None은 충돌 자체를 안 함(장식용 배경 등)
 enum class EHitboxKind
@@ -102,7 +103,7 @@ protected:
 	EObstacleType type;
 	int index;					//애니메이션 돌릴때 배열의 인덱스를 바꿔주어 이미지를 바꾼다
 
-	HBITMAP hbit;
+	BmpPtr hbit;	//RAII: 오브젝트 소멸 시 자동으로 DeleteObject
 	HDC odc;
 
 private:

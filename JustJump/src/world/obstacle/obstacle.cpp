@@ -34,24 +34,19 @@ void Obstacle::Create(int _x, int _y, int _w, int _h, int _type)
 
 void Obstacle::SetHbit(HINSTANCE g_hinst)
 {
-	hbit = LoadObj(hbit, g_hinst, static_cast<int>(type));
+	hbit = CreateBmpPtr(LoadObj(hbit.get(), g_hinst, static_cast<int>(type)));
 }
 
 // All objects reset
 void Obstacle::ResetObject()
 {
-	if(hbit)
-	{
-		DeleteObject(hbit);
-		hbit = NULL;
-	}
+	hbit.reset();	//BmpPtr: 자동으로 DeleteObject
 	x = 0;
 	y = 0;
 	width = 0;
 	height = 0;
 	type = EObstacleType::AnimatedBg;
 	index = 0;
-	hbit = NULL;
 }
 
 void Obstacle::Update(float dt)

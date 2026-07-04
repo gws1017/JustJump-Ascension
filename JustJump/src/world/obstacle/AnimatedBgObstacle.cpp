@@ -15,7 +15,7 @@ float AnimatedBgObstacle::GetAnimPeriodSec() const
 void AnimatedBgObstacle::DrawObj(HDC& mem1dc)
 {
 	odc = CreateCompatibleDC(mem1dc);
-	SelectObject(odc, hbit);
+	SelectObject(odc, hbit.get());
 	TransparentBlt(mem1dc, x, y, width, height, odc, 0, 0 + index * 768, 1024, 768, RGB(142, 203, 162));
 	DeleteDC(odc);
 }

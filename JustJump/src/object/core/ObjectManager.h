@@ -44,6 +44,16 @@ public:
 
 	//오브젝트를 소유권 공유하며 등록
 	void RegisterObstacle(const SPtr<Obstacle>& obstacle);
+	//편집 모드: 타입/위치를 지정해 오브젝트만 만듦 (등록 안 함, 미리보기용)
+	SPtr<Obstacle> CreateObstacle(EObstacleType type, int x, int y, int w, int h, HINSTANCE g_hinst);
+	//편집 모드: 타입/위치를 지정해 오브젝트를 만들고 바로 등록. 생성된 오브젝트를 반환
+	SPtr<Obstacle> CreateAndRegisterObstacle(EObstacleType type, int x, int y, int w, int h, HINSTANCE g_hinst);
+	//편집 모드: 오브젝트 제거
+	void RemoveObstacle(const SPtr<Obstacle>& obstacle);
+	//편집 모드: 현재 오브젝트 목록을 map_(mapnum).json으로 저장. 성공 여부 반환
+	bool SaveObstaclesToJson(int mapnum) const;
+	//해당 맵 번호의 JSON 파일이 실제로 존재하는지 (저장된 맵인지) 확인
+	static bool MapFileExists(int mapnum);
 private:
 
 	HDC* mem1dc;
