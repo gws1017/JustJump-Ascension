@@ -13,7 +13,7 @@ public:
 	void OnMouseDown(LPARAM mouse, Sound& sound);
 	bool OnMouseUp(LPARAM mouse);	// true = 부활 확정
 
-	void Render(HDC mem1dc, const CAMERA& camera);
+	void Render(HDC mem1dc, const UPtr<CAMERA>& camera);
 
 private:
 	static bool IsInRect(LPARAM mouse, int l, int t, int r, int b);

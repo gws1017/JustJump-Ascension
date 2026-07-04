@@ -10,7 +10,11 @@
 #include "object/core/ObjectManager.h"
 #include "world/obstacle/obstacle.h"
 
-GameWorld::GameWorld() = default;
+GameWorld::GameWorld()
+    : m_player(CreateUPtr<PLAYER>())
+    , m_camera(CreateUPtr<CAMERA>())
+{
+}
 
 GameWorld::~GameWorld() = default;
 
@@ -27,9 +31,9 @@ bool GameWorld::Initialize(HINSTANCE hinstance)
     m_map.CreateHP(m_hinstance);
 
     //플레이어 스프라이트는 UI 비트맵보다 먼저 로드 (GDI 핸들 우선 확보)
-    m_player.SetBitMap(m_hinstance);
-    m_player.InitializeAnimPosition();
-    m_player.SelectBitmap();
+    m_player->SetBitMap(m_hinstance);
+    m_player->InitializeAnimPosition();
+    m_player->SelectBitmap();
 
     //UI 초기화
     m_titleUI.Load(m_hinstance);
@@ -38,8 +42,8 @@ bool GameWorld::Initialize(HINSTANCE hinstance)
     //카메라 초기화
     if (m_map.GetMapNumber() == static_cast<int>(EMapId::Title))
     {
-        m_camera.SetX(0);
-        m_camera.SetY(0);
+        m_camera->SetX(0);
+        m_camera->SetY(0);
     }
 
     //블렌드 함수 초기화
@@ -115,7 +119,7 @@ void GameWorld::RenderScene(HDC hdc)
         RenderStartMenu(mem1dc);
     }
 
-    m_player.Render(mem1dc);
+    m_player->Render(mem1dc);
 
     if (m_map.GetMapNumber() >= static_cast<int>(EMapId::GameplayMin))
     {
@@ -124,7 +128,7 @@ void GameWorld::RenderScene(HDC hdc)
 
     if (m_map.GetBlackTime() > 0) m_map.DrawLoadBK(mem1dc, mem2dc, m_blendfunction);
 
-    BitBlt(hdc, 0, 0, GameConst::kViewportWidth, GameConst::kViewportHeight, mem1dc, m_camera.GetX(), m_camera.GetY(), SRCCOPY);
+    BitBlt(hdc, 0, 0, GameConst::kViewportWidth, GameConst::kViewportHeight, mem1dc, m_camera->GetX(), m_camera->GetY(), SRCCOPY);
 
     DeleteDC(mem1dc);
     DeleteDC(mem2dc);
@@ -134,13 +138,13 @@ void GameWorld::UpdateGameplay(float dt)
 {
     if (InputManager::IsRegistered())
     {
-        m_player.ProcessInput(m_sound);
+        m_player->ProcessInput(m_sound);
 
-        if (m_player.GetGameMode() && !m_player.IsDead())
-            m_camera.ProcessInput();
+        if (m_player->GetGameMode() && !m_player->IsDead())
+            m_camera->ProcessInput();
     }
 
-    m_player.Update(dt);
+    m_player->Update(dt);
     m_object_manager.AdjustPlayer(m_player, m_map, m_ocount, m_hinstance, m_sound);
     m_map.movemap();
     m_object_manager.UpdateAll(dt);
@@ -157,7 +161,7 @@ void GameWorld::UpdateFadeAndCamera()
         return;
     }
 
-    if (m_player.GetGameMode() == 0)
+    if (m_player->GetGameMode() == 0)
         m_object_manager.AdjustCamera(m_camera, m_player);
 }
 
@@ -171,7 +175,7 @@ void GameWorld::RenderInGameUI(HDC mem1dc)
     HDC dc = nullptr;
     m_map.DrawUi(mem1dc, dc, m_camera);
     m_map.DrawHP(mem1dc, dc, m_camera, m_player);
-    if (m_player.IsDead() == 1)
+    if (m_player->IsDead() == 1)
         m_deadUI.Render(mem1dc, m_camera);
 }
 
@@ -220,8 +224,8 @@ void GameWorld::OnChar(WPARAM ch)
 		for (const auto& obs : m_object_manager.GetObjects()) {
 			if (obs->GetType() == EObstacleType::Portal)
             {
-				m_player.SetX(obs->GetX() + offset);
-				m_player.SetY(obs->GetY() + offset);
+				m_player->SetX(obs->GetX() + offset);
+				m_player->SetY(obs->GetY() + offset);
 				break;
 			}
 		}
@@ -229,18 +233,18 @@ void GameWorld::OnChar(WPARAM ch)
 	}
 	if (ch == 'c')
 	{
-		m_player.SetMoveCommand(EMoveCommand::None);
-		if (m_player.GetGameMode() == 0)
-			m_player.SetGameMode(1);
+		m_player->SetMoveCommand(EMoveCommand::None);
+		if (m_player->GetGameMode() == 0)
+			m_player->SetGameMode(1);
 		else
-			m_player.SetGameMode(0);
+			m_player->SetGameMode(0);
 		return;
 	}
 }
 
 void GameWorld::OnMouseMove(LPARAM mouse)
 {
-    if (m_player.IsDead() == 1)
+    if (m_player->IsDead() == 1)
     {
         m_deadUI.OnMouseMove(mouse, m_sound);
         return;
@@ -252,7 +256,7 @@ void GameWorld::OnMouseMove(LPARAM mouse)
 void GameWorld::OnMouseDown(LPARAM mouse)
 {
     SetCursor(LoadCursorFromFile(TEXT("cursor/cursor4.cur")));
-    if (m_player.IsDead() == 1)
+    if (m_player->IsDead() == 1)
     {
         m_deadUI.OnMouseDown(mouse, m_sound);
         return;
@@ -263,12 +267,12 @@ void GameWorld::OnMouseDown(LPARAM mouse)
 
 void GameWorld::OnMouseUp(LPARAM mouse)
 {
-    if (m_player.IsDead() == 1)
+    if (m_player->IsDead() == 1)
     {
         if (m_deadUI.OnMouseUp(mouse))
         {
-            m_player.Initialzie();
-            m_player.SetCurrentHP(100);
+            m_player->Initialzie();
+            m_player->SetCurrentHP(100);
         }
         return;
     }
@@ -278,7 +282,7 @@ void GameWorld::OnMouseUp(LPARAM mouse)
         {
             m_map.SetBlackTime(50);
             m_map.SetMapNumber(m_map.GetMapNumber() + 1);
-            m_player.Initialzie();
+            m_player->Initialzie();
             m_object_manager.ResetObstacle();
             m_ocount = m_object_manager.InitObject(m_map.GetMapNumber(), m_hinstance);
 
@@ -292,9 +296,9 @@ void GameWorld::OnMouseUp(LPARAM mouse)
             if (m_sound.Channel[0]) m_sound.Channel[0]->stop();
             m_sound.System->playSound(m_sound.bgmSound[1], nullptr, false, &m_sound.Channel[0]);
 
-            m_player.SetCurrentHP(100);
-            m_camera.SetX(0);
-            m_camera.SetY(GameConst::kDefaultCameraY);
+            m_player->SetCurrentHP(100);
+            m_camera->SetX(0);
+            m_camera->SetY(GameConst::kDefaultCameraY);
         }
     }
 }

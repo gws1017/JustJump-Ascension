@@ -5,12 +5,13 @@
 #include "world/Map.h"
 #include "system/Sound.h"
 
-#include "object/character/player.h"
-#include "object/view/Camera.h"
 #include "object/core/ObjectManager.h"
 
 #include "ui/TitleMenuUI.h"
 #include "ui/DeadScreenUI.h"
+
+class PLAYER;
+class CAMERA;
 
 class GameWorld
 {
@@ -35,9 +36,9 @@ public:
 private:
 
 	HINSTANCE m_hinstance = nullptr;
-	PLAYER m_player;
+	UPtr<PLAYER> m_player;
 	MAP m_map;
-	CAMERA m_camera;
+	UPtr<CAMERA> m_camera;
 	Sound m_sound;
 	ObjectManager m_object_manager;
 

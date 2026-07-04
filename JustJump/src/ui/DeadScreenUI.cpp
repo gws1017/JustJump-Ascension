@@ -60,29 +60,29 @@ bool DeadScreenUI::OnMouseUp(LPARAM mouse)
 	return false;
 }
 
-void DeadScreenUI::Render(HDC mem1dc, const CAMERA& camera)
+void DeadScreenUI::Render(HDC mem1dc, const UPtr<CAMERA>& camera)
 {
 	HDC dc = CreateCompatibleDC(mem1dc);
 	SelectObject(dc, m_dieBit[m_state].get());
-	TransparentBlt(mem1dc, camera.GetX() + 380, camera.GetY() + 240, 260, 130, dc, 0, 0, 260, 130, RGB(255, 0, 0));
+	TransparentBlt(mem1dc, camera->GetX() + 380, camera->GetY() + 240, 260, 130, dc, 0, 0, 260, 130, RGB(255, 0, 0));
 	DeleteDC(dc);
 
 	HFONT hfont = CreateFont(14, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("메이플스토리 bold"));
 	HFONT oldfont = (HFONT)SelectObject(mem1dc, hfont);
 	SetTextColor(mem1dc, RGB(32, 108, 168));
-	TextOut(mem1dc, camera.GetX() + 459, camera.GetY() + 260, L"확인을 누르시면 부활하게 됩니다.", lstrlenW(L"확인을 누르시면 부활하게 됩니다."));
-	TextOut(mem1dc, camera.GetX() + 461, camera.GetY() + 260, L"확인을 누르시면 부활하게 됩니다.", lstrlenW(L"확인을 누르시면 부활하게 됩니다."));
-	TextOut(mem1dc, camera.GetX() + 460, camera.GetY() + 259, L"확인을 누르시면 부활하게 됩니다.", lstrlenW(L"확인을 누르시면 부활하게 됩니다."));
-	TextOut(mem1dc, camera.GetX() + 460, camera.GetY() + 261, L"확인을 누르시면 부활하게 됩니다.", lstrlenW(L"확인을 누르시면 부활하게 됩니다."));
+	TextOut(mem1dc, camera->GetX() + 459, camera->GetY() + 260, L"확인을 누르시면 부활하게 됩니다.", lstrlenW(L"확인을 누르시면 부활하게 됩니다."));
+	TextOut(mem1dc, camera->GetX() + 461, camera->GetY() + 260, L"확인을 누르시면 부활하게 됩니다.", lstrlenW(L"확인을 누르시면 부활하게 됩니다."));
+	TextOut(mem1dc, camera->GetX() + 460, camera->GetY() + 259, L"확인을 누르시면 부활하게 됩니다.", lstrlenW(L"확인을 누르시면 부활하게 됩니다."));
+	TextOut(mem1dc, camera->GetX() + 460, camera->GetY() + 261, L"확인을 누르시면 부활하게 됩니다.", lstrlenW(L"확인을 누르시면 부활하게 됩니다."));
 	SetTextColor(mem1dc, RGB(255, 255, 255));
-	TextOut(mem1dc, camera.GetX() + 460, camera.GetY() + 260, L"확인을 누르시면 부활하게 됩니다.", lstrlenW(L"확인을 누르시면 부활하게 됩니다."));
+	TextOut(mem1dc, camera->GetX() + 460, camera->GetY() + 260, L"확인을 누르시면 부활하게 됩니다.", lstrlenW(L"확인을 누르시면 부활하게 됩니다."));
 	SelectObject(mem1dc, oldfont);
 	DeleteObject(hfont);
 
 	hfont = CreateFont(12, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("메이플스토리 light"));
 	oldfont = (HFONT)SelectObject(mem1dc, hfont);
-	TextOut(mem1dc, camera.GetX() + 460, camera.GetY() + 285, L"아쉽지만 확인을 누르시면 맵의 맨 처음", lstrlenW(L"아쉽지만 확인을 누르시면 맵의 맨 처음."));
-	TextOut(mem1dc, camera.GetX() + 460, camera.GetY() + 297, L"위치로 돌아가게 됩니다. 포기하지 마세요!", lstrlenW(L"위치로 돌아가게 됩니다. 포기하지 마세요!"));
+	TextOut(mem1dc, camera->GetX() + 460, camera->GetY() + 285, L"아쉽지만 확인을 누르시면 맵의 맨 처음", lstrlenW(L"아쉽지만 확인을 누르시면 맵의 맨 처음."));
+	TextOut(mem1dc, camera->GetX() + 460, camera->GetY() + 297, L"위치로 돌아가게 됩니다. 포기하지 마세요!", lstrlenW(L"위치로 돌아가게 됩니다. 포기하지 마세요!"));
 	SelectObject(mem1dc, oldfont);
 	DeleteObject(hfont);
 }

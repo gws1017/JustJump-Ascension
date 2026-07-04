@@ -28,13 +28,13 @@ public:
 	bool BlackTime();
 	//맵 배경 이동
 	void movemap();
-	void DrawBK(HDC& mem1dc, HDC& mem2dc, RECT& rectview ,const PLAYER& player);
+	void DrawBK(HDC& mem1dc, HDC& mem2dc, RECT& rectview, const UPtr<PLAYER>& player);
 	//로딩화면 알파블렌딩
 	void DrawLoadBK(HDC& mem1dc, HDC& mem2dc, BLENDFUNCTION bf);
 	//상태창
-	void DrawUi(HDC& mem1dc, HDC& mem2dc, CAMERA camera);
+	void DrawUi(HDC& mem1dc, HDC& mem2dc, const UPtr<CAMERA>& camera);
 	//HP바
-	void DrawHP(HDC& mem1dc, HDC& mem2dc, CAMERA camera, PLAYER& player);
+	void DrawHP(HDC& mem1dc, HDC& mem2dc, const UPtr<CAMERA>& camera, const UPtr<PLAYER>& player);
 
 private:
 
