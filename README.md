@@ -47,37 +47,38 @@
   - 기존 obj_t(프레임/스텝 카운터) 기반 → `Update(float dt)` 가상 함수 아키텍처로 전환, 오브젝트별 누적 타이머로 캡슐화
 - **UI 컴포넌트 분리**
   - `TitleMenuUI`, `DeadScreenUI` 클래스로 마우스 히트테스트 및 렌더링 로직을 GameWorld에서 분리
-
-### 진행중
-- **언리얼 코딩 표준을 참고하여 변수명, 함수명 등 수정**
+- **사운드 시스템 리팩토링**
+  - `SoundManager` 싱글턴으로 전역 접근 (`InputManager`와 동일 패턴), `EBgm`/`EEffect` enum class로 재생 인덱스를 이름 기반으로 전환
+- **스마트 포인터 전면 적용**
+  - `PLAYER`, `CAMERA`, `SoundManager`는 `UPtr`로 단독 소유, `Obstacle`은 `SPtr`로 공유 소유
+  - `HBITMAP`은 `BmpPtr`, FMOD `System`/`Sound`는 `FmodSystemPtr`/`FmodSoundPtr`로 커스텀 삭제자 기반 RAII 적용
+- **클래스 상속 구조 재정립 (Obstacle)**
+  - `EObstacleType` 13종 전부를 `Obstacle` 서브클래스로 분리, 타입 switch였던 `DrawObj`/`Update`/`IndexChange`를 가상 함수로 전환
+  - `CollP2W`의 충돌 히트박스 분기도 `GetHitboxKind()` 가상 함수로 통합
 - **게임 루프 구조 분리**
   - Update, Render, Input 로직을 Win32 메시지 루프에서 분리 → 유지보수성과 확장성 향상
-- **스마트 포인터/캡슐화 적용**
-  - unique_ptr, shared_ptr 등을 사용하여 전역 변수 제거 및 메모리 안전성 강화
-  - App 계층(`m_game_world`, `m_input_manager`, `m_timer`, `m_window`)과 `ObjectManager::m_obstacles`에는 적용 완료
-  - `HBITMAP`(Map, TitleMenuUI, DeadScreenUI, PLAYER 등)과 FMOD 리소스는 아직 raw 핸들 + 수동 Load/Unload 패턴
-
-
-### 진행 예정
-
-- **사운드 시스템 리팩토링**
-  - FMOD 사용 → Sound 클래스를 관리하는 싱글턴 매니저 클래스를 추가하여 전역으로 사용
 - **오브젝트 배치 방식 개선**
-  - 기존 텍스트 기반 배치(txt) → JSON 형식으로 구조화 예정 (맵에 따라 객체 로드)
-- **클래스 상속 구조 재정립 예정**
-  - Obstacle 클래스, Player 클래스, Camera 클래스를 중심으로 상속/다형성 설계 강화
-- **GDI/FMOD 리소스 RAII 래퍼 도입**
-  - `HBITMAP` 등 raw 핸들을 커스텀 삭제자 기반 스마트 포인터로 감싸 수동 Load/Unload 짝 맞춤 실수 방지
+  - 기존 텍스트 기반 배치(txt, `x y w h type`) → JSON으로 전환. NuGet `nlohmann.json` 패키지로 파싱
+  - 타입을 숫자 대신 `"Platform"`, `"GearRow"` 같은 문자열로 명시해 가독성 확보
+
+### 진행중
+
+- **언리얼 코딩 표준을 참고하여 변수명, 함수명 등 수정**
+
 ---
+
+
 
 ## 스크린샷
 
-![GIF 2025-04-26 오후 9-32-26](https://github.com/user-attachments/assets/c162a9e4-5400-4f66-b0d3-ebadfe8fce4d)
-![GIF 2025-04-26 오후 9-40-23](https://github.com/user-attachments/assets/19def80c-1704-4c1a-afc5-24e5b712d0a3)
-![GIF 2025-04-26 오후 9-43-11](https://github.com/user-attachments/assets/775b891c-a213-437c-926d-2afe32073bdb)
-![GIF 2025-04-26 오후 9-54-21](https://github.com/user-attachments/assets/c3b46748-4225-4e28-9c66-298a80748c6f)
+GIF 2025-04-26 오후 9-32-26
+GIF 2025-04-26 오후 9-40-23
+GIF 2025-04-26 오후 9-43-11
+GIF 2025-04-26 오후 9-54-21
 
 ---
+
+
 
 ## License
 
@@ -87,27 +88,3 @@
 
 본 프로젝트는 상업적 용도로 사용되지 않았으며, 원 저작권자의 요청 시 언제든지 삭제될 수 있습니다.
 
-
-## 리팩토링 진행 기록 (추가용)
-
-### 최근 반영 내용
-
-- **GameWorld 구조 정리 (월드 오케스트레이션 유지)**
-  - `GameWorld::Update(dt)`를 월드 단위 흐름 제어 중심으로 유지
-  - 내부 로직을 `UpdateGameplay(dt)`, `UpdateFadeAndCamera`로 분리해 가독성과 유지보수성 개선
-- **Render 단계 분리**
-  - 렌더 진입점은 `Render()`로 유지하고, 내부를 `RenderScene`, `RenderStartMenu`, `RenderInGameUI`로 분리
-  - 기능 단위 분리로 렌더 파이프라인 파악이 쉬워짐
-- **UI 컴포넌트 분리**
-  - 마우스 hit-test와 렌더링을 `IsInRect` 계열 멤버 함수 대신 `TitleMenuUI`, `DeadScreenUI` 클래스로 위임
-  - `GameWorld`는 상태 판단 후 위임만 수행, 중첩 if 블록과 버튼 상태 변수를 GameWorld에서 제거
-- **임시 실험 구조 정리**
-  - 과도한 컨텍스트/외부 위임(`GameWorldContext`, `m_update`, `m_render`) 방식은 현재 프로젝트 단계에서 복잡도 증가로 판단하여 제거
-  - `GameWorld` 중심 구조를 유지한 채, 내부 함수 분리 방식으로 정리
-
-### 다음 작업 계획
-
-- **UI 렌더링 통합**
-  - `RenderStartMenu`, `RenderInGameUI`를 상태 기반 `RenderUI`로 통합 검토
-- **GDI/FMOD 리소스 RAII 래퍼 도입**
-  - `HBITMAP` 등 raw 핸들을 커스텀 삭제자 기반 스마트 포인터로 감싸 수동 Load/Unload 짝 맞춤 실수 방지

@@ -1,5 +1,7 @@
 #include "Global.h"
 #include <fstream>
+#include <map>
+#include <nlohmann/json.hpp>
 
 #include "ObjectManager.h"
 #include "object/character/player.h"
@@ -369,76 +371,103 @@ void ObjectManager::AdjustPlayer(const UPtr<PLAYER>& player, MAP& m, int& ocount
 }
 
 
+namespace
+{
+	//JSON의 문자열 type 필드 <-> EObstacleType 매핑
+	EObstacleType ObstacleTypeFromName(const std::string& name)
+	{
+		static const std::map<std::string, EObstacleType> kNameTable = {
+			{ "AnimatedBg",  EObstacleType::AnimatedBg },
+			{ "Ground",      EObstacleType::Ground },
+			{ "Platform",    EObstacleType::Platform },
+			{ "SmallPlat",   EObstacleType::SmallPlat },
+			{ "BeltRight",   EObstacleType::BeltRight },
+			{ "Transparent", EObstacleType::Transparent },
+			{ "BeltLeft",    EObstacleType::BeltLeft },
+			{ "LongPlat",    EObstacleType::LongPlat },
+			{ "Nail",        EObstacleType::Nail },
+			{ "BrokenPipe",  EObstacleType::BrokenPipe },
+			{ "Gas",         EObstacleType::Gas },
+			{ "GearRow",     EObstacleType::GearRow },
+			{ "GearCol",     EObstacleType::GearCol },
+			{ "Portal",      EObstacleType::Portal },
+			{ "Rope",        EObstacleType::Rope },
+		};
+		auto it = kNameTable.find(name);
+		if (it == kNameTable.end())
+			throw std::runtime_error("맵 JSON: 알 수 없는 오브젝트 타입 '" + name + "'");
+		return it->second;
+	}
+
+	SPtr<Obstacle> CreateObstacleByType(EObstacleType obsType)
+	{
+		switch (obsType)
+		{
+		case EObstacleType::Ground:       return CreateSPtr<GroundObstacle>();
+		case EObstacleType::AnimatedBg:   return CreateSPtr<AnimatedBgObstacle>();
+		case EObstacleType::Platform:     return CreateSPtr<PlatformObstacle>();
+		case EObstacleType::SmallPlat:    return CreateSPtr<SmallPlatObstacle>();
+		case EObstacleType::BeltRight:
+		case EObstacleType::BeltLeft:     return CreateSPtr<BeltObstacle>();
+		case EObstacleType::Transparent:  return CreateSPtr<TransparentObstacle>();
+		case EObstacleType::LongPlat:     return CreateSPtr<LongPlatObstacle>();
+		case EObstacleType::Nail:         return CreateSPtr<NailObstacle>();
+		case EObstacleType::BrokenPipe:   return CreateSPtr<BrokenPipeObstacle>();
+		case EObstacleType::Gas:          return CreateSPtr<GasObstacle>();
+		case EObstacleType::GearRow:
+		case EObstacleType::GearCol:      return CreateSPtr<GearObstacle>();
+		case EObstacleType::Portal:       return CreateSPtr<PortalObstacle>();
+		case EObstacleType::Rope:         return CreateSPtr<RopeObstacle>();
+		default:                          return CreateSPtr<GroundObstacle>();
+		}
+	}
+}
+
 //int(맵 번호) 에 따라 장애물 위치값 넣어주고 몇개의 오브젝트가 들어갔는지 알려주는 함수
 int ObjectManager::InitObject(int mapnum, HINSTANCE g_hinst)
 {
-	int x, y, w, h, type;
+	std::string path;
+	if (mapnum == static_cast<int>(EMapId::Title))      path = "map/map_0.json";
+	else if (mapnum == 10)                              path = "map/map_1.json";
+	else if (mapnum == 11)                              path = "map/map_2.json";
+	else if (mapnum == 12)                              path = "map/map_3.json";
+	else if (mapnum == static_cast<int>(EMapId::Clear)) path = "map/map_4.json";
+	else return 0;		//맵 값이 잘못입력되었으면 그대로 탈출
+
 	int objcount = 0;
+	try
+	{
+		std::ifstream in(path);
+		if (!in.is_open())
+			throw std::runtime_error("파일을 열 수 없음");
 
-	ifstream in;
-	if (mapnum == static_cast<int>(EMapId::Title))
-	{
-		in.open("map/map_0.txt", ios::in);
-	}
-	else if (mapnum == 10)
-	{
-		in.open("map/map_1.txt", ios::in);
-	}
-	else if (mapnum == 11)
-	{
-		in.open("map/map_2.txt", ios::in);
-	}
-	else if (mapnum == 12)
-	{
-		in.open("map/map_3.txt", ios::in);
-	}
-	else if (mapnum == static_cast<int>(EMapId::Clear))
-	{
-		in.open("map/map_4.txt", ios::in);
-	}
-	else {
-		return 0;		//맵 값이 잘못입력되었으면 그대로 탈출
-	}
+		nlohmann::json root;
+		in >> root;
 
+		if (!root.contains("obstacles") || !root["obstacles"].is_array())
+			return 0;
 
-
-
-	if (in.is_open())
-	{
-		for (int i = 0; i < GameConst::kMaxObstaclesPerMap; ++i)
+		for (const auto& item : root["obstacles"])
 		{
-			if (in.eof())
-			{
-				objcount = i;
+			if (objcount >= GameConst::kMaxObstaclesPerMap)
 				break;
-			}
-			in >> x >> y >> w >> h >> type;
-			const EObstacleType obsType = static_cast<EObstacleType>(type);
-			SPtr<Obstacle> obs;
-			switch (obsType)
-			{
-			case EObstacleType::Ground:       obs = CreateSPtr<GroundObstacle>();       break;
-			case EObstacleType::AnimatedBg:   obs = CreateSPtr<AnimatedBgObstacle>();   break;
-			case EObstacleType::Platform:     obs = CreateSPtr<PlatformObstacle>();     break;
-			case EObstacleType::SmallPlat:    obs = CreateSPtr<SmallPlatObstacle>();    break;
-			case EObstacleType::BeltRight:
-			case EObstacleType::BeltLeft:     obs = CreateSPtr<BeltObstacle>();         break;
-			case EObstacleType::Transparent:  obs = CreateSPtr<TransparentObstacle>();  break;
-			case EObstacleType::LongPlat:     obs = CreateSPtr<LongPlatObstacle>();     break;
-			case EObstacleType::Nail:         obs = CreateSPtr<NailObstacle>();         break;
-			case EObstacleType::BrokenPipe:   obs = CreateSPtr<BrokenPipeObstacle>();   break;
-			case EObstacleType::Gas:          obs = CreateSPtr<GasObstacle>();          break;
-			case EObstacleType::GearRow:
-			case EObstacleType::GearCol:      obs = CreateSPtr<GearObstacle>();         break;
-			case EObstacleType::Portal:       obs = CreateSPtr<PortalObstacle>();       break;
-			case EObstacleType::Rope:         obs = CreateSPtr<RopeObstacle>();         break;
-			default:                          obs = CreateSPtr<GroundObstacle>();       break;
-			}
-			obs->Create(x, y, w, h, type);
+
+			const int x = item.at("x").get<int>();
+			const int y = item.at("y").get<int>();
+			const int w = item.at("w").get<int>();
+			const int h = item.at("h").get<int>();
+			const EObstacleType obsType = ObstacleTypeFromName(item.at("type").get<std::string>());
+
+			SPtr<Obstacle> obs = CreateObstacleByType(obsType);
+			obs->Create(x, y, w, h, static_cast<int>(obsType));
 			obs->SetHbit(g_hinst);
 			RegisterObstacle(obs);
-
+			++objcount;
 		}
+	}
+	catch (const std::exception& e)
+	{
+		std::cout << "맵 로드 실패 (" << path << "): " << e.what() << std::endl;
 	}
 	return objcount;
 }
