@@ -25,12 +25,12 @@ namespace ObstacleSprite {
 	constexpr AnimStrip kGear        {  0,  4,  18,  18,  23     };
 	constexpr AnimStrip kPortal      {  0, 55,  63, 135,  79     };
 
-	constexpr SpriteRect kPlatform   { 11, 15,  77,  18, 17 };   // type 2
-	constexpr SpriteRect kSmall      {  0,  0,  19,  19, 18 };   // type 3
-	constexpr SpriteRect kNail       {  1,  0,  26,  15,  0, 11 }; // type 101
-	constexpr SpriteRect kBrokenPipe {  0,  1,  17,  75 };        // type 102
+	constexpr SpriteRect kPlatform   { 11, 15,  77,  18, 17 };  
+	constexpr SpriteRect kSmall      {  0,  0,  19,  19, 18 };   
+	constexpr SpriteRect kNail       {  1,  0,  26,  15,  0, 11 }; 
+	constexpr SpriteRect kBrokenPipe {  0,  1,  17,  75 };       
 
-	namespace Platform7 {                                          // type 7
+	namespace Platform7 {                                         
 		constexpr SpriteRect kHead  { 11, 15, 14, 18 };
 		constexpr SpriteRect kBody  { 27, 15, 50, 18 };
 		constexpr SpriteRect kTail  { 78, 15, 13, 18 };
@@ -70,16 +70,17 @@ public:
 	void Create(int x, int y, int width, int height, int type);
 	// All objects reset
 	void ResetObject();
-	//Move gear object (기본은 안 움직임, GearObstacle이 오버라이드)
+	//타입별로 움직임이 있는 오브젝트만 오버라이드
 	virtual void Move() {}
-	//오브젝트 애니메이션 쓸때 사용하는함수
-	virtual void IndexChange();
-	//오브젝트를 그려줌
-	virtual void DrawObj(HDC& mem1dc);
+	//타입별로 애니메이션이 있는 오브젝트만 오버라이드
+	virtual void IndexChange() {}
+
+	virtual void DrawObj(HDC& mem1dc) = 0;
 
 protected:
 
-	virtual float GetAnimPeriodSec() const;
+	//타입별로 애니메이션이 있는 오브젝트만 오버라이드, 기본은 애니메이션 없음
+	virtual float GetAnimPeriodSec() const { return 0.f; }
 
 	int mx, my;					// x,y 축기준 증감량
 
@@ -96,5 +97,3 @@ private:
 
 	float m_animAccum = 0.f;	// 애니메이션 누적 시간
 };
-
-//bool collp2w(PLAYER, OBJECT);

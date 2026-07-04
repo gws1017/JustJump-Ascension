@@ -175,6 +175,17 @@
     <ClCompile Include="src\world\obstacle\obstacle.cpp" />
     <ClCompile Include="src\world\obstacle\GearObstacle.cpp" />
     <ClCompile Include="src\world\obstacle\PortalObstacle.cpp" />
+    <ClCompile Include="src\world\obstacle\GroundObstacle.cpp" />
+    <ClCompile Include="src\world\obstacle\AnimatedBgObstacle.cpp" />
+    <ClCompile Include="src\world\obstacle\PlatformObstacle.cpp" />
+    <ClCompile Include="src\world\obstacle\SmallPlatObstacle.cpp" />
+    <ClCompile Include="src\world\obstacle\BeltObstacle.cpp" />
+    <ClCompile Include="src\world\obstacle\TransparentObstacle.cpp" />
+    <ClCompile Include="src\world\obstacle\LongPlatObstacle.cpp" />
+    <ClCompile Include="src\world\obstacle\NailObstacle.cpp" />
+    <ClCompile Include="src\world\obstacle\BrokenPipeObstacle.cpp" />
+    <ClCompile Include="src\world\obstacle\GasObstacle.cpp" />
+    <ClCompile Include="src\world\obstacle\RopeObstacle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameConstants.h" />
@@ -200,6 +211,17 @@
     <ClInclude Include="src\world\obstacle\obstacle.h" />
     <ClInclude Include="src\world\obstacle\GearObstacle.h" />
     <ClInclude Include="src\world\obstacle\PortalObstacle.h" />
+    <ClInclude Include="src\world\obstacle\GroundObstacle.h" />
+    <ClInclude Include="src\world\obstacle\AnimatedBgObstacle.h" />
+    <ClInclude Include="src\world\obstacle\PlatformObstacle.h" />
+    <ClInclude Include="src\world\obstacle\SmallPlatObstacle.h" />
+    <ClInclude Include="src\world\obstacle\BeltObstacle.h" />
+    <ClInclude Include="src\world\obstacle\TransparentObstacle.h" />
+    <ClInclude Include="src\world\obstacle\LongPlatObstacle.h" />
+    <ClInclude Include="src\world\obstacle\NailObstacle.h" />
+    <ClInclude Include="src\world\obstacle\BrokenPipeObstacle.h" />
+    <ClInclude Include="src\world\obstacle\GasObstacle.h" />
+    <ClInclude Include="src\world\obstacle\RopeObstacle.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />

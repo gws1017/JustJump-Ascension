@@ -4,8 +4,19 @@
 #include "ObjectManager.h"
 #include "object/character/player.h"
 #include "world/obstacle/obstacle.h"
+#include "world/obstacle/GroundObstacle.h"
+#include "world/obstacle/AnimatedBgObstacle.h"
+#include "world/obstacle/PlatformObstacle.h"
+#include "world/obstacle/SmallPlatObstacle.h"
+#include "world/obstacle/BeltObstacle.h"
+#include "world/obstacle/TransparentObstacle.h"
+#include "world/obstacle/LongPlatObstacle.h"
+#include "world/obstacle/NailObstacle.h"
+#include "world/obstacle/BrokenPipeObstacle.h"
+#include "world/obstacle/GasObstacle.h"
 #include "world/obstacle/GearObstacle.h"
 #include "world/obstacle/PortalObstacle.h"
+#include "world/obstacle/RopeObstacle.h"
 #include "object/view/Camera.h"
 #include "core/InputManager.h"
 #include "world/Map.h"
@@ -417,12 +428,25 @@ int ObjectManager::InitObject(int mapnum, HINSTANCE g_hinst)
 			in >> x >> y >> w >> h >> type;
 			const EObstacleType obsType = static_cast<EObstacleType>(type);
 			SPtr<Obstacle> obs;
-			if (obsType == EObstacleType::Portal)
-				obs = CreateSPtr<PortalObstacle>();
-			else if (obsType == EObstacleType::GearRow || obsType == EObstacleType::GearCol)
-				obs = CreateSPtr<GearObstacle>();
-			else
-				obs = CreateSPtr<Obstacle>();
+			switch (obsType)
+			{
+			case EObstacleType::Ground:       obs = CreateSPtr<GroundObstacle>();       break;
+			case EObstacleType::AnimatedBg:   obs = CreateSPtr<AnimatedBgObstacle>();   break;
+			case EObstacleType::Platform:     obs = CreateSPtr<PlatformObstacle>();     break;
+			case EObstacleType::SmallPlat:    obs = CreateSPtr<SmallPlatObstacle>();    break;
+			case EObstacleType::BeltRight:
+			case EObstacleType::BeltLeft:     obs = CreateSPtr<BeltObstacle>();         break;
+			case EObstacleType::Transparent:  obs = CreateSPtr<TransparentObstacle>();  break;
+			case EObstacleType::LongPlat:     obs = CreateSPtr<LongPlatObstacle>();     break;
+			case EObstacleType::Nail:         obs = CreateSPtr<NailObstacle>();         break;
+			case EObstacleType::BrokenPipe:   obs = CreateSPtr<BrokenPipeObstacle>();   break;
+			case EObstacleType::Gas:          obs = CreateSPtr<GasObstacle>();          break;
+			case EObstacleType::GearRow:
+			case EObstacleType::GearCol:      obs = CreateSPtr<GearObstacle>();         break;
+			case EObstacleType::Portal:       obs = CreateSPtr<PortalObstacle>();       break;
+			case EObstacleType::Rope:         obs = CreateSPtr<RopeObstacle>();         break;
+			default:                          obs = CreateSPtr<GroundObstacle>();       break;
+			}
 			obs->Create(x, y, w, h, type);
 			obs->SetHbit(g_hinst);
 			RegisterObstacle(obs);

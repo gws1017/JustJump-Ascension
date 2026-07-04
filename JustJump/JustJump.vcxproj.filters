@@ -81,6 +81,39 @@
     <ClCompile Include="src\world\obstacle\PortalObstacle.cpp">
       <Filter>소스 파일\src\world\obstacle</Filter>
     </ClCompile>
+    <ClCompile Include="src\world\obstacle\GroundObstacle.cpp">
+      <Filter>소스 파일\src\world\obstacle</Filter>
+    </ClCompile>
+    <ClCompile Include="src\world\obstacle\AnimatedBgObstacle.cpp">
+      <Filter>소스 파일\src\world\obstacle</Filter>
+    </ClCompile>
+    <ClCompile Include="src\world\obstacle\PlatformObstacle.cpp">
+      <Filter>소스 파일\src\world\obstacle</Filter>
+    </ClCompile>
+    <ClCompile Include="src\world\obstacle\SmallPlatObstacle.cpp">
+      <Filter>소스 파일\src\world\obstacle</Filter>
+    </ClCompile>
+    <ClCompile Include="src\world\obstacle\BeltObstacle.cpp">
+      <Filter>소스 파일\src\world\obstacle</Filter>
+    </ClCompile>
+    <ClCompile Include="src\world\obstacle\TransparentObstacle.cpp">
+      <Filter>소스 파일\src\world\obstacle</Filter>
+    </ClCompile>
+    <ClCompile Include="src\world\obstacle\LongPlatObstacle.cpp">
+      <Filter>소스 파일\src\world\obstacle</Filter>
+    </ClCompile>
+    <ClCompile Include="src\world\obstacle\NailObstacle.cpp">
+      <Filter>소스 파일\src\world\obstacle</Filter>
+    </ClCompile>
+    <ClCompile Include="src\world\obstacle\BrokenPipeObstacle.cpp">
+      <Filter>소스 파일\src\world\obstacle</Filter>
+    </ClCompile>
+    <ClCompile Include="src\world\obstacle\GasObstacle.cpp">
+      <Filter>소스 파일\src\world\obstacle</Filter>
+    </ClCompile>
+    <ClCompile Include="src\world\obstacle\RopeObstacle.cpp">
+      <Filter>소스 파일\src\world\obstacle</Filter>
+    </ClCompile>
     <ClCompile Include="src\object\core\ObjectManager.cpp">
       <Filter>소스 파일\src\object\core</Filter>
     </ClCompile>
@@ -141,6 +174,39 @@
       <Filter>소스 파일\src\world\obstacle</Filter>
     </ClInclude>
     <ClInclude Include="src\world\obstacle\PortalObstacle.h">
+      <Filter>소스 파일\src\world\obstacle</Filter>
+    </ClInclude>
+    <ClInclude Include="src\world\obstacle\GroundObstacle.h">
+      <Filter>소스 파일\src\world\obstacle</Filter>
+    </ClInclude>
+    <ClInclude Include="src\world\obstacle\AnimatedBgObstacle.h">
+      <Filter>소스 파일\src\world\obstacle</Filter>
+    </ClInclude>
+    <ClInclude Include="src\world\obstacle\PlatformObstacle.h">
+      <Filter>소스 파일\src\world\obstacle</Filter>
+    </ClInclude>
+    <ClInclude Include="src\world\obstacle\SmallPlatObstacle.h">
+      <Filter>소스 파일\src\world\obstacle</Filter>
+    </ClInclude>
+    <ClInclude Include="src\world\obstacle\BeltObstacle.h">
+      <Filter>소스 파일\src\world\obstacle</Filter>
+    </ClInclude>
+    <ClInclude Include="src\world\obstacle\TransparentObstacle.h">
+      <Filter>소스 파일\src\world\obstacle</Filter>
+    </ClInclude>
+    <ClInclude Include="src\world\obstacle\LongPlatObstacle.h">
+      <Filter>소스 파일\src\world\obstacle</Filter>
+    </ClInclude>
+    <ClInclude Include="src\world\obstacle\NailObstacle.h">
+      <Filter>소스 파일\src\world\obstacle</Filter>
+    </ClInclude>
+    <ClInclude Include="src\world\obstacle\BrokenPipeObstacle.h">
+      <Filter>소스 파일\src\world\obstacle</Filter>
+    </ClInclude>
+    <ClInclude Include="src\world\obstacle\GasObstacle.h">
+      <Filter>소스 파일\src\world\obstacle</Filter>
+    </ClInclude>
+    <ClInclude Include="src\world\obstacle\RopeObstacle.h">
       <Filter>소스 파일\src\world\obstacle</Filter>
     </ClInclude>
     <ClInclude Include="src\object\core\Object.h">
