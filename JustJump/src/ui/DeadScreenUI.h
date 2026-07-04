@@ -1,6 +1,5 @@
 #pragma once
 #include <Windows.h>
-class Sound;
 class CAMERA;
 
 class DeadScreenUI
@@ -9,8 +8,8 @@ public:
 	void Load(HINSTANCE hInst);
 	void Unload();
 
-	void OnMouseMove(LPARAM mouse, Sound& sound);
-	void OnMouseDown(LPARAM mouse, Sound& sound);
+	void OnMouseMove(LPARAM mouse);
+	void OnMouseDown(LPARAM mouse);
 	bool OnMouseUp(LPARAM mouse);	// true = 부활 확정
 
 	void Render(HDC mem1dc, const UPtr<CAMERA>& camera);

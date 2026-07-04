@@ -1,6 +1,7 @@
 #pragma once
 #include <Windows.h>
 #include <memory>
+#include <fmod.hpp>
 
 template<class T>
 using UPtr = std::unique_ptr<T>;
@@ -39,4 +40,22 @@ inline BmpPtr CreateBmpPtr(HBITMAP raw)
 {
 	return BmpPtr(raw);
 }
+
+// FMOD System/Sound 전용 RAII. 둘 다 delete 대신 release()로 해제해야 한다.
+// FMOD::Channel은 System이 내부적으로 관리하는 일시적 핸들이라(release 없음, stop만 함)
+// 스마트 포인터로 감싸지 않는다.
+namespace FmodDetail
+{
+	struct SystemDeleter
+	{
+		void operator()(FMOD::System* s) const noexcept { if (s) s->release(); }
+	};
+	struct SoundDeleter
+	{
+		void operator()(FMOD::Sound* s) const noexcept { if (s) s->release(); }
+	};
+}
+
+using FmodSystemPtr = std::unique_ptr<FMOD::System, FmodDetail::SystemDeleter>;
+using FmodSoundPtr = std::unique_ptr<FMOD::Sound, FmodDetail::SoundDeleter>;
 

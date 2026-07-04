@@ -60,7 +60,7 @@
     <ClCompile Include="src\object\character\player.cpp">
       <Filter>소스 파일\src\object\character</Filter>
     </ClCompile>
-    <ClCompile Include="src\system\Sound.cpp">
+    <ClCompile Include="src\system\SoundManager.cpp">
       <Filter>소스 파일\src\system</Filter>
     </ClCompile>
     <ClCompile Include="src\system\Load.cpp">
@@ -107,7 +107,7 @@
     <ClInclude Include="src\core\Timer.h">
       <Filter>소스 파일\src\core</Filter>
     </ClInclude>
-    <ClInclude Include="src\system\Sound.h">
+    <ClInclude Include="src\system\SoundManager.h">
       <Filter>소스 파일\src\system</Filter>
     </ClInclude>
     <ClInclude Include="src\system\Load.h">

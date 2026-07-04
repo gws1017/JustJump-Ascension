@@ -12,6 +12,6 @@
 #include <vector>
 
 #include "core/util/ptr_template.h"
-#include "system/Sound.h"
+#include "system/SoundManager.h"
 #include "system/Load.h"
 #include "../GameConstants.h"

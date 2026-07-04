@@ -84,7 +84,7 @@ bool ObjectManager::CollP2W(const UPtr<PLAYER>& player, const SPtr<Obstacle>& ob
 
 
 //플레이어와 오브젝트간 상호작용 판단하고 그에맞게 바꿔줌
-void ObjectManager::AdjustPlayer(const UPtr<PLAYER>& player, MAP& m, int& ocount, HINSTANCE g_hinst, Sound& sound)
+void ObjectManager::AdjustPlayer(const UPtr<PLAYER>& player, MAP& m, int& ocount, HINSTANCE g_hinst)
 {
 	
 	int check_coll = 0;	//하나라도 부딪혔는지 판별하기위함
@@ -118,7 +118,7 @@ void ObjectManager::AdjustPlayer(const UPtr<PLAYER>& player, MAP& m, int& ocount
 						{
 							player->SetMoveCommand(static_cast<EMoveCommand>(player->GetDirection()));	//보고있는방향으로 앞으로 나가게, 떨어졌는데 가만히있진 않지요
 							player->SetState(EPlayerState::Hurt);		//피격으로감
-							player->TakeDamage(sound);
+							player->TakeDamage();
 							return;
 						}
 					}
@@ -184,7 +184,7 @@ void ObjectManager::AdjustPlayer(const UPtr<PLAYER>& player, MAP& m, int& ocount
 						else {
 							player->SetState(EPlayerState::Hurt);		//피격으로감
 						}
-						player->TakeDamage(sound);
+						player->TakeDamage();
 					}
 				}
 				else if (obstacle->GetType() == EObstacleType::BrokenPipe) //Break Pipe Left
@@ -252,7 +252,7 @@ void ObjectManager::AdjustPlayer(const UPtr<PLAYER>& player, MAP& m, int& ocount
 								player->SetMoveCommand(EMoveCommand::Left); //무조건 왼쪽임
 								player->SetState(EPlayerState::Hurt);
 							}
-							player->TakeDamage(sound);
+							player->TakeDamage();
 						}
 					}
 				}
@@ -286,7 +286,7 @@ void ObjectManager::AdjustPlayer(const UPtr<PLAYER>& player, MAP& m, int& ocount
 							player->SetMoveCommand(static_cast<EMoveCommand>(player->GetDirection()));
 							player->SetState(EPlayerState::Hurt);		//피격으로감
 						}
-						player->TakeDamage(sound);
+						player->TakeDamage();
 					}
 				}
 			}
@@ -305,22 +305,10 @@ void ObjectManager::AdjustPlayer(const UPtr<PLAYER>& player, MAP& m, int& ocount
 							resetObstacle->ResetObject();
 						ocount = InitObject(m.GetMapNumber(), g_hinst);
 						m.CreateMap(g_hinst);
-						sound.SetIndex(m.GetMapNumber() - static_cast<int>(EMapId::Title));
-						sound.System->update();
-						sound.Channel[0]->stop();
-						sound.System->playSound(
-							sound.bgmSound[sound.GetIndex()],
-							nullptr,
-							false,
-							&sound.Channel[0]
-						);
-						sound.Channel[1]->stop();
-						sound.System->playSound(
-							sound.effectSound[1],
-							nullptr,
-							false,
-							&sound.Channel[1]
-						);
+						SoundManager::Get().SetIndex(m.GetMapNumber() - static_cast<int>(EMapId::Title));
+						SoundManager::Get().Update();
+						SoundManager::Get().PlayBgm(static_cast<EBgm>(SoundManager::Get().GetIndex()));
+						SoundManager::Get().PlayEffect(EEffect::Portal);
 
 
 						return;

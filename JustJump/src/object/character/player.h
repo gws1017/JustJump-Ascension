@@ -1,6 +1,5 @@
 #pragma once
 #include "object/core/Object.h"
-class Sound;
 
 // 너무 많지않나
 // hurt bool 이있는데 왜또 스테이트가있지
@@ -107,12 +106,12 @@ public:
 	void Initialzie();
 	void InitializeAnimPosition();
 
-	void ProcessInput(Sound& sound);
+	void ProcessInput();
 
 	void Update(float dt) override;
 
 	//방향키 눌렀을때 플레이어 세팅
-	void OnKeyPressed(WPARAM key, Sound& sound);
+	void OnKeyPressed(WPARAM key);
 	//방향키 땠을때 플레이어 세팅풀기
 	void OnKeyReleased(WPARAM key);
 
@@ -130,9 +129,9 @@ public:
 	//가시한테 찔렸을때 강제이동값
 	void UpdateSpikeKnockback();
 	//다쳤을때 피 다는 계산식 + 뒤지면초기화
-	void TakeDamage(Sound& sound);
+	void TakeDamage();
 	//뒤지면 초기화
-	void Die(Sound& sound);
+	void Die();
 
 private:
 
@@ -140,7 +139,7 @@ private:
 	void HandleRightPressed();
 	void HandleUpPressed();
 	void HandleDownPressed();
-	void HandleSpacePressed(Sound& sound);
+	void HandleSpacePressed();
 
 	void HandleLeftReleased();
 	void HandleRightReleased();

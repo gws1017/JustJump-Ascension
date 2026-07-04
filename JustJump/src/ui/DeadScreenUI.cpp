@@ -20,7 +20,7 @@ bool DeadScreenUI::IsInRect(LPARAM mouse, int l, int t, int r, int b)
 	return l < x && x < r && t < y && y < b;
 }
 
-void DeadScreenUI::OnMouseMove(LPARAM mouse, Sound& sound)
+void DeadScreenUI::OnMouseMove(LPARAM mouse)
 {
 	const auto& kr = UiHitbox::kRevive;
 	if (IsInRect(mouse, kr.left, kr.top, kr.right, kr.bottom))
@@ -28,8 +28,7 @@ void DeadScreenUI::OnMouseMove(LPARAM mouse, Sound& sound)
 		m_state = 1;
 		if (!m_occurButton)
 		{
-			if (sound.Channel[1]) sound.Channel[1]->stop();
-			sound.System->playSound(sound.effectSound[4], nullptr, false, &sound.Channel[1]);
+			SoundManager::Get().PlayEffect(EEffect::ButtonHover);
 			m_occurButton = true;
 		}
 		return;
@@ -38,14 +37,13 @@ void DeadScreenUI::OnMouseMove(LPARAM mouse, Sound& sound)
 	m_occurButton = false;
 }
 
-void DeadScreenUI::OnMouseDown(LPARAM mouse, Sound& sound)
+void DeadScreenUI::OnMouseDown(LPARAM mouse)
 {
 	const auto& kr = UiHitbox::kRevive;
 	if (IsInRect(mouse, kr.left, kr.top, kr.right, kr.bottom))
 	{
 		m_state = 2;
-		if (sound.Channel[1]) sound.Channel[1]->stop();
-		sound.System->playSound(sound.effectSound[3], nullptr, false, &sound.Channel[1]);
+		SoundManager::Get().PlayEffect(EEffect::ButtonClick);
 	}
 }
 

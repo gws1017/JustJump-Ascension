@@ -3,7 +3,6 @@
 #include "Global.h"
 
 #include "world/Map.h"
-#include "system/Sound.h"
 
 #include "object/core/ObjectManager.h"
 
@@ -12,6 +11,7 @@
 
 class PLAYER;
 class CAMERA;
+class SoundManager;
 
 class GameWorld
 {
@@ -39,7 +39,7 @@ private:
 	UPtr<PLAYER> m_player;
 	MAP m_map;
 	UPtr<CAMERA> m_camera;
-	Sound m_sound;
+	UPtr<SoundManager> m_sound;
 	ObjectManager m_object_manager;
 
 	TitleMenuUI m_titleUI;

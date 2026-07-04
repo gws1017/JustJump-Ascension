@@ -2,7 +2,6 @@
 
 class CAMERA;
 class PLAYER;
-class Sound;
 
 class MAP
 {

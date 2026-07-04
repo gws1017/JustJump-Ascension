@@ -3,7 +3,7 @@
 #include "core/InputManager.h"
 
 #include "world/Map.h"
-#include "system/Sound.h"
+#include "system/SoundManager.h"
 
 #include "object/character/player.h"
 #include "object/view/Camera.h"
@@ -13,6 +13,7 @@
 GameWorld::GameWorld()
     : m_player(CreateUPtr<PLAYER>())
     , m_camera(CreateUPtr<CAMERA>())
+    , m_sound(CreateUPtr<SoundManager>())
 {
 }
 
@@ -53,14 +54,9 @@ bool GameWorld::Initialize(HINSTANCE hinstance)
     m_blendfunction.SourceConstantAlpha = 0;
 
     //사운드 초기화
-    m_sound.Sound_Setup();
-
-    if (m_sound.System && m_sound.bgmSound[0])
-    {
-        if (m_sound.Channel[0])
-            m_sound.Channel[0]->stop();
-        m_sound.System->playSound(m_sound.bgmSound[0], nullptr, false, &m_sound.Channel[0]);
-    }
+    SoundManager::Register(m_sound.get());
+    m_sound->Initialize();
+    m_sound->PlayBgm(EBgm::Title);
 
     if (m_map.GetMapNumber() == static_cast<int>(EMapId::Title))
         m_hbit1 = (HBITMAP)LoadImage(m_hinstance, TEXT("img/start_rayer1.bmp"),
@@ -138,14 +134,14 @@ void GameWorld::UpdateGameplay(float dt)
 {
     if (InputManager::IsRegistered())
     {
-        m_player->ProcessInput(m_sound);
+        m_player->ProcessInput();
 
         if (m_player->GetGameMode() && !m_player->IsDead())
             m_camera->ProcessInput();
     }
 
     m_player->Update(dt);
-    m_object_manager.AdjustPlayer(m_player, m_map, m_ocount, m_hinstance, m_sound);
+    m_object_manager.AdjustPlayer(m_player, m_map, m_ocount, m_hinstance);
     m_map.movemap();
     m_object_manager.UpdateAll(dt);
 }
@@ -184,28 +180,9 @@ void GameWorld::Shutdown()
     m_titleUI.Unload();
     m_deadUI.Unload();
 
-    // FMOD
-	for (int i = 0; i < 5; ++i)
-	{
-		if (m_sound.effectSound[i])
-		{
-			m_sound.effectSound[i]->release();
-			m_sound.effectSound[i] = nullptr;
-		}
-	}
-	for (int i = 0; i < 2; ++i)
-	{
-		if (m_sound.Channel[i])
-		{
-			m_sound.Channel[i]->stop();
-			m_sound.Channel[i] = nullptr;
-		}
-	}
-	if (m_sound.System)
-	{
-		m_sound.System->release();
-		m_sound.System = nullptr;
-	}
+    m_sound->Shutdown();
+    SoundManager::Unregister();
+
 	// GDI 비트맵
 	if (m_hbit1) { DeleteObject(m_hbit1); m_hbit1 = nullptr; }
 
@@ -246,11 +223,11 @@ void GameWorld::OnMouseMove(LPARAM mouse)
 {
     if (m_player->IsDead() == 1)
     {
-        m_deadUI.OnMouseMove(mouse, m_sound);
+        m_deadUI.OnMouseMove(mouse);
         return;
     }
     if (m_map.GetMapNumber() == static_cast<int>(EMapId::Title))
-        m_titleUI.OnMouseMove(mouse, m_sound);
+        m_titleUI.OnMouseMove(mouse);
 }
 
 void GameWorld::OnMouseDown(LPARAM mouse)
@@ -258,11 +235,11 @@ void GameWorld::OnMouseDown(LPARAM mouse)
     SetCursor(LoadCursorFromFile(TEXT("cursor/cursor4.cur")));
     if (m_player->IsDead() == 1)
     {
-        m_deadUI.OnMouseDown(mouse, m_sound);
+        m_deadUI.OnMouseDown(mouse);
         return;
     }
     if (m_map.GetMapNumber() == static_cast<int>(EMapId::Title))
-        m_titleUI.OnMouseDown(mouse, m_sound);
+        m_titleUI.OnMouseDown(mouse);
 }
 
 void GameWorld::OnMouseUp(LPARAM mouse)
@@ -288,13 +265,10 @@ void GameWorld::OnMouseUp(LPARAM mouse)
 
             m_map.CreateMap(m_hinstance);
             m_hbit1 = (HBITMAP)LoadImage(m_hinstance, TEXT("img/bk.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-            m_sound.SetIndex(m_sound.GetIndex() + 1);
+            m_sound->SetIndex(m_sound->GetIndex() + 1);
 
-            if (m_sound.Channel[1]) m_sound.Channel[1]->stop();
-            m_sound.System->playSound(m_sound.effectSound[1], nullptr, false, &m_sound.Channel[1]);
-
-            if (m_sound.Channel[0]) m_sound.Channel[0]->stop();
-            m_sound.System->playSound(m_sound.bgmSound[1], nullptr, false, &m_sound.Channel[0]);
+            m_sound->PlayEffect(EEffect::Portal);
+            m_sound->PlayBgm(EBgm::Level1);
 
             m_player->SetCurrentHP(100);
             m_camera->SetX(0);

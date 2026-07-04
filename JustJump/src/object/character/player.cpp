@@ -248,18 +248,18 @@ void PLAYER::InitializeAnimPosition()
 	AnimHeight = 0;
 }
 
-void PLAYER::ProcessInput(Sound& sound)
+void PLAYER::ProcessInput()
 {
 	if (bIsDead)
 		return;
 	if (IsGameMode) // 플라잉 모드면 키는 카메라 쪽 — 여기서는 아무 것도 안 함
 		return;
 	auto& input = InputManager::Get();
-	if (input.IsActionPressed(EInputAction::MoveLeft))  OnKeyPressed(VK_LEFT, sound);
-	if (input.IsActionPressed(EInputAction::MoveRight)) OnKeyPressed(VK_RIGHT, sound);
-	if (input.IsActionPressed(EInputAction::MoveUp))    OnKeyPressed(VK_UP, sound);
-	if (input.IsActionPressed(EInputAction::MoveDown))  OnKeyPressed(VK_DOWN, sound);
-	if (input.IsActionPressed(EInputAction::Jump))      OnKeyPressed(VK_SPACE, sound);
+	if (input.IsActionPressed(EInputAction::MoveLeft))  OnKeyPressed(VK_LEFT);
+	if (input.IsActionPressed(EInputAction::MoveRight)) OnKeyPressed(VK_RIGHT);
+	if (input.IsActionPressed(EInputAction::MoveUp))    OnKeyPressed(VK_UP);
+	if (input.IsActionPressed(EInputAction::MoveDown))  OnKeyPressed(VK_DOWN);
+	if (input.IsActionPressed(EInputAction::Jump))      OnKeyPressed(VK_SPACE);
 	if (input.IsActionReleased(EInputAction::MoveLeft))  OnKeyReleased(VK_LEFT);
 	if (input.IsActionReleased(EInputAction::MoveRight)) OnKeyReleased(VK_RIGHT);
 	if (input.IsActionReleased(EInputAction::MoveUp))    OnKeyReleased(VK_UP);
@@ -369,7 +369,7 @@ void PLAYER::HandleDownPressed()
 	}
 }
 
-void PLAYER::HandleSpacePressed(Sound& sound)
+void PLAYER::HandleSpacePressed()
 {
 	if (InputHelper::IsDownDown())//수그리고있을땐 점프못함
 	{
@@ -390,16 +390,7 @@ void PLAYER::HandleSpacePressed(Sound& sound)
 	}
 	if (PlayerState != EPlayerState::Jump && PlayerState != EPlayerState::Airborne)	//점프나 공중이아니라면 점프뛸수있다. 하지만 줄에매달렸을때도 안되긴 마찬가지
 	{
-		if (sound.Channel[1]) {
-			sound.Channel[1]->stop();
-		}
-
-		sound.System->playSound(
-			sound.effectSound[0],
-			nullptr,
-			false,
-			&sound.Channel[1]
-		);
+		SoundManager::Get().PlayEffect(EEffect::Jump);
 		m_jumpCount++;
 		PlayerState = EPlayerState::Jump;
 		SavedY = y;
@@ -515,7 +506,7 @@ void PLAYER::HandleDownReleased()
 	
 }
 
-void PLAYER::OnKeyPressed(WPARAM key, Sound& sound)
+void PLAYER::OnKeyPressed(WPARAM key)
 {
 	switch (key)
 	{
@@ -532,7 +523,7 @@ void PLAYER::OnKeyPressed(WPARAM key, Sound& sound)
 		HandleDownPressed();
 		break;
 	case VK_SPACE:
-		HandleSpacePressed(sound);
+		HandleSpacePressed();
 		break;
 	}
 }
@@ -799,17 +790,17 @@ void PLAYER::UpdateSpikeKnockback()
 	}
 }
 
-void PLAYER::TakeDamage(Sound& sound)
+void PLAYER::TakeDamage()
 {
 	if (bIsDead == false)
 		CurrentHP -= 5;
 	if (CurrentHP <= 0)	//0 이하라면
 	{
-		Die(sound);
+		Die();
 	}
 }
 
-void PLAYER::Die(Sound& sound)
+void PLAYER::Die()
 {
 	CurrentHP = 0;
 	bIsDead = true;
@@ -819,15 +810,6 @@ void PLAYER::Die(Sound& sound)
 	height = PlayerSprite::kDeathPoseH;
 	InvincibleTime = 1;
 
-	if (sound.Channel[1]) {
-		sound.Channel[1]->stop();
-	}
-
-	sound.System->playSound(
-		sound.effectSound[2],
-		nullptr,
-		false,
-		&sound.Channel[1]
-	);
+	SoundManager::Get().PlayEffect(EEffect::Death);
 	m_dieCount++;
 }

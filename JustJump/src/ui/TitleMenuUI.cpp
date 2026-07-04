@@ -30,7 +30,7 @@ bool TitleMenuUI::IsInRect(LPARAM mouse, int l, int t, int r, int b)
 	return l < x && x < r && t < y && y < b;
 }
 
-void TitleMenuUI::OnMouseMove(LPARAM mouse, Sound& sound)
+void TitleMenuUI::OnMouseMove(LPARAM mouse)
 {
 	const auto& ks = UiHitbox::kStart;
 	const auto& kh = UiHitbox::kHelp;
@@ -39,8 +39,7 @@ void TitleMenuUI::OnMouseMove(LPARAM mouse, Sound& sound)
 	{
 		if (m_startButton == 0)
 		{
-			if (sound.Channel[1]) sound.Channel[1]->stop();
-			sound.System->playSound(sound.effectSound[4], nullptr, false, &sound.Channel[1]);
+			SoundManager::Get().PlayEffect(EEffect::ButtonHover);
 			m_startButton = 1;
 		}
 		return;
@@ -49,8 +48,7 @@ void TitleMenuUI::OnMouseMove(LPARAM mouse, Sound& sound)
 	{
 		if (m_helpButton == 0)
 		{
-			if (sound.Channel[1]) sound.Channel[1]->stop();
-			sound.System->playSound(sound.effectSound[4], nullptr, false, &sound.Channel[1]);
+			SoundManager::Get().PlayEffect(EEffect::ButtonHover);
 			m_helpButton = 1;
 		}
 		return;
@@ -58,13 +56,12 @@ void TitleMenuUI::OnMouseMove(LPARAM mouse, Sound& sound)
 	Reset();
 }
 
-void TitleMenuUI::OnMouseDown(LPARAM mouse, Sound& sound)
+void TitleMenuUI::OnMouseDown(LPARAM mouse)
 {
 	const auto& ks = UiHitbox::kStart;
 	if (IsInRect(mouse, ks.left, ks.top, ks.right, ks.bottom) && m_startButton == 1)
 	{
-		if (sound.Channel[1]) sound.Channel[1]->stop();
-		sound.System->playSound(sound.effectSound[3], nullptr, false, &sound.Channel[1]);
+		SoundManager::Get().PlayEffect(EEffect::ButtonClick);
 		m_startButton = 2;
 	}
 }
