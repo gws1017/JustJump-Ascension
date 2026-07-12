@@ -61,8 +61,11 @@ bool DeadScreenUI::OnMouseUp(LPARAM mouse)
 void DeadScreenUI::Render(HDC mem1dc, const UPtr<CAMERA>& camera)
 {
 	HDC dc = CreateCompatibleDC(mem1dc);
-	SelectObject(dc, m_dieBit[m_state].get());
+	if (!dc)
+		return;
+	HBITMAP oldBit = (HBITMAP)SelectObject(dc, m_dieBit[m_state].get());
 	TransparentBlt(mem1dc, camera->GetX() + 380, camera->GetY() + 240, 260, 130, dc, 0, 0, 260, 130, RGB(255, 0, 0));
+	SelectObject(dc, oldBit);
 	DeleteDC(dc);
 
 	HFONT hfont = CreateFont(14, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("메이플스토리 bold"));

@@ -131,6 +131,8 @@ bool GameWorld::Initialize(HINSTANCE hinstance)
 
     m_ocount = m_object_manager.InitObject(static_cast<int>(EMapId::Title), m_hinstance);
 
+    m_clickCursor = LoadCursorFromFile(TEXT("cursor/cursor4.cur"));
+
     return true;
 }
 
@@ -401,9 +403,8 @@ void GameWorld::RenderStartMenu(HDC mem1dc)
 
 void GameWorld::RenderInGameUI(HDC mem1dc)
 {
-    HDC dc = nullptr;
-    m_map.DrawUi(mem1dc, dc, m_camera);
-    m_map.DrawHP(mem1dc, dc, m_camera, m_player);
+    m_map.DrawUi(mem1dc, m_camera);
+    m_map.DrawHP(mem1dc, m_camera, m_player);
     if (m_player->IsDead() == 1)
         m_deadUI.Render(mem1dc, m_camera);
 }
@@ -476,6 +477,7 @@ void GameWorld::Shutdown()
 
 	// GDI 비트맵
 	if (m_hbit1) { DeleteObject(m_hbit1); m_hbit1 = nullptr; }
+	if (m_clickCursor) { DestroyCursor(m_clickCursor); m_clickCursor = nullptr; }
 
 	// 폰트 제거
 	RemoveFontResourceA("font/Maplestory Bold.ttf");
@@ -530,7 +532,8 @@ void GameWorld::OnMouseMove(LPARAM mouse)
 
 void GameWorld::OnMouseDown(LPARAM mouse)
 {
-    SetCursor(LoadCursorFromFile(TEXT("cursor/cursor4.cur")));
+    if (m_clickCursor)
+        SetCursor(m_clickCursor);
 
     if (m_editMode)
     {
@@ -569,6 +572,7 @@ void GameWorld::OnMouseUp(LPARAM mouse)
             m_ocount = m_object_manager.InitObject(m_map.GetMapNumber(), m_hinstance);
 
             m_map.CreateMap(m_hinstance);
+            if (m_hbit1) { DeleteObject(m_hbit1); m_hbit1 = nullptr; }
             m_hbit1 = (HBITMAP)LoadImage(m_hinstance, TEXT("img/bk.bmp"), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
             m_sound->SetIndex(m_sound->GetIndex() + 1);
 

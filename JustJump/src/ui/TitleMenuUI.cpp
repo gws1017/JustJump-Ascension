@@ -80,8 +80,10 @@ bool TitleMenuUI::OnMouseUp(LPARAM mouse)
 void TitleMenuUI::Render(HDC mem1dc)
 {
 	HDC dc = CreateCompatibleDC(mem1dc);
+	if (!dc)
+		return;
 
-	SelectObject(dc, m_startBit[m_startButton].get());
+	HBITMAP oldBit = (HBITMAP)SelectObject(dc, m_startBit[m_startButton].get());
 	TransparentBlt(mem1dc, 292, 490, 138, 82, dc, 0, 0, 138, 82, RGB(255, 0, 0));
 
 	SelectObject(dc, m_helpBit[m_helpButton].get());
@@ -90,5 +92,6 @@ void TitleMenuUI::Render(HDC mem1dc)
 	else
 		TransparentBlt(mem1dc, 215, 300, 400, 200, dc, 0, 0, 400, 200, RGB(0, 0, 0));
 
+	SelectObject(dc, oldBit);
 	DeleteDC(dc);
 }

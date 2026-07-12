@@ -54,6 +54,7 @@ private:
 	//Render 관련 변수
 	PAINTSTRUCT m_ps{};
 	HBITMAP m_hbit1 = nullptr;
+	HCURSOR m_clickCursor = nullptr;
 
 	//맵 편집 모드 (F1로 토글, 개발용)
 	bool m_editMode = false;
